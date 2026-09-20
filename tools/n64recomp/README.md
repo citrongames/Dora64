@@ -62,14 +62,14 @@ These files contain tool changes, not generated Doraemon game functions.
 Do not replace the runtime's separate N64Recomp submodule with this checkout:
 that dependency is part of the runtime build and remains at its tested revision.
 
-## Remaining migration
+## ROM-based source generation
 
 ROM/function metadata and RSP configuration live in `recomp/`, and all current
 game-code edits are preserved in `recomp/patches/`. Full generated Windows and
 Linux game builds succeeded, and the user accepted the Windows playtest.
 CMake now requires generated output; old game/RSP sources are excluded from
-tracking and retained locally as backups. The public release will use a separate clean repository;
-the current private development history will be retained.
+tracking and retained locally as backups. Dora64 uses a separate clean repository;
+the previous development history remains in the private Dora64-history archive.
 
 ## Validation of the pinned baseline
 

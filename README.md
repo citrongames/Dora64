@@ -1,16 +1,56 @@
 # Dora64
 
-Private development repository for a native PC recompilation of *Doraemon: Nobita to Mittsu no Seireiseki* for Nintendo 64.
+A native PC recompilation of *Doraemon: Nobita to Mittsu no Seireiseki* for Nintendo 64.
 
 The project recompiles the original MIPS game code into native code and uses N64ModernRuntime and RT64 for the platform, audio, input, and rendering layers. It is a native recompilation project, not a conventional whole-system emulator.
+
+## Download and play
+
+Download the latest **Windows x64** or **Linux x86_64** archive from
+[GitHub Releases](https://github.com/citrongames/Dora64/releases/latest).
+Extract the complete archive, keep the `assets` folder beside the executable,
+and place your original Japanese `.z64` ROM in that same folder. Launch
+`Dora64.exe` on Windows or `./Dora64` on Linux. ROMs are not included.
+Use version **1.0.1 or newer** for working English and Russian text localization.
+
+Windows 11 is the primary playtesting platform. Linux release binaries target
+Ubuntu 24.04 or compatible newer systems; runtime dependencies and launch
+instructions are included in each archive's `README.txt`.
+
+Features include Japanese, English and Russian game text, widescreen support,
+an optional modern camera, higher frame rates through interpolation, autosave,
+remappable controls, adjustable object draw distance and optional cheats.
+The Modern settings profile is enabled on first launch; the Original profile
+is available in **Esc → Game**. Both archives include short Russian and English
+collectible walkthroughs.
+
+## Development and credits
+
+Dora64 was developed by **citrongames with extensive assistance from AI —
+OpenAI's ChatGPT and Codex** — for reverse engineering, programming, debugging,
+localization and documentation. Project direction, decisions and gameplay
+testing were handled by the maintainer.
+
+The port builds on the work of the authors and contributors of
+[N64Recomp](https://github.com/N64Recomp/N64Recomp),
+[N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime),
+[RT64](https://github.com/rt64/rt64), and
+[Zelda64Recomp](https://github.com/Zelda64Recomp/Zelda64Recomp).
+The AI disclosure describes development of this port, not the upstream projects.
+
+The related Dora64 repositories are public:
+[runtime](https://github.com/citrongames/Dora64-N64ModernRuntime),
+[renderer](https://github.com/citrongames/Dora64-RT64), and
+[recompiler](https://github.com/citrongames/Dora64-N64Recomp).
+Existing upstream credits and licenses are preserved.
 
 ## Repository layout
 
 - `recomp/` — ROM metadata, RSP configuration and reproducible PC function patches.
 - `build-tools/game/` — local generated game functions and RSP code; excluded from Git.
 - `src/` — PC entry point, game hooks, input/audio integration, RT64 bridge, and the system overlay.
-- `lib/rt64/` — private RT64 fork, included as a Git submodule.
-- `lib/N64ModernRuntime/` — private runtime fork, included as a Git submodule.
+- `lib/rt64/` — Dora64 RT64 fork, included as a Git submodule.
+- `lib/N64ModernRuntime/` — Dora64 runtime fork, included as a Git submodule.
 - `BUGS_AND_TODO.md` — known issues found during playtesting.
 - `PC_ENHANCEMENTS_ROADMAP.md` — planned PC-specific improvements.
 - `MANUAL_REFERENCE.md` — notes extracted from the original Japanese manual.
@@ -49,13 +89,11 @@ ROM images, saves, logs, local mods, and build outputs are excluded from Git.
 
 ## Clone
 
-Clone recursively so the private runtime forks are checked out at their tested revisions:
+Clone recursively so the runtime forks are checked out at their tested revisions:
 
 ```sh
 git clone --recurse-submodules https://github.com/citrongames/Dora64.git
 ```
-
-Access to all private repositories is required.
 
 ## Generate game code
 
