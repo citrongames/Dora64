@@ -1,0 +1,22 @@
+{
+  "entry_count": 1138,
+  "entries_sha256": "9fbe69681b77eea90a52c6af5a6e05499e1d88fb349a0509e9e132a30a349357",
+  "direct_call_only": [
+    {
+      "name": "__osDisableInt_recomp",
+      "section_offset": "0x00096410"
+    },
+    {
+      "name": "__osRestoreInt_recomp",
+      "section_offset": "0x00096430"
+    },
+    {
+      "name": "osGetCount_recomp",
+      "section_offset": "0x00091500"
+    },
+    {
+      "name": "osSetIntMask_recomp",
+      "section_offset": "0x0008A940"
+    }
+  ]
+}

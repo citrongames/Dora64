@@ -1,0 +1,2063 @@
+--- a/__scMain.c
++++ b/__scMain.c
+@@ -180,4 +180,11 @@
+     ctx->r4 = ADD32(ctx->r4, 0X6B20);
+     after_5:
++    {
++        // Doraemon composites text and menu overlays directly into the VI
++        // framebuffer in func_80012B80. Notify the renderer only after the
++        // whole pass is complete so it never captures a partially drawn frame.
++        extern void ultramodern_notify_cpu_framebuffer_write(uint8_t *rdram);
++        ultramodern_notify_cpu_framebuffer_write(rdram);
++    }
+ L_80000CC0:
+     // 0x80000CC0: lui         $a0, 0x800F
+--- a/__scTaskComplete.c
++++ b/__scTaskComplete.c
+@@ -510,4 +510,10 @@
+     // 0x80001364: addiu       $sp, $sp, 0x70
+     ctx->r29 = ADD32(ctx->r29, 0X70);
++    // PC enhancement: poll the canonical collectible mask once per completed
++    // video frame. Some gadgets (including Tanma Watch) bypass the usual item
++    // registration function but all of them update this mask for the book.
++    if (!doraemon_game_reset_poll(rdram, ctx)) {
++        doraemon_collectible_autosave_poll(rdram, ctx);
++    }
+     return;
+     // 0x80001364: addiu       $sp, $sp, 0x70
+--- a/_handleEvent.c
++++ b/_handleEvent.c
+@@ -55,4 +55,12 @@
+     // 0x8008EAD4: or          $a0, $s7, $zero
+     ctx->r4 = ctx->r23 | 0;
++    // The original sound player only initializes the event type here. On the
++    // recompiled runtime the remaining stack bytes can contain a sound-state
++    // pointer, which makes _removeEvents accidentally delete this periodic
++    // player tick. Clear the complete ALEvent before posting it.
++    MEM_W(0XF4, ctx->r29) = 0;
++    MEM_W(0XF8, ctx->r29) = 0;
++    MEM_W(0XFC, ctx->r29) = 0;
++    MEM_W(0X100, ctx->r29) = 0;
+     // 0x8008EAD8: sh          $t6, 0xF4($sp)
+     MEM_H(0XF4, ctx->r29) = ctx->r14;
+@@ -969,4 +977,23 @@
+     ctx->r5 = ctx->r20 | 0;
+     after_22:
++    // A sound transition can remove the periodic player tick if an old build
++    // has already posted one with stale payload bytes. Recover an empty queue
++    // instead of spinning forever on AL_SEQP_END_EVT (-1) with a zero delta.
++    if ((ctx->r2 == 0) && (MEM_H(ctx->r22, 0X28) == -1)) {
++        MEM_W(0XF4, ctx->r29) = 0;
++        MEM_W(0XF8, ctx->r29) = 0;
++        MEM_W(0XFC, ctx->r29) = 0;
++        MEM_W(0X100, ctx->r29) = 0;
++        MEM_H(0XF4, ctx->r29) = 5;
++
++        ctx->r4 = ctx->r23;
++        ctx->r5 = ADD32(ctx->r29, 0XF4);
++        ctx->r6 = MEM_W(ctx->r22, 0X48);
++        alEvtqPostEvent(rdram, ctx);
++
++        ctx->r4 = ctx->r23;
++        ctx->r5 = ctx->r20;
++        alEvtqNextEvent(rdram, ctx);
++    }
+     // 0x8008EF7C: beq         $v0, $zero, L_8008EAC4
+     if (ctx->r2 == 0) {
+--- a/alSndpNew.c
++++ b/alSndpNew.c
+@@ -156,4 +156,10 @@
+     // 0x8008F0BC: addiu       $t8, $zero, 0x5
+     ctx->r24 = ADD32(0, 0X5);
++    // Initialize the complete periodic ALEvent. Leaving the payload as stale
++    // stack data can make _removeEvents mistake this tick for a sound event.
++    MEM_W(0X34, ctx->r29) = 0;
++    MEM_W(0X38, ctx->r29) = 0;
++    MEM_W(0X3C, ctx->r29) = 0;
++    MEM_W(0X40, ctx->r29) = 0;
+     // 0x8008F0C0: sh          $t8, 0x34($sp)
+     MEM_H(0X34, ctx->r29) = ctx->r24;
+--- a/func_800040D0.c
++++ b/func_800040D0.c
+@@ -1,3 +1,6 @@
+ RECOMP_FUNC void func_800040D0(uint8_t* rdram, recomp_context* ctx) {
++    doraemon_cheats_reset();
++    extern void doraemon_camera_reset(void);
++    doraemon_camera_reset();
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+--- a/func_80004408.c
++++ b/func_80004408.c
+@@ -1,3 +1,5 @@
+ RECOMP_FUNC void func_80004408(uint8_t* rdram, recomp_context* ctx) {
++    extern int doraemon_camera_update(uint8_t*, recomp_context*);
++    if (doraemon_camera_update(rdram, ctx)) return;
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+--- a/func_8000AD54.c
++++ b/func_8000AD54.c
+@@ -1,3 +1,6 @@
+ RECOMP_FUNC void func_8000AD54(uint8_t* rdram, recomp_context* ctx) {
++    doraemon_cheats_tick(rdram);
++    extern void doraemon_camera_sync(uint8_t*);
++    doraemon_camera_sync(rdram);
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+--- a/func_8000BDE0.c
++++ b/func_8000BDE0.c
+@@ -1,3 +1,5 @@
+ RECOMP_FUNC void func_8000BDE0(uint8_t* rdram, recomp_context* ctx) {
++    extern void doraemon_snapshot_frame_lights(uint8_t*, uint32_t);
++    const uint32_t lighting_buffer = MEM_BU(0X3, ctx->r4);
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+@@ -836,4 +838,5 @@
+     // 0x8000C314: addiu       $sp, $sp, 0x58
+     ctx->r29 = ADD32(ctx->r29, 0X58);
++    doraemon_snapshot_frame_lights(rdram, lighting_buffer);
+     return;
+     // 0x8000C314: addiu       $sp, $sp, 0x58
+--- a/func_8000D420.c
++++ b/func_8000D420.c
+@@ -923,7 +923,7 @@
+     // 0x8000D9A0: jr          $ra
+     // 0x8000D9A4: sw          $t5, -0x476C($at)
+-    MEM_W(-0X476C, ctx->r1) = ctx->r13;
++    MEM_W(-0X476C, ctx->r1) = (ctx->r13 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r1, -0X476C), ctx->r13));
+     return;
+     // 0x8000D9A4: sw          $t5, -0x476C($at)
+-    MEM_W(-0X476C, ctx->r1) = ctx->r13;
++    MEM_W(-0X476C, ctx->r1) = (ctx->r13 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r1, -0X476C), ctx->r13));
+ ;}
+--- a/func_8000DAD0.c
++++ b/func_8000DAD0.c
+@@ -201,5 +201,5 @@
+     MEM_W(0X70, ctx->r2) = 0;
+     // 0x8000DC3C: sw          $zero, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = 0;
++    MEM_W(0X74, ctx->r2) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), 0);
+     // 0x8000DC40: addiu       $a2, $zero, 0x1
+     ctx->r6 = ADD32(0, 0X1);
+--- a/func_8000DF50.c
++++ b/func_8000DF50.c
+@@ -205,5 +205,5 @@
+     MEM_W(0X70, ctx->r3) = 0;
+     // 0x8000E0BC: sw          $zero, 0x74($v1)
+-    MEM_W(0X74, ctx->r3) = 0;
++    MEM_W(0X74, ctx->r3) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r3, 0X74), 0);
+     // 0x8000E0C0: addiu       $s3, $zero, 0x1
+     ctx->r19 = ADD32(0, 0X1);
+--- a/func_8000E320.c
++++ b/func_8000E320.c
+@@ -253,5 +253,5 @@
+     MEM_W(0X70, ctx->r3) = 0;
+     // 0x8000E4D0: sw          $zero, 0x74($v1)
+-    MEM_W(0X74, ctx->r3) = 0;
++    MEM_W(0X74, ctx->r3) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r3, 0X74), 0);
+     // 0x8000E4D4: addiu       $s1, $zero, 0x1
+     ctx->r17 = ADD32(0, 0X1);
+--- a/func_8000E72C.c
++++ b/func_8000E72C.c
+@@ -153,5 +153,5 @@
+     MEM_W(0X70, ctx->r3) = 0;
+     // 0x8000E838: sw          $zero, 0x74($v1)
+-    MEM_W(0X74, ctx->r3) = 0;
++    MEM_W(0X74, ctx->r3) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r3, 0X74), 0);
+     // 0x8000E83C: addiu       $s2, $zero, 0x1
+     ctx->r18 = ADD32(0, 0X1);
+--- a/func_8000E9E8.c
++++ b/func_8000E9E8.c
+@@ -153,5 +153,5 @@
+     MEM_W(0X70, ctx->r3) = 0;
+     // 0x8000EAF4: sw          $zero, 0x74($v1)
+-    MEM_W(0X74, ctx->r3) = 0;
++    MEM_W(0X74, ctx->r3) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r3, 0X74), 0);
+     // 0x8000EAF8: addiu       $s1, $zero, 0x1
+     ctx->r17 = ADD32(0, 0X1);
+--- a/func_8000ED00.c
++++ b/func_8000ED00.c
+@@ -37,5 +37,5 @@
+     MEM_W(0X70, ctx->r2) = 0;
+     // 0x8000ED44: sw          $zero, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = 0;
++    MEM_W(0X74, ctx->r2) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), 0);
+     // 0x8000ED48: addiu       $a3, $zero, 0x1
+     ctx->r7 = ADD32(0, 0X1);
+--- a/func_800120F8.c
++++ b/func_800120F8.c
+@@ -119,9 +119,4 @@
+     // 0x800121D4: sh          $t9, -0x26A($v0)
+     MEM_H(-0X26A, ctx->r2) = ctx->r25;
+-    {
+-    extern void ultramodern_notify_cpu_framebuffer_write(uint8_t *rdram);
+-    ultramodern_notify_cpu_framebuffer_write(rdram);
+-}
+-
+     // 0x800121D8: jr          $ra
+     // 0x800121DC: nop
+--- a/func_800121E0.c
++++ b/func_800121E0.c
+@@ -357,9 +357,4 @@
+     // 0x800123A8: addiu       $v0, $v0, 0x268
+     ctx->r2 = ADD32(ctx->r2, 0X268);
+-    {
+-    extern void ultramodern_notify_cpu_framebuffer_write(uint8_t *rdram);
+-    ultramodern_notify_cpu_framebuffer_write(rdram);
+-}
+-
+     // 0x800123AC: jr          $ra
+     // 0x800123B0: nop
+--- a/func_800123B4.c
++++ b/func_800123B4.c
+@@ -60,4 +60,17 @@
+     // 0x80012414: addiu       $s3, $a3, 0xC
+     ctx->r19 = ADD32(ctx->r7, 0XC);
++    {
++        extern int doraemon_dialogue_glyph_advance(
++            uint8_t* rdram,
++            uint32_t dialogue_object_address
++        );
++        const int localized_advance = doraemon_dialogue_glyph_advance(
++            rdram,
++            (uint32_t)ctx->r4
++        );
++        if (localized_advance > 0) {
++            ctx->r19 = (gpr)localized_advance;
++        }
++    }
+     // 0x80012418: blez        $s2, L_80012448
+     if (SIGNED(ctx->r18) <= 0) {
+--- a/func_80012470.c
++++ b/func_80012470.c
+@@ -116,4 +116,12 @@
+     // 0x80012524: lw          $t9, 0x4($s4)
+     ctx->r25 = MEM_W(ctx->r20, 0X4);
++    {
++        extern void doraemon_localize_dialogue_message(
++            uint8_t* rdram,
++            uint32_t dialogue_object_address
++        );
++        doraemon_localize_dialogue_message(rdram, (uint32_t)ctx->r20);
++        ctx->r25 = MEM_W(ctx->r20, 0X4);
++    }
+     // 0x80012528: addiu       $s3, $zero, 0x1
+     ctx->r19 = ADD32(0, 0X1);
+--- a/func_8001282C.c
++++ b/func_8001282C.c
+@@ -301,4 +301,17 @@
+     // 0x800129F8: addiu       $t1, $t9, 0xC
+     ctx->r9 = ADD32(ctx->r25, 0XC);
++    {
++        extern int doraemon_dialogue_glyph_advance(
++            uint8_t* rdram,
++            uint32_t dialogue_object_address
++        );
++        const int localized_advance = doraemon_dialogue_glyph_advance(
++            rdram,
++            (uint32_t)ctx->r18
++        );
++        if (localized_advance > 0) {
++            ctx->r9 = (gpr)localized_advance;
++        }
++    }
+     // 0x800129FC: multu       $t8, $t1
+     result = U64(U32(ctx->r24)) * U64(U32(ctx->r9)); lo = S32(result >> 0); hi = S32(result >> 32);
+--- a/func_8001CC70.c
++++ b/func_8001CC70.c
+@@ -1,3 +1,4 @@
+ RECOMP_FUNC void func_8001CC70(uint8_t* rdram, recomp_context* ctx) {
++    doraemon_model_pool_init(rdram);
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+@@ -143,7 +144,7 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8001CD6C: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8001CD70: addiu       $v1, $v1, -0x4360
+-    ctx->r3 = ADD32(ctx->r3, -0X4360);
++    ctx->r3 = ADD32(ctx->r3, doraemon_model_storage_offset);
+     // 0x8001CD74: or          $a0, $zero, $zero
+     ctx->r4 = 0 | 0;
+@@ -170,5 +171,5 @@
+     ctx->r13 = S32(ctx->r13 << 3);
+     // 0x8001CDA0: slti        $at, $t8, 0x100
+-    ctx->r1 = SIGNED(ctx->r24) < 0X100 ? 1 : 0;
++    ctx->r1 = SIGNED(ctx->r24) < DORAEMON_MODEL_POOL_CAPACITY ? 1 : 0;
+     // 0x8001CDA4: addu        $t6, $v1, $t5
+     ctx->r14 = ADD32(ctx->r3, ctx->r13);
+--- a/func_8001D52C.c
++++ b/func_8001D52C.c
+@@ -134,5 +134,5 @@
+     ctx->r14 = S32(0X8014 << 16);
+     // 0x8001D5FC: addiu       $t6, $t6, 0x14A0
+-    ctx->r14 = ADD32(ctx->r14, 0X14A0);
++    ctx->r14 = ADD32(ctx->r14, (doraemon_model_table_offset));
+     // 0x8001D600: beq         $s2, $a1, L_8001DA68
+     if (ctx->r18 == ctx->r5) {
+@@ -441,5 +441,5 @@
+     ctx->r16 = ADD32(ctx->r16, ctx->r24);
+     // 0x8001D760: lw          $s0, 0x14A0($s0)
+-    ctx->r16 = MEM_W(ctx->r16, 0X14A0);
++    ctx->r16 = MEM_W(ctx->r16, (doraemon_model_table_offset));
+     // 0x8001D764: lwc1        $f6, 0x90($v0)
+     ctx->f6.u32l = MEM_W(ctx->r2, 0X90);
+@@ -491,5 +491,5 @@
+     ctx->r25 = S32(0X8014 << 16);
+     // 0x8001D7A4: addiu       $t9, $t9, 0x14A0
+-    ctx->r25 = ADD32(ctx->r25, 0X14A0);
++    ctx->r25 = ADD32(ctx->r25, (doraemon_model_table_offset));
+     // 0x8001D7A8: beq         $s2, $v0, L_8001D818
+     if (ctx->r18 == ctx->r2) {
+--- a/func_8001DAC8.c
++++ b/func_8001DAC8.c
+@@ -1,3 +1,4 @@
+ RECOMP_FUNC void func_8001DAC8(uint8_t* rdram, recomp_context* ctx) {
++    doraemon_draw_distance_trace(rdram);
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+@@ -730,10 +731,13 @@
+     // 0x8001DE78: lwc1        $f0, 0x18FC($at)
+     ctx->f0.u32l = MEM_W(ctx->r1, 0X18FC);
++    ctx->f0.fl = doraemon_draw_distance_limit(ctx->f0.fl, (uint32_t)ctx->r2);
+         goto L_8001DE80;
+     // 0x8001DE78: lwc1        $f0, 0x18FC($at)
+     ctx->f0.u32l = MEM_W(ctx->r1, 0X18FC);
++    ctx->f0.fl = doraemon_draw_distance_limit(ctx->f0.fl, (uint32_t)ctx->r2);
+ L_8001DE7C:
+     // 0x8001DE7C: lwc1        $f0, 0x1900($at)
+     ctx->f0.u32l = MEM_W(ctx->r1, 0X1900);
++    ctx->f0.fl = doraemon_draw_distance_limit(ctx->f0.fl, (uint32_t)ctx->r2);
+ L_8001DE80:
+     // 0x8001DE80: bltzl       $t3, L_8001DF48
+--- a/func_8001E8A8.c
++++ b/func_8001E8A8.c
+@@ -9,5 +9,5 @@
+     ctx->r2 = ADD32(ctx->r2, -0X47E0);
+     // 0x8001E8B4: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x8001E8B8: or          $v1, $zero, $zero
+     ctx->r3 = 0 | 0;
+--- a/func_8001E94C.c
++++ b/func_8001E94C.c
+@@ -920,5 +920,5 @@
+     ctx->r3 = MEM_W(ctx->r16, 0X0);
+     // 0x8001EDF8: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EDFC: ori         $at, $at, 0xE0
+     ctx->r1 = ctx->r1 | 0XE0;
+@@ -936,5 +936,5 @@
+     ctx->r3 = MEM_W(ctx->r16, 0X0);
+     // 0x8001EE18: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EE1C: ori         $at, $at, 0x120
+     ctx->r1 = ctx->r1 | 0X120;
+@@ -952,5 +952,5 @@
+     ctx->r5 = MEM_W(ctx->r23, 0X8C);
+     // 0x8001EE38: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EE3C: ori         $at, $at, 0x220
+     ctx->r1 = ctx->r1 | 0X220;
+@@ -970,5 +970,5 @@
+     ctx->r24 = ADD32(ctx->r18, ctx->r1);
+     // 0x8001EE54: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EE58: addiu       $t7, $v1, 0x8
+     ctx->r15 = ADD32(ctx->r3, 0X8);
+@@ -1058,5 +1058,5 @@
+     ctx->f8.u32l = MEM_W(ctx->r17, 0X30);
+     // 0x8001EEC4: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EEC8: c.eq.s      $f20, $f8
+     CHECK_FR(ctx, 20);
+@@ -1093,5 +1093,5 @@
+ L_8001EEF8:
+     // 0x8001EEF8: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EEFC: c.eq.s      $f20, $f10
+     CHECK_FR(ctx, 20);
+@@ -1128,5 +1128,5 @@
+ L_8001EF2C:
+     // 0x8001EF2C: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EF30: c.eq.s      $f20, $f16
+     CHECK_FR(ctx, 20);
+@@ -1167,5 +1167,5 @@
+     ctx->f18.u32l = MEM_W(ctx->r17, 0X30);
+     // 0x8001EF64: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EF68: c.eq.s      $f20, $f18
+     CHECK_FR(ctx, 20);
+@@ -1202,5 +1202,5 @@
+ L_8001EF98:
+     // 0x8001EF98: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EF9C: c.eq.s      $f20, $f4
+     CHECK_FR(ctx, 20);
+@@ -1237,5 +1237,5 @@
+ L_8001EFCC:
+     // 0x8001EFCC: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001EFD0: c.eq.s      $f20, $f6
+     CHECK_FR(ctx, 20);
+@@ -1276,5 +1276,5 @@
+     ctx->f8.u32l = MEM_W(ctx->r17, 0X34);
+     // 0x8001F004: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F008: c.eq.s      $f20, $f8
+     CHECK_FR(ctx, 20);
+@@ -1311,5 +1311,5 @@
+ L_8001F038:
+     // 0x8001F038: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F03C: c.eq.s      $f20, $f10
+     CHECK_FR(ctx, 20);
+@@ -1346,5 +1346,5 @@
+ L_8001F06C:
+     // 0x8001F06C: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F070: c.eq.s      $f20, $f16
+     CHECK_FR(ctx, 20);
+@@ -1385,5 +1385,5 @@
+     ctx->f18.u32l = MEM_W(ctx->r17, 0X34);
+     // 0x8001F0A4: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F0A8: c.eq.s      $f20, $f18
+     CHECK_FR(ctx, 20);
+@@ -1420,5 +1420,5 @@
+ L_8001F0D8:
+     // 0x8001F0D8: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F0DC: c.eq.s      $f20, $f4
+     CHECK_FR(ctx, 20);
+@@ -1455,5 +1455,5 @@
+ L_8001F10C:
+     // 0x8001F10C: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F110: c.eq.s      $f20, $f6
+     CHECK_FR(ctx, 20);
+@@ -1494,5 +1494,5 @@
+     ctx->f8.u32l = MEM_W(ctx->r17, 0X38);
+     // 0x8001F144: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F148: c.eq.s      $f20, $f8
+     CHECK_FR(ctx, 20);
+@@ -1529,5 +1529,5 @@
+ L_8001F178:
+     // 0x8001F178: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F17C: c.eq.s      $f20, $f10
+     CHECK_FR(ctx, 20);
+@@ -1564,5 +1564,5 @@
+ L_8001F1AC:
+     // 0x8001F1AC: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F1B0: c.eq.s      $f20, $f16
+     CHECK_FR(ctx, 20);
+@@ -1603,5 +1603,5 @@
+ L_8001F1E4:
+     // 0x8001F1E4: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F1E8: c.eq.s      $f20, $f18
+     CHECK_FR(ctx, 20);
+@@ -1638,5 +1638,5 @@
+ L_8001F218:
+     // 0x8001F218: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F21C: c.eq.s      $f20, $f4
+     CHECK_FR(ctx, 20);
+@@ -1673,5 +1673,5 @@
+ L_8001F24C:
+     // 0x8001F24C: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F250: c.eq.s      $f20, $f6
+     CHECK_FR(ctx, 20);
+@@ -1709,5 +1709,5 @@
+ L_8001F280:
+     // 0x8001F280: lui         $at, 0x8000
+-    ctx->r1 = S32(0X8000 << 16);
++    ctx->r1 = 0;
+     // 0x8001F284: beql        $t5, $zero, L_8001F2AC
+     if (ctx->r13 == 0) {
+--- a/func_8001F7FC.c
++++ b/func_8001F7FC.c
+@@ -9,5 +9,5 @@
+     ctx->r3 = MEM_HU(ctx->r7, 0X0);
+     // 0x8001F808: addiu       $t7, $zero, 0x100
+-    ctx->r15 = ADD32(0, 0X100);
++    ctx->r15 = ADD32(0, DORAEMON_MODEL_POOL_CAPACITY);
+     // 0x8001F80C: lui         $t0, 0x800F
+     ctx->r8 = S32(0X800F << 16);
+--- a/func_8001F878.c
++++ b/func_8001F878.c
+@@ -23,5 +23,5 @@
+     ctx->r25 = S32(0X8014 << 16);
+     // 0x8001F898: addiu       $t9, $t9, 0x14A0
+-    ctx->r25 = ADD32(ctx->r25, 0X14A0);
++    ctx->r25 = ADD32(ctx->r25, (doraemon_model_table_offset));
+     // 0x8001F89C: sll         $t8, $t6, 2
+     ctx->r24 = S32(ctx->r14 << 2);
+@@ -29,5 +29,5 @@
+     ctx->r7 = S32(0X8014 << 16);
+     // 0x8001F8A4: addiu       $a3, $a3, 0x18A0
+-    ctx->r7 = ADD32(ctx->r7, 0X18A0);
++    ctx->r7 = ADD32(ctx->r7, (doraemon_model_scratch_offset));
+     // 0x8001F8A8: addu        $a1, $t8, $t9
+     ctx->r5 = ADD32(ctx->r24, ctx->r25);
+@@ -69,7 +69,7 @@
+     ctx->r7 = S32(0X8014 << 16);
+     // 0x8001F8E8: slti        $at, $t7, 0x100
+-    ctx->r1 = SIGNED(ctx->r15) < 0X100 ? 1 : 0;
++    ctx->r1 = SIGNED(ctx->r15) < DORAEMON_MODEL_POOL_CAPACITY ? 1 : 0;
+     // 0x8001F8EC: addiu       $a3, $a3, 0x18A0
+-    ctx->r7 = ADD32(ctx->r7, 0X18A0);
++    ctx->r7 = ADD32(ctx->r7, (doraemon_model_scratch_offset));
+     // 0x8001F8F0: andi        $v0, $a2, 0xFFFF
+     ctx->r2 = ctx->r6 & 0XFFFF;
+@@ -85,5 +85,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x8001F900: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x8001F904: or          $a2, $v0, $zero
+     ctx->r6 = ctx->r2 | 0;
+@@ -108,5 +108,5 @@
+     ctx->r11 = SUB32(0, ctx->r4);
+     // 0x8001F92C: slti        $at, $a2, 0x100
+-    ctx->r1 = SIGNED(ctx->r6) < 0X100 ? 1 : 0;
++    ctx->r1 = SIGNED(ctx->r6) < DORAEMON_MODEL_POOL_CAPACITY ? 1 : 0;
+     // 0x8001F930: addu        $t5, $t4, $t3
+     ctx->r13 = ADD32(ctx->r12, ctx->r11);
+@@ -131,5 +131,5 @@
+     ctx->r2 = 0 | 0;
+     // 0x8001F948: addiu       $t7, $zero, 0x100
+-    ctx->r15 = ADD32(0, 0X100);
++    ctx->r15 = ADD32(0, DORAEMON_MODEL_POOL_CAPACITY);
+     // 0x8001F94C: subu        $t8, $t7, $v1
+     ctx->r24 = SUB32(ctx->r15, ctx->r3);
+@@ -139,5 +139,5 @@
+     ctx->r12 = S32(0X8014 << 16);
+     // 0x8001F958: addiu       $t4, $t4, 0x14A0
+-    ctx->r12 = ADD32(ctx->r12, 0X14A0);
++    ctx->r12 = ADD32(ctx->r12, (doraemon_model_table_offset));
+     // 0x8001F95C: sll         $t2, $t9, 2
+     ctx->r10 = S32(ctx->r25 << 2);
+--- a/func_8001FA04.c
++++ b/func_8001FA04.c
+@@ -427,10 +427,13 @@
+     // 0x8001FC20: lwc1        $f2, 0x1920($at)
+     ctx->f2.u32l = MEM_W(ctx->r1, 0X1920);
++    ctx->f2.fl = doraemon_draw_distance_limit(ctx->f2.fl, (uint32_t)ctx->r3);
+         goto L_8001FC28;
+     // 0x8001FC20: lwc1        $f2, 0x1920($at)
+     ctx->f2.u32l = MEM_W(ctx->r1, 0X1920);
++    ctx->f2.fl = doraemon_draw_distance_limit(ctx->f2.fl, (uint32_t)ctx->r3);
+ L_8001FC24:
+     // 0x8001FC24: lwc1        $f2, 0x1924($at)
+     ctx->f2.u32l = MEM_W(ctx->r1, 0X1924);
++    ctx->f2.fl = doraemon_draw_distance_limit(ctx->f2.fl, (uint32_t)ctx->r3);
+ L_8001FC28:
+     // 0x8001FC28: c.lt.s      $f12, $f2
+@@ -4785,5 +4788,5 @@
+     c1cs = ctx->f4.d < ctx->f6.d;
+     // 0x8002132C: addiu       $t9, $t9, 0x14A0
+-    ctx->r25 = ADD32(ctx->r25, 0X14A0);
++    ctx->r25 = ADD32(ctx->r25, (doraemon_model_table_offset));
+     // 0x80021330: andi        $a0, $s7, 0xFFFF
+     ctx->r4 = ctx->r23 & 0XFFFF;
+--- a/func_80023A58.c
++++ b/func_80023A58.c
+@@ -189,5 +189,5 @@
+     MEM_W(0X80, ctx->r2) = ctx->r8;
+     // 0x80023BB4: sw          $t3, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r11;
++    MEM_W(0X74, ctx->r2) = (ctx->r11 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r11));
+     // 0x80023BB8: swc1        $f18, 0x28($v0)
+     MEM_W(0X28, ctx->r2) = ctx->f18.u32l;
+--- a/func_80023C04.c
++++ b/func_80023C04.c
+@@ -77,4 +77,5 @@
+     ctx->r4 = ctx->r12 | 0;
+     after_0:
++    doraemon_draw_distance_allocation(rdram, (uint32_t)ctx->r22, (int16_t)ctx->r2);
+     // 0x80023C80: sll         $s4, $v0, 16
+     ctx->r20 = S32(ctx->r2 << 16);
+@@ -124,5 +125,5 @@
+     ctx->f20.u32l = 0;
+     // 0x80023CC4: addiu       $fp, $fp, 0x14A0
+-    ctx->r30 = ADD32(ctx->r30, 0X14A0);
++    ctx->r30 = ADD32(ctx->r30, (doraemon_model_table_offset));
+     // 0x80023CC8: addiu       $s7, $zero, 0x1F
+     ctx->r23 = ADD32(0, 0X1F);
+@@ -268,5 +269,5 @@
+     ctx->f20.u32l = 0;
+     // 0x80023DD0: addiu       $fp, $fp, 0x14A0
+-    ctx->r30 = ADD32(ctx->r30, 0X14A0);
++    ctx->r30 = ADD32(ctx->r30, (doraemon_model_table_offset));
+     // 0x80023DD4: addiu       $s1, $zero, 0xFF
+     ctx->r17 = ADD32(0, 0XFF);
+--- a/func_800242F0.c
++++ b/func_800242F0.c
+@@ -43,5 +43,5 @@
+     ctx->r12 = ADD32(ctx->r12, ctx->r11);
+     // 0x80024338: lw          $t4, 0x14A0($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A0);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset));
+     // 0x8002433C: sh          $t9, 0x6($t4)
+     MEM_H(0X6, ctx->r12) = ctx->r25;
+--- a/func_80024348.c
++++ b/func_80024348.c
+@@ -39,5 +39,5 @@
+     ctx->r3 = ADD32(ctx->r3, ctx->r10);
+     // 0x80024388: lw          $v1, 0x14A0($v1)
+-    ctx->r3 = MEM_W(ctx->r3, 0X14A0);
++    ctx->r3 = MEM_W(ctx->r3, (doraemon_model_table_offset));
+     // 0x8002438C: lhu         $t3, 0x8($v1)
+     ctx->r11 = MEM_HU(ctx->r3, 0X8);
+--- a/func_8002439C.c
++++ b/func_8002439C.c
+@@ -37,5 +37,5 @@
+     ctx->r9 = S32(0X8014 << 16);
+     // 0x800243D8: addiu       $t1, $t1, 0x14A0
+-    ctx->r9 = ADD32(ctx->r9, 0X14A0);
++    ctx->r9 = ADD32(ctx->r9, (doraemon_model_table_offset));
+     // 0x800243DC: blez        $t3, L_80024434
+     if (SIGNED(ctx->r11) <= 0) {
+--- a/func_8002443C.c
++++ b/func_8002443C.c
+@@ -47,5 +47,5 @@
+     ctx->r2 = ADD32(ctx->r2, ctx->r10);
+     // 0x8002448C: lw          $v0, 0x14A0($v0)
+-    ctx->r2 = MEM_W(ctx->r2, 0X14A0);
++    ctx->r2 = MEM_W(ctx->r2, (doraemon_model_table_offset));
+     // 0x80024490: lwc1        $f0, 0x28($sp)
+     ctx->f0.u32l = MEM_W(ctx->r29, 0X28);
+--- a/func_800244C4.c
++++ b/func_800244C4.c
+@@ -43,5 +43,5 @@
+     ctx->r2 = ADD32(ctx->r2, ctx->r10);
+     // 0x8002450C: lw          $v0, 0x14A0($v0)
+-    ctx->r2 = MEM_W(ctx->r2, 0X14A0);
++    ctx->r2 = MEM_W(ctx->r2, (doraemon_model_table_offset));
+     // 0x80024510: lwc1        $f0, 0x18($v0)
+     ctx->f0.u32l = MEM_W(ctx->r2, 0X18);
+--- a/func_8002454C.c
++++ b/func_8002454C.c
+@@ -54,5 +54,5 @@
+     ctx->r18 = ctx->r14 | 0;
+     // 0x800245AC: addiu       $s7, $s7, 0x14A0
+-    ctx->r23 = ADD32(ctx->r23, 0X14A0);
++    ctx->r23 = ADD32(ctx->r23, (doraemon_model_table_offset));
+     // 0x800245B0: addiu       $s6, $s6, -0x47E0
+     ctx->r22 = ADD32(ctx->r22, -0X47E0);
+--- a/func_800246AC.c
++++ b/func_800246AC.c
+@@ -39,5 +39,5 @@
+     ctx->r18 = ctx->r14 | 0;
+     // 0x800246F4: addiu       $s7, $s7, 0x14A0
+-    ctx->r23 = ADD32(ctx->r23, 0X14A0);
++    ctx->r23 = ADD32(ctx->r23, (doraemon_model_table_offset));
+     // 0x800246F8: addiu       $s6, $s6, -0x47E0
+     ctx->r22 = ADD32(ctx->r22, -0X47E0);
+--- a/func_800247E8.c
++++ b/func_800247E8.c
+@@ -35,5 +35,5 @@
+     ctx->r6 = S32(0X8014 << 16);
+     // 0x80024820: addiu       $a2, $a2, 0x14A0
+-    ctx->r6 = ADD32(ctx->r6, 0X14A0);
++    ctx->r6 = ADD32(ctx->r6, (doraemon_model_table_offset));
+     // 0x80024824: sll         $t1, $v1, 2
+     ctx->r9 = S32(ctx->r3 << 2);
+--- a/func_80025AF4.c
++++ b/func_80025AF4.c
+@@ -31,5 +31,5 @@
+     ctx->f0.u32l = 0;
+     // 0x80025B1C: addiu       $a1, $a1, 0x14A0
+-    ctx->r5 = ADD32(ctx->r5, 0X14A0);
++    ctx->r5 = ADD32(ctx->r5, (doraemon_model_table_offset));
+     // 0x80025B20: lw          $t8, 0x38($a0)
+     ctx->r24 = MEM_W(ctx->r4, 0X38);
+--- a/func_80029A18.c
++++ b/func_80029A18.c
+@@ -92,5 +92,5 @@
+     ctx->r13 = MEM_HU(ctx->r12, 0X46);
+     // 0x80029A98: addiu       $t1, $t1, 0x14A0
+-    ctx->r9 = ADD32(ctx->r9, 0X14A0);
++    ctx->r9 = ADD32(ctx->r9, (doraemon_model_table_offset));
+     // 0x80029A9C: addiu       $a1, $a1, -0x64F8
+     ctx->r5 = ADD32(ctx->r5, -0X64F8);
+@@ -110,5 +110,5 @@
+     ctx->r9 = S32(0X8014 << 16);
+     // 0x80029AB4: addiu       $t1, $t1, 0x14A0
+-    ctx->r9 = ADD32(ctx->r9, 0X14A0);
++    ctx->r9 = ADD32(ctx->r9, (doraemon_model_table_offset));
+     // 0x80029AB8: sll         $t8, $t7, 2
+     ctx->r24 = S32(ctx->r15 << 2);
+@@ -362,5 +362,5 @@
+     ctx->r9 = S32(0X8014 << 16);
+     // 0x80029C7C: addiu       $t1, $t1, 0x14A0
+-    ctx->r9 = ADD32(ctx->r9, 0X14A0);
++    ctx->r9 = ADD32(ctx->r9, (doraemon_model_table_offset));
+     // 0x80029C80: sll         $t8, $t7, 2
+     ctx->r24 = S32(ctx->r15 << 2);
+@@ -494,5 +494,5 @@
+     ctx->r9 = S32(0X8014 << 16);
+     // 0x80029D34: addiu       $t1, $t1, 0x14A0
+-    ctx->r9 = ADD32(ctx->r9, 0X14A0);
++    ctx->r9 = ADD32(ctx->r9, (doraemon_model_table_offset));
+     // 0x80029D38: lw          $t7, 0x38($v1)
+     ctx->r15 = MEM_W(ctx->r3, 0X38);
+--- a/func_8002B3A8.c
++++ b/func_8002B3A8.c
+@@ -351,5 +351,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8002B54C: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8002B550: sll         $t1, $a0, 2
+     ctx->r9 = S32(ctx->r4 << 2);
+--- a/func_8002D07C.c
++++ b/func_8002D07C.c
+@@ -119,5 +119,5 @@
+     ctx->r25 = ctx->r15 | ctx->r1;
+     // 0x8002D130: sh          $t4, 0x24($v0)
+-    MEM_H(0X24, ctx->r2) = ctx->r12;
++    MEM_H(0X24, ctx->r2) = (ctx->r12 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r2, 0X24), ctx->r12));
+     // 0x8002D134: sw          $t9, 0x2C($v0)
+     MEM_W(0X2C, ctx->r2) = ctx->r25;
+--- a/func_8002D394.c
++++ b/func_8002D394.c
+@@ -49,5 +49,5 @@
+     ctx->r11 = ADD32(0, 0X6);
+     // 0x8002D3E0: sw          $t1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r9;
++    MEM_W(0X74, ctx->r2) = (ctx->r9 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r9));
+     // 0x8002D3E4: sh          $t2, 0x4E($v0)
+     MEM_H(0X4E, ctx->r2) = ctx->r10;
+--- a/func_8002D3FC.c
++++ b/func_8002D3FC.c
+@@ -76,5 +76,5 @@
+     ctx->r11 = ADD32(0, 0X1);
+     // 0x8002D470: sw          $t0, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r8;
++    MEM_W(0X74, ctx->r2) = (ctx->r8 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r8));
+     // 0x8002D474: sh          $t1, 0x4E($v0)
+     MEM_H(0X4E, ctx->r2) = ctx->r9;
+--- a/func_8002D518.c
++++ b/func_8002D518.c
+@@ -66,5 +66,5 @@
+     ctx->r25 = ADD32(0, 0XFA);
+     // 0x8002D57C: sw          $t9, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r25;
++    MEM_W(0X74, ctx->r2) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r25));
+     // 0x8002D580: div.s       $f10, $f6, $f8
+     CHECK_FR(ctx, 10);
+--- a/func_8002E250.c
++++ b/func_8002E250.c
+@@ -306,5 +306,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8002E408: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8002E40C: sll         $t7, $t6, 2
+     ctx->r15 = S32(ctx->r14 << 2);
+--- a/func_8002E5F0.c
++++ b/func_8002E5F0.c
+@@ -64,5 +64,5 @@
+     ctx->r8 = ADD32(ctx->r8, ctx->r25);
+     // 0x8002E64C: lw          $t0, 0x14A0($t0)
+-    ctx->r8 = MEM_W(ctx->r8, 0X14A0);
++    ctx->r8 = MEM_W(ctx->r8, (doraemon_model_table_offset));
+     // 0x8002E650: lui         $at, 0x800C
+     ctx->r1 = S32(0X800C << 16);
+--- a/func_8002E7F8.c
++++ b/func_8002E7F8.c
+@@ -70,5 +70,5 @@
+     ctx->r10 = ADD32(ctx->r10, ctx->r9);
+     // 0x8002E85C: lw          $t2, 0x14A0($t2)
+-    ctx->r10 = MEM_W(ctx->r10, 0X14A0);
++    ctx->r10 = MEM_W(ctx->r10, (doraemon_model_table_offset));
+     // 0x8002E860: mtc1        $at, $f6
+     ctx->f6.u32l = ctx->r1;
+--- a/func_8002EA24.c
++++ b/func_8002EA24.c
+@@ -76,5 +76,5 @@
+     ctx->r8 = ADD32(ctx->r8, ctx->r25);
+     // 0x8002EA8C: lw          $t0, 0x14A0($t0)
+-    ctx->r8 = MEM_W(ctx->r8, 0X14A0);
++    ctx->r8 = MEM_W(ctx->r8, (doraemon_model_table_offset));
+     // 0x8002EA90: mtc1        $at, $f4
+     ctx->f4.u32l = ctx->r1;
+--- a/func_8002F820.c
++++ b/func_8002F820.c
+@@ -426,5 +426,5 @@
+     ctx->r2 = ADD32(ctx->r2, ctx->r14);
+     // 0x8002FA6C: lw          $v0, 0x14A0($v0)
+-    ctx->r2 = MEM_W(ctx->r2, 0X14A0);
++    ctx->r2 = MEM_W(ctx->r2, (doraemon_model_table_offset));
+     // 0x8002FA70: addiu       $at, $zero, 0x33
+     ctx->r1 = ADD32(0, 0X33);
+--- a/func_800304F8.c
++++ b/func_800304F8.c
+@@ -31,5 +31,5 @@
+     ctx->r3 = ADD32(ctx->r3, ctx->r10);
+     // 0x80030530: lw          $v1, 0x14A0($v1)
+-    ctx->r3 = MEM_W(ctx->r3, 0X14A0);
++    ctx->r3 = MEM_W(ctx->r3, (doraemon_model_table_offset));
+     // 0x80030534: sw          $ra, 0x1C($sp)
+     MEM_W(0X1C, ctx->r29) = ctx->r31;
+--- a/func_80030D0C.c
++++ b/func_80030D0C.c
+@@ -55,15 +55,15 @@
+     if (SIGNED(ctx->r3) >= 0) {
+         // 0x80030D64: sw          $v1, 0x74($v0)
+-        MEM_W(0X74, ctx->r2) = ctx->r3;
++        MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+             goto L_80030D70;
+     }
+     goto skip_0;
+     // 0x80030D64: sw          $v1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r3;
++    MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+     skip_0:
+     // 0x80030D68: or          $v1, $zero, $zero
+     ctx->r3 = 0 | 0;
+     // 0x80030D6C: sw          $v1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r3;
++    MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+ L_80030D70:
+     // 0x80030D70: sb          $zero, 0x2AB0($at)
+--- a/func_80030F64.c
++++ b/func_80030F64.c
+@@ -28,4 +28,5 @@
+     // 0x80030F8C: lw          $t0, 0xB4($s0)
+     ctx->r8 = MEM_W(ctx->r16, 0XB4);
++    ctx->r8 = S32(doraemon_cheats_torpedo_route((uint32_t)ctx->r16, (uint32_t)ctx->r8));
+     // 0x80030F90: lw          $v0, 0xA0($s0)
+     ctx->r2 = MEM_W(ctx->r16, 0XA0);
+@@ -426,5 +427,5 @@
+     ctx->r13 = ADD32(ctx->r13, ctx->r12);
+     // 0x80031170: lw          $t5, 0x14A4($t5)
+-    ctx->r13 = MEM_W(ctx->r13, 0X14A4);
++    ctx->r13 = MEM_W(ctx->r13, (doraemon_model_table_offset + 4));
+     // 0x80031174: lwc1        $f6, 0x14($s0)
+     ctx->f6.u32l = MEM_W(ctx->r16, 0X14);
+@@ -524,5 +525,5 @@
+     MEM_W(0X18, ctx->r16) = ctx->f4.u32l;
+     // 0x80031214: lw          $t8, 0x14A8($t8)
+-    ctx->r24 = MEM_W(ctx->r24, 0X14A8);
++    ctx->r24 = MEM_W(ctx->r24, (doraemon_model_table_offset + 8));
+     // 0x80031218: lwc1        $f16, 0x38($t8)
+     ctx->f16.u32l = MEM_W(ctx->r24, 0X38);
+@@ -552,5 +553,5 @@
+     ctx->r25 = ADD32(ctx->r25, ctx->r9);
+     // 0x80031234: lw          $t9, 0x14A8($t9)
+-    ctx->r25 = MEM_W(ctx->r25, 0X14A8);
++    ctx->r25 = MEM_W(ctx->r25, (doraemon_model_table_offset + 8));
+     // 0x80031238: swc1        $f0, 0x38($t9)
+     MEM_W(0X38, ctx->r25) = ctx->f0.u32l;
+--- a/func_80031254.c
++++ b/func_80031254.c
+@@ -1,3 +1,4 @@
+ RECOMP_FUNC void func_80031254(uint8_t* rdram, recomp_context* ctx) {
++    doraemon_cheats_torpedo_update(rdram, (int16_t)ctx->r4);
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
+@@ -227,5 +228,5 @@
+     ctx->r11 = ADD32(ctx->r11, ctx->r10);
+     // 0x80031378: lw          $t3, 0x14A4($t3)
+-    ctx->r11 = MEM_W(ctx->r11, 0X14A4);
++    ctx->r11 = MEM_W(ctx->r11, (doraemon_model_table_offset + 4));
+     // 0x8003137C: mtc1        $at, $f11
+     ctx->f_odd[(11 - 1) * 2] = ctx->r1;
+@@ -268,5 +269,5 @@
+     ctx->r14 = ADD32(ctx->r14, ctx->r13);
+     // 0x800313A8: lw          $t6, 0x14A4($t6)
+-    ctx->r14 = MEM_W(ctx->r14, 0X14A4);
++    ctx->r14 = MEM_W(ctx->r14, (doraemon_model_table_offset + 4));
+     // 0x800313AC: swc1        $f0, 0x38($t6)
+     MEM_W(0X38, ctx->r14) = ctx->f0.u32l;
+--- a/func_80036CEC.c
++++ b/func_80036CEC.c
+@@ -47,8 +47,8 @@
+     // 0x80036D30: b           L_800372E0
+     // 0x80036D34: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+         goto L_800372E0;
+     // 0x80036D34: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+ L_80036D38:
+     // 0x80036D38: lw          $t9, -0x29E4($t9)
+@@ -114,8 +114,8 @@
+     // 0x80036D98: b           L_800372E0
+     // 0x80036D9C: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+         goto L_800372E0;
+     // 0x80036D9C: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+ L_80036DA0:
+     // 0x80036DA0: mtc1        $zero, $f20
+@@ -624,5 +624,5 @@
+     MEM_W(0X4, ctx->r16) = ctx->r12;
+     // 0x80037160: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x80037164: swc1        $f12, 0xCC($s0)
+     MEM_W(0XCC, ctx->r16) = ctx->f12.u32l;
+@@ -655,5 +655,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x80037190: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x80037194: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+@@ -887,9 +887,9 @@
+     if (ctx->r14 != ctx->r1) {
+         // 0x800372C0: addiu       $v1, $v1, 0x14A0
+-        ctx->r3 = ADD32(ctx->r3, 0X14A0);
++        ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+             goto L_800372E0;
+     }
+     // 0x800372C0: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x800372C4: lui         $v0, 0x800E
+     ctx->r2 = S32(0X800E << 16);
+--- a/func_8003732C.c
++++ b/func_8003732C.c
+@@ -46,8 +46,8 @@
+     // 0x80037370: b           L_80037504
+     // 0x80037374: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+         goto L_80037504;
+     // 0x80037374: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+ L_80037378:
+     // 0x80037378: lw          $t1, -0x29E4($t1)
+@@ -94,5 +94,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x800373BC: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x800373C0: b           L_80037504
+     // 0x800373C4: sw          $t3, 0x4($a3)
+@@ -111,5 +111,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x800373D8: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x800373DC: sll         $t5, $t4, 2
+     ctx->r13 = S32(ctx->r12 << 2);
+@@ -337,5 +337,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x800374FC: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x80037500: lw          $a3, 0x1C($sp)
+     ctx->r7 = MEM_W(ctx->r29, 0X1C);
+--- a/func_80037AE0.c
++++ b/func_80037AE0.c
+@@ -636,13 +636,13 @@
+     if (ctx->r1 != 0) {
+         // 0x80037E08: sw          $t9, 0x74($v0)
+-        MEM_W(0X74, ctx->r2) = ctx->r25;
++        MEM_W(0X74, ctx->r2) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r25));
+             goto L_80037E14;
+     }
+     // 0x80037E08: sw          $t9, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r25;
++    MEM_W(0X74, ctx->r2) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r25));
+     // 0x80037E0C: addiu       $t1, $zero, 0xFA
+     ctx->r9 = ADD32(0, 0XFA);
+     // 0x80037E10: sw          $t1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r9;
++    MEM_W(0X74, ctx->r2) = (ctx->r9 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r9));
+ L_80037E14:
+     // 0x80037E14: sll         $a0, $a2, 16
+@@ -903,5 +903,5 @@
+     MEM_W(0X2C, ctx->r2) = ctx->r15;
+     // 0x80037FB0: sh          $t9, 0x24($v0)
+-    MEM_H(0X24, ctx->r2) = ctx->r25;
++    MEM_H(0X24, ctx->r2) = (ctx->r25 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r2, 0X24), ctx->r25));
+     // 0x80037FB4: lui         $a0, 0x802C
+     ctx->r4 = S32(0X802C << 16);
+--- a/func_80039254.c
++++ b/func_80039254.c
+@@ -489,5 +489,5 @@
+     ctx->r11 = ADD32(ctx->r11, ctx->r10);
+     // 0x800394A8: lw          $t3, 0x14A8($t3)
+-    ctx->r11 = MEM_W(ctx->r11, 0X14A8);
++    ctx->r11 = MEM_W(ctx->r11, (doraemon_model_table_offset + 8));
+     // 0x800394AC: b           L_800394D8
+     // 0x800394B0: swc1        $f16, 0x30($t3)
+@@ -508,5 +508,5 @@
+     ctx->r14 = ADD32(ctx->r14, ctx->r13);
+     // 0x800394C8: lw          $t6, 0x14A8($t6)
+-    ctx->r14 = MEM_W(ctx->r14, 0X14A8);
++    ctx->r14 = MEM_W(ctx->r14, (doraemon_model_table_offset + 8));
+     // 0x800394CC: addiu       $t7, $zero, -0x1
+     ctx->r15 = ADD32(0, -0X1);
+@@ -1381,5 +1381,5 @@
+     ctx->r9 = ADD32(ctx->r9, ctx->r8);
+     // 0x80039964: lw          $t1, 0x14A8($t1)
+-    ctx->r9 = MEM_W(ctx->r9, 0X14A8);
++    ctx->r9 = MEM_W(ctx->r9, (doraemon_model_table_offset + 8));
+     // 0x80039968: mtc1        $at, $f8
+     ctx->f8.u32l = ctx->r1;
+@@ -1417,5 +1417,5 @@
+     ctx->r12 = ADD32(ctx->r12, ctx->r11);
+     // 0x80039990: lw          $t4, 0x14A8($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A8);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset + 8));
+     // 0x80039994: addiu       $a0, $zero, 0x1
+     ctx->r4 = ADD32(0, 0X1);
+--- a/func_8003D130.c
++++ b/func_8003D130.c
+@@ -999,5 +999,5 @@
+     MEM_W(0XC0, ctx->r3) = ctx->f8.u32l;
+     // 0x8003D648: lw          $v0, 0x14A0($v0)
+-    ctx->r2 = MEM_W(ctx->r2, 0X14A0);
++    ctx->r2 = MEM_W(ctx->r2, (doraemon_model_table_offset));
+     // 0x8003D64C: lwc1        $f6, 0x30($v0)
+     ctx->f6.u32l = MEM_W(ctx->r2, 0X30);
+@@ -1069,5 +1069,5 @@
+     ctx->r2 = ADD32(ctx->r2, ctx->r15);
+     // 0x8003D6BC: lw          $v0, 0x14A0($v0)
+-    ctx->r2 = MEM_W(ctx->r2, 0X14A0);
++    ctx->r2 = MEM_W(ctx->r2, (doraemon_model_table_offset));
+     // 0x8003D6C0: lui         $at, 0x4140
+     ctx->r1 = S32(0X4140 << 16);
+--- a/func_8003DC20.c
++++ b/func_8003DC20.c
+@@ -1510,5 +1510,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8003E3C8: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8003E3CC: mul.s       $f16, $f0, $f2
+     CHECK_FR(ctx, 16);
+--- a/func_800407FC.c
++++ b/func_800407FC.c
+@@ -129,5 +129,5 @@
+     ctx->r15 = ADD32(0, 0XA);
+     // 0x800408B8: sw          $t7, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r15;
++    MEM_W(0X74, ctx->r16) = (ctx->r15 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r15));
+     // 0x800408BC: swc1        $f0, 0x90($s0)
+     MEM_W(0X90, ctx->r16) = ctx->f0.u32l;
+--- a/func_80040BD8.c
++++ b/func_80040BD8.c
+@@ -37,5 +37,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x80040C14: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x80040C18: sll         $t9, $a1, 2
+     ctx->r25 = S32(ctx->r5 << 2);
+--- a/func_800420A4.c
++++ b/func_800420A4.c
+@@ -469,5 +469,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8004231C: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x80042320: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+--- a/func_80046238.c
++++ b/func_80046238.c
+@@ -92,5 +92,5 @@
+     MEM_W(0X8, ctx->r3) = ctx->r9;
+     // 0x800462BC: sw          $t2, 0x74($v1)
+-    MEM_W(0X74, ctx->r3) = ctx->r10;
++    MEM_W(0X74, ctx->r3) = (ctx->r10 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r3, 0X74), ctx->r10));
+     // 0x800462C0: c.le.s      $f2, $f0
+     CHECK_FR(ctx, 2);
+--- a/func_80047084.c
++++ b/func_80047084.c
+@@ -1567,5 +1567,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x80047878: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004787C: mul.s       $f16, $f0, $f2
+     CHECK_FR(ctx, 16);
+--- a/func_80048970.c
++++ b/func_80048970.c
+@@ -131,5 +131,5 @@
+     ctx->r15 = ADD32(0, 0XA);
+     // 0x80048A30: sw          $t7, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r15;
++    MEM_W(0X74, ctx->r16) = (ctx->r15 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r15));
+     // 0x80048A34: swc1        $f0, 0x90($s0)
+     MEM_W(0X90, ctx->r16) = ctx->f0.u32l;
+--- a/func_80048FB4.c
++++ b/func_80048FB4.c
+@@ -218,5 +218,5 @@
+     ctx->r14 = ADD32(0, 0X1F4);
+     // 0x800490C0: sw          $t5, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r13;
++    MEM_W(0X74, ctx->r16) = (ctx->r13 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r13));
+     // 0x800490C4: sw          $t6, 0x4($s0)
+     MEM_W(0X4, ctx->r16) = ctx->r14;
+--- a/func_80049A10.c
++++ b/func_80049A10.c
+@@ -3384,5 +3384,5 @@
+     ctx->f6.u32l = ctx->r1;
+     // 0x8004ABA0: lw          $t9, 0x14A8($t9)
+-    ctx->r25 = MEM_W(ctx->r25, 0X14A8);
++    ctx->r25 = MEM_W(ctx->r25, (doraemon_model_table_offset + 8));
+     // 0x8004ABA4: or          $a1, $zero, $zero
+     ctx->r5 = 0 | 0;
+--- a/func_8004AF68.c
++++ b/func_8004AF68.c
+@@ -123,9 +123,9 @@
+     if (ctx->r12 != ctx->r1) {
+         // 0x8004B014: addiu       $v1, $v1, 0x14A0
+-        ctx->r3 = ADD32(ctx->r3, 0X14A0);
++        ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+             goto L_8004B038;
+     }
+     // 0x8004B014: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004B018: lui         $at, 0x4040
+     ctx->r1 = S32(0X4040 << 16);
+@@ -135,5 +135,5 @@
+     ctx->r4 = ADD32(0, 0XA);
+     // 0x8004B024: sw          $a0, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r4;
++    MEM_W(0X74, ctx->r16) = (ctx->r4 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r4));
+     // 0x8004B028: lw          $v0, 0x38($s0)
+     ctx->r2 = MEM_W(ctx->r16, 0X38);
+@@ -231,5 +231,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8004B0C8: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004B0CC: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+@@ -367,5 +367,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8004B188: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004B18C: sll         $t0, $t9, 2
+     ctx->r8 = S32(ctx->r25 << 2);
+@@ -415,5 +415,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8004B1D4: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004B1D8: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+@@ -444,5 +444,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8004B208: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8004B20C: addiu       $t2, $t1, -0x1
+     ctx->r10 = ADD32(ctx->r9, -0X1);
+--- a/func_8004B290.c
++++ b/func_8004B290.c
+@@ -51,5 +51,5 @@
+     ctx->r12 = MEM_H(ctx->r12, -0X6E40);
+     // 0x8004B2F0: lw          $t7, 0x14A4($t7)
+-    ctx->r15 = MEM_W(ctx->r15, 0X14A4);
++    ctx->r15 = MEM_W(ctx->r15, (doraemon_model_table_offset + 4));
+     // 0x8004B2F4: sll         $t9, $v0, 8
+     ctx->r25 = S32(ctx->r2 << 8);
+@@ -221,9 +221,9 @@
+     if (SIGNED(ctx->r4) > 0) {
+         // 0x8004B3F4: sw          $t7, 0x74($s0)
+-        MEM_W(0X74, ctx->r16) = ctx->r15;
++        MEM_W(0X74, ctx->r16) = (ctx->r15 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r15));
+             goto L_8004B42C;
+     }
+     // 0x8004B3F4: sw          $t7, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r15;
++    MEM_W(0X74, ctx->r16) = (ctx->r15 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r15));
+     // 0x8004B3F8: lw          $t8, 0x4($s0)
+     ctx->r24 = MEM_W(ctx->r16, 0X4);
+--- a/func_8004CD80.c
++++ b/func_8004CD80.c
+@@ -4670,5 +4670,5 @@
+     ctx->r9 = MEM_W(ctx->r18, 0X4);
+     // 0x8004E624: sw          $zero, 0x74($s2)
+-    MEM_W(0X74, ctx->r18) = 0;
++    MEM_W(0X74, ctx->r18) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r18, 0X74), 0);
+     // 0x8004E628: sw          $zero, 0xC0($s2)
+     MEM_W(0XC0, ctx->r18) = 0;
+--- a/func_8004F0B0.c
++++ b/func_8004F0B0.c
+@@ -93,5 +93,5 @@
+     ctx->r11 = ADD32(ctx->r11, ctx->r10);
+     // 0x8004F130: lw          $t3, 0x14A0($t3)
+-    ctx->r11 = MEM_W(ctx->r11, 0X14A0);
++    ctx->r11 = MEM_W(ctx->r11, (doraemon_model_table_offset));
+     // 0x8004F134: addiu       $t1, $zero, 0x4
+     ctx->r9 = ADD32(0, 0X4);
+--- a/func_8004F210.c
++++ b/func_8004F210.c
+@@ -2032,5 +2032,5 @@
+     ctx->r25 = ADD32(ctx->r24, -0X5);
+     // 0x8004FD5C: sw          $t9, 0x74($s2)
+-    MEM_W(0X74, ctx->r18) = ctx->r25;
++    MEM_W(0X74, ctx->r18) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r18, 0X74), ctx->r25));
+     // 0x8004FD60: bgtz        $t9, L_8004FDA0
+     if (SIGNED(ctx->r25) > 0) {
+--- a/func_80052060.c
++++ b/func_80052060.c
+@@ -82,5 +82,5 @@
+     ctx->r12 = ADD32(ctx->r12, ctx->r11);
+     // 0x800520D8: lw          $t4, 0x14A0($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A0);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset));
+     // 0x800520DC: addiu       $t2, $zero, 0x4
+     ctx->r10 = ADD32(0, 0X4);
+--- a/func_80052250.c
++++ b/func_80052250.c
+@@ -5689,5 +5689,5 @@
+     ctx->r15 = MEM_W(ctx->r19, 0X4);
+     // 0x80053FDC: sw          $zero, 0x74($s3)
+-    MEM_W(0X74, ctx->r19) = 0;
++    MEM_W(0X74, ctx->r19) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r19, 0X74), 0);
+     // 0x80053FE0: sw          $zero, 0xCC($s3)
+     MEM_W(0XCC, ctx->r19) = 0;
+--- a/func_80054670.c
++++ b/func_80054670.c
+@@ -3066,5 +3066,5 @@
+     ctx->r16 = S32(0X8014 << 16);
+     // 0x80055714: addiu       $s0, $s0, 0x14A0
+-    ctx->r16 = ADD32(ctx->r16, 0X14A0);
++    ctx->r16 = ADD32(ctx->r16, (doraemon_model_table_offset));
+     // 0x80055718: addiu       $t6, $zero, 0x7
+     ctx->r14 = ADD32(0, 0X7);
+@@ -5374,5 +5374,5 @@
+     ctx->r13 = MEM_W(ctx->r18, 0X4);
+     // 0x800563E8: sw          $zero, 0x74($s2)
+-    MEM_W(0X74, ctx->r18) = 0;
++    MEM_W(0X74, ctx->r18) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r18, 0X74), 0);
+     // 0x800563EC: sw          $zero, 0xCC($s2)
+     MEM_W(0XCC, ctx->r18) = 0;
+--- a/func_80056C20.c
++++ b/func_80056C20.c
+@@ -4268,5 +4268,5 @@
+     ctx->r8 = ADD32(0, 0X352);
+     // 0x800582FC: sw          $v0, 0x74($s1)
+-    MEM_W(0X74, ctx->r17) = ctx->r2;
++    MEM_W(0X74, ctx->r17) = (ctx->r2 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r17, 0X74), ctx->r2));
+     // 0x80058300: sw          $t0, 0x4($s1)
+     MEM_W(0X4, ctx->r17) = ctx->r8;
+--- a/func_80058E04.c
++++ b/func_80058E04.c
+@@ -127,5 +127,5 @@
+     ctx->r25 = ADD32(0, 0X1);
+     // 0x80058EB8: sw          $t8, 0x74($s3)
+-    MEM_W(0X74, ctx->r19) = ctx->r24;
++    MEM_W(0X74, ctx->r19) = (ctx->r24 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r19, 0X74), ctx->r24));
+     // 0x80058EBC: b           L_80059220
+     // 0x80058EC0: sw          $t9, 0x4($s3)
+@@ -295,5 +295,5 @@
+     ctx->f22.u32l = 0;
+     // 0x80058F94: addiu       $s6, $s6, 0x14A0
+-    ctx->r22 = ADD32(ctx->r22, 0X14A0);
++    ctx->r22 = ADD32(ctx->r22, (doraemon_model_table_offset));
+     // 0x80058F98: ldc1        $f20, 0x4988($at)
+     CHECK_FR(ctx, 20);
+--- a/func_8005925C.c
++++ b/func_8005925C.c
+@@ -226,5 +226,5 @@
+     ctx->f22.u32l = 0;
+     // 0x80059398: addiu       $s5, $s5, 0x14A0
+-    ctx->r21 = ADD32(ctx->r21, 0X14A0);
++    ctx->r21 = ADD32(ctx->r21, (doraemon_model_table_offset));
+     // 0x8005939C: ldc1        $f20, 0x49A0($at)
+     CHECK_FR(ctx, 20);
+--- a/func_80059B1C.c
++++ b/func_80059B1C.c
+@@ -258,5 +258,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x80059C68: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x80059C6C: bgez        $t4, L_80059C84
+     if (SIGNED(ctx->r12) >= 0) {
+--- a/func_8005A5F4.c
++++ b/func_8005A5F4.c
+@@ -109,5 +109,5 @@
+     ctx->r11 = ADD32(ctx->r11, ctx->r10);
+     // 0x8005A68C: lw          $t3, 0x14A0($t3)
+-    ctx->r11 = MEM_W(ctx->r11, 0X14A0);
++    ctx->r11 = MEM_W(ctx->r11, (doraemon_model_table_offset));
+     // 0x8005A690: addiu       $t4, $zero, 0x78
+     ctx->r12 = ADD32(0, 0X78);
+--- a/func_8005A7D8.c
++++ b/func_8005A7D8.c
+@@ -129,5 +129,5 @@
+     ctx->r14 = ADD32(ctx->r14, ctx->r13);
+     // 0x8005A88C: lw          $t6, 0x14A0($t6)
+-    ctx->r14 = MEM_W(ctx->r14, 0X14A0);
++    ctx->r14 = MEM_W(ctx->r14, (doraemon_model_table_offset));
+     // 0x8005A890: addiu       $t3, $zero, 0x4
+     ctx->r11 = ADD32(0, 0X4);
+@@ -171,5 +171,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8005A8D0: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8005A8D4: sll         $t9, $t8, 2
+     ctx->r25 = S32(ctx->r24 << 2);
+--- a/func_8005AB14.c
++++ b/func_8005AB14.c
+@@ -379,5 +379,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8005AD1C: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8005AD20: sll         $t9, $t8, 2
+     ctx->r25 = S32(ctx->r24 << 2);
+@@ -552,5 +552,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x8005AE00: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8005AE04: sll         $t1, $t9, 2
+     ctx->r9 = S32(ctx->r25 << 2);
+--- a/func_8005AF10.c
++++ b/func_8005AF10.c
+@@ -530,5 +530,5 @@
+     ctx->f20.u32l = ctx->r1;
+     // 0x8005B178: sw          $t7, 0x74($s1)
+-    MEM_W(0X74, ctx->r17) = ctx->r15;
++    MEM_W(0X74, ctx->r17) = (ctx->r15 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r17, 0X74), ctx->r15));
+     // 0x8005B17C: sra         $t3, $t2, 14
+     ctx->r11 = S32(SIGNED(ctx->r10) >> 14);
+@@ -660,5 +660,5 @@
+     ctx->r1 = ADD32(ctx->r1, ctx->r15);
+     // 0x8005B240: sw          $t5, -0x476C($at)
+-    MEM_W(-0X476C, ctx->r1) = ctx->r13;
++    MEM_W(-0X476C, ctx->r1) = (ctx->r13 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r1, -0X476C), ctx->r13));
+     // 0x8005B244: lw          $t9, 0xB4($s1)
+     ctx->r25 = MEM_W(ctx->r17, 0XB4);
+--- a/func_80060944.c
++++ b/func_80060944.c
+@@ -283,5 +283,5 @@
+     ctx->r4 = S32(0X8014 << 16);
+     // 0x80060AA0: addiu       $a0, $a0, 0x14A0
+-    ctx->r4 = ADD32(ctx->r4, 0X14A0);
++    ctx->r4 = ADD32(ctx->r4, (doraemon_model_table_offset));
+     // 0x80060AA4: lw          $v1, 0x18($sp)
+     ctx->r3 = MEM_W(ctx->r29, 0X18);
+--- a/func_80063D00.c
++++ b/func_80063D00.c
+@@ -158,16 +158,16 @@
+     if (SIGNED(ctx->r25) >= 0) {
+         // 0x80063DE4: sw          $t9, 0x74($t0)
+-        MEM_W(0X74, ctx->r8) = ctx->r25;
++        MEM_W(0X74, ctx->r8) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r8, 0X74), ctx->r25));
+             goto L_80063DEC;
+     }
+     // 0x80063DE4: sw          $t9, 0x74($t0)
+-    MEM_W(0X74, ctx->r8) = ctx->r25;
++    MEM_W(0X74, ctx->r8) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r8, 0X74), ctx->r25));
+     // 0x80063DE8: sw          $zero, 0x74($t0)
+-    MEM_W(0X74, ctx->r8) = 0;
++    MEM_W(0X74, ctx->r8) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r8, 0X74), 0);
+ L_80063DEC:
+     // 0x80063DEC: lwc1        $f6, 0x18($s0)
+     ctx->f6.u32l = MEM_W(ctx->r16, 0X18);
+     // 0x80063DF0: sw          $t1, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r9;
++    MEM_W(0X74, ctx->r16) = (ctx->r9 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r9));
+     // 0x80063DF4: lw          $a2, 0x10($s0)
+     ctx->r6 = MEM_W(ctx->r16, 0X10);
+@@ -235,5 +235,5 @@
+ L_80063E58:
+     // 0x80063E58: sw          $t1, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r9;
++    MEM_W(0X74, ctx->r16) = (ctx->r9 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r9));
+ L_80063E5C:
+     // 0x80063E5C: lw          $v0, 0x4($t0)
+--- a/func_800655D0.c
++++ b/func_800655D0.c
+@@ -1055,5 +1055,5 @@
+     ctx->r11 = ADD32(ctx->r3, ctx->r12);
+     // 0x80065C04: sw          $t1, 0x74($t3)
+-    MEM_W(0X74, ctx->r11) = ctx->r9;
++    MEM_W(0X74, ctx->r11) = (ctx->r9 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r11, 0X74), ctx->r9));
+ L_80065C08:
+     // 0x80065C08: jal         0x800073C0
+--- a/func_80068F14.c
++++ b/func_80068F14.c
+@@ -83,5 +83,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x80068F94: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x80068F98: sll         $t3, $t2, 2
+     ctx->r11 = S32(ctx->r10 << 2);
+@@ -349,5 +349,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x80069128: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x8006912C: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+@@ -475,5 +475,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x800691CC: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x800691D0: sll         $t7, $t6, 2
+     ctx->r15 = S32(ctx->r14 << 2);
+--- a/func_80069E60.c
++++ b/func_80069E60.c
+@@ -110,5 +110,5 @@
+     ctx->r12 = ADD32(0, 0XA);
+     // 0x80069F14: sw          $t4, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r12;
++    MEM_W(0X74, ctx->r16) = (ctx->r12 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r12));
+     // 0x80069F18: lui         $a1, 0x3F80
+     ctx->r5 = S32(0X3F80 << 16);
+--- a/func_8006E400.c
++++ b/func_8006E400.c
+@@ -875,5 +875,5 @@
+     ctx->r25 = S32(ctx->r15 << 2);
+     // 0x8006E938: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8006E93C: addu        $t5, $v1, $t9
+     ctx->r13 = ADD32(ctx->r3, ctx->r25);
+--- a/func_8006EFC0.c
++++ b/func_8006EFC0.c
+@@ -1371,5 +1371,5 @@
+     MEM_H(0X22, ctx->r3) = ctx->r14;
+     // 0x8006F94C: sh          $t7, 0x24($v1)
+-    MEM_H(0X24, ctx->r3) = ctx->r15;
++    MEM_H(0X24, ctx->r3) = (ctx->r15 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r3, 0X24), ctx->r15));
+     // 0x8006F950: bne         $v0, $a0, L_8006F92C
+     if (ctx->r2 != ctx->r4) {
+--- a/func_8006FD00.c
++++ b/func_8006FD00.c
+@@ -396,5 +396,5 @@
+     ctx->r3 = S32(0X8014 << 16);
+     // 0x8006FF8C: addiu       $v1, $v1, 0x14A0
+-    ctx->r3 = ADD32(ctx->r3, 0X14A0);
++    ctx->r3 = ADD32(ctx->r3, (doraemon_model_table_offset));
+     // 0x8006FF90: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+--- a/func_80071A10.c
++++ b/func_80071A10.c
+@@ -478,5 +478,5 @@
+     ctx->r25 = ADD32(0, 0X64);
+     // 0x80071CF8: sw          $t9, 0x74($s2)
+-    MEM_W(0X74, ctx->r18) = ctx->r25;
++    MEM_W(0X74, ctx->r18) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r18, 0X74), ctx->r25));
+     // 0x80071CFC: lw          $t6, 0xA0($v0)
+     ctx->r14 = MEM_W(ctx->r2, 0XA0);
+@@ -610,5 +610,5 @@
+     ctx->r18 = ADD32(ctx->r19, ctx->r25);
+     // 0x80071DD4: sw          $t6, 0x74($s2)
+-    MEM_W(0X74, ctx->r18) = ctx->r14;
++    MEM_W(0X74, ctx->r18) = (ctx->r14 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r18, 0X74), ctx->r14));
+     // 0x80071DD8: lw          $t7, 0xB8($s0)
+     ctx->r15 = MEM_W(ctx->r16, 0XB8);
+@@ -767,5 +767,5 @@
+     ctx->r24 = ADD32(ctx->r19, ctx->r15);
+     // 0x80071EF4: sw          $t6, 0x74($t8)
+-    MEM_W(0X74, ctx->r24) = ctx->r14;
++    MEM_W(0X74, ctx->r24) = (ctx->r14 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r24, 0X74), ctx->r14));
+ L_80071EF8:
+     // 0x80071EF8: lw          $t9, 0xB4($s0)
+--- a/func_80072A60.c
++++ b/func_80072A60.c
+@@ -33,5 +33,5 @@
+     ctx->r1 = S32(0X800F << 16);
+     // 0x80072A94: sh          $zero, 0x38C4($at)
+-    MEM_H(0X38C4, ctx->r1) = 0;
++    MEM_H(0X38C4, ctx->r1) = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r1, 0X38C4), 0);
+     // 0x80072A98: lui         $at, 0x8010
+     ctx->r1 = S32(0X8010 << 16);
+@@ -43,5 +43,5 @@
+     ctx->r25 = ADD32(0, 0X1);
+     // 0x80072AA8: sw          $t9, -0x476C($at)
+-    MEM_W(-0X476C, ctx->r1) = ctx->r25;
++    MEM_W(-0X476C, ctx->r1) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r1, -0X476C), ctx->r25));
+     // 0x80072AAC: lhu         $t1, 0x0($v1)
+     ctx->r9 = MEM_HU(ctx->r3, 0X0);
+--- a/func_80073440.c
++++ b/func_80073440.c
+@@ -75,5 +75,5 @@
+     MEM_B(0XD, ctx->r3) = ctx->r25;
+     // 0x800734A4: sh          $t8, 0x24($a1)
+-    MEM_H(0X24, ctx->r5) = ctx->r24;
++    MEM_H(0X24, ctx->r5) = (ctx->r24 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r5, 0X24), ctx->r24));
+     // 0x800734A8: sb          $a3, 0x42($a1)
+     MEM_B(0X42, ctx->r5) = ctx->r7;
+--- a/func_80073F28.c
++++ b/func_80073F28.c
+@@ -196,9 +196,9 @@
+     if (SIGNED(ctx->r10) <= 0) {
+         // 0x8007403C: sw          $t2, 0x74($s0)
+-        MEM_W(0X74, ctx->r16) = ctx->r10;
++        MEM_W(0X74, ctx->r16) = (ctx->r10 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r10));
+             goto L_8007406C;
+     }
+     // 0x8007403C: sw          $t2, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r10;
++    MEM_W(0X74, ctx->r16) = (ctx->r10 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r10));
+     // 0x80074040: lwc1        $f8, 0x0($v1)
+     ctx->f8.u32l = MEM_W(ctx->r3, 0X0);
+@@ -278,9 +278,9 @@
+     if (SIGNED(ctx->r14) <= 0) {
+         // 0x800740A8: sw          $t6, 0x74($s0)
+-        MEM_W(0X74, ctx->r16) = ctx->r14;
++        MEM_W(0X74, ctx->r16) = (ctx->r14 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r14));
+             goto L_800740D8;
+     }
+     // 0x800740A8: sw          $t6, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r14;
++    MEM_W(0X74, ctx->r16) = (ctx->r14 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r14));
+     // 0x800740AC: lwc1        $f8, 0x0($v1)
+     ctx->f8.u32l = MEM_W(ctx->r3, 0X0);
+@@ -564,5 +564,5 @@
+ 
+     // 0x80074238: sw          $v0, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r2;
++    MEM_W(0X74, ctx->r16) = (ctx->r2 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r2));
+ L_8007423C:
+     // 0x8007423C: blez        $v0, L_80074510
+@@ -1020,15 +1020,15 @@
+     if (SIGNED(ctx->r3) >= 0) {
+         // 0x80074474: sw          $v1, 0x74($v0)
+-        MEM_W(0X74, ctx->r2) = ctx->r3;
++        MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+             goto L_80074480;
+     }
+     goto skip_5;
+     // 0x80074474: sw          $v1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r3;
++    MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+     skip_5:
+     // 0x80074478: or          $v1, $zero, $zero
+     ctx->r3 = 0 | 0;
+     // 0x8007447C: sw          $v1, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r3;
++    MEM_W(0X74, ctx->r2) = (ctx->r3 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r3));
+ L_80074480:
+     // 0x80074480: b           L_80074498
+@@ -1149,5 +1149,5 @@
+     ctx->r3 = MEM_H(ctx->r16, 0XC8);
+     // 0x80074528: sw          $zero, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = 0;
++    MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+     // 0x8007452C: addiu       $at, $zero, 0x1
+     ctx->r1 = ADD32(0, 0X1);
+--- a/func_8007461C.c
++++ b/func_8007461C.c
+@@ -362,5 +362,5 @@
+ L_800747CC:
+     // 0x800747CC: sw          $zero, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = 0;
++    MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+ L_800747D0:
+     // 0x800747D0: jal         0x80073094
+--- a/func_80074A44.c
++++ b/func_80074A44.c
+@@ -128,5 +128,5 @@
+     ctx->r19 = S32(0X8014 << 16);
+     // 0x80074B04: addiu       $s3, $s3, 0x14A0
+-    ctx->r19 = ADD32(ctx->r19, 0X14A0);
++    ctx->r19 = ADD32(ctx->r19, (doraemon_model_table_offset));
+     // 0x80074B08: cvt.s.w     $f20, $f4
+     CHECK_FR(ctx, 20);
+--- a/func_80074C38.c
++++ b/func_80074C38.c
+@@ -29,5 +29,5 @@
+     ctx->r19 = S32(0X8014 << 16);
+     // 0x80074C64: addiu       $s3, $s3, 0x14A0
+-    ctx->r19 = ADD32(ctx->r19, 0X14A0);
++    ctx->r19 = ADD32(ctx->r19, (doraemon_model_table_offset));
+     // 0x80074C68: lw          $t7, 0x38($s2)
+     ctx->r15 = MEM_W(ctx->r18, 0X38);
+--- a/func_80074D74.c
++++ b/func_80074D74.c
+@@ -35,5 +35,5 @@
+     ctx->r7 = S32(0X8014 << 16);
+     // 0x80074DAC: addiu       $a3, $a3, 0x14A0
+-    ctx->r7 = ADD32(ctx->r7, 0X14A0);
++    ctx->r7 = ADD32(ctx->r7, (doraemon_model_table_offset));
+     // 0x80074DB0: or          $a2, $zero, $zero
+     ctx->r6 = 0 | 0;
+--- a/func_800751DC.c
++++ b/func_800751DC.c
+@@ -811,5 +811,5 @@
+     ctx->r2 = S32(0X8014 << 16);
+     // 0x800755C8: addiu       $v0, $v0, 0x14A0
+-    ctx->r2 = ADD32(ctx->r2, 0X14A0);
++    ctx->r2 = ADD32(ctx->r2, (doraemon_model_table_offset));
+     // 0x800755CC: sll         $t3, $t2, 2
+     ctx->r11 = S32(ctx->r10 << 2);
+--- a/func_800762B0.c
++++ b/func_800762B0.c
+@@ -189,5 +189,5 @@
+     ctx->r3 = ADD32(ctx->r3, ctx->r9);
+     // 0x800763C4: lw          $v1, 0x14A0($v1)
+-    ctx->r3 = MEM_W(ctx->r3, 0X14A0);
++    ctx->r3 = MEM_W(ctx->r3, (doraemon_model_table_offset));
+     // 0x800763C8: bne         $at, $zero, L_800763D8
+     if (ctx->r1 != 0) {
+--- a/func_8007645C.c
++++ b/func_8007645C.c
+@@ -126,5 +126,5 @@
+     ctx->r23 = ADD32(ctx->r11, ctx->r12);
+     // 0x80076548: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x8007654C: ldc1        $f20, 0x5E20($at)
+     CHECK_FR(ctx, 20);
+@@ -260,5 +260,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x8007660C: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x80076610: beq         $s5, $v0, L_80076620
+     if (ctx->r21 == ctx->r2) {
+@@ -407,5 +407,5 @@
+     ctx->r8 = S32(0X8014 << 16);
+     // 0x800766F0: addiu       $t0, $t0, 0x14A0
+-    ctx->r8 = ADD32(ctx->r8, 0X14A0);
++    ctx->r8 = ADD32(ctx->r8, (doraemon_model_table_offset));
+     // 0x800766F4: sll         $t6, $t5, 2
+     ctx->r14 = S32(ctx->r13 << 2);
+--- a/func_80076768.c
++++ b/func_80076768.c
+@@ -538,5 +538,5 @@
+     MEM_H(0X4E, ctx->r16) = ctx->r11;
+     // 0x80076AE8: sw          $t2, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r10;
++    MEM_W(0X74, ctx->r16) = (ctx->r10 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r10));
+     // 0x80076AEC: lbu         $t4, 0x41($s2)
+     ctx->r12 = MEM_BU(ctx->r18, 0X41);
+--- a/func_80077164.c
++++ b/func_80077164.c
+@@ -303,5 +303,5 @@
+     ctx->r13 = S32(0X8014 << 16);
+     // 0x8007731C: addiu       $t5, $t5, 0x14A0
+-    ctx->r13 = ADD32(ctx->r13, 0X14A0);
++    ctx->r13 = ADD32(ctx->r13, (doraemon_model_table_offset));
+     // 0x80077320: sll         $t9, $a1, 2
+     ctx->r25 = S32(ctx->r5 << 2);
+--- a/func_800778C0.c
++++ b/func_800778C0.c
+@@ -2,4 +2,14 @@
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
++    extern void doraemon_begin_game_text_composition(uint8_t* rdram);
++    extern uint32_t doraemon_localize_game_text_fragment(
++        uint8_t* rdram,
++        uint32_t source_address,
++        int category,
++        int preserve_service_byte
++    );
++    extern uint32_t doraemon_localize_game_text_digit(uint32_t original_code);
++    extern void doraemon_finish_game_text_composition(uint8_t* rdram);
++    doraemon_begin_game_text_composition(rdram);
+     // 0x800778C0: addiu       $sp, $sp, -0x20
+     ctx->r29 = ADD32(ctx->r29, -0X20);
+@@ -36,4 +46,7 @@
+     // 0x80077900: lw          $v1, 0x7F38($v1)
+     ctx->r3 = MEM_W(ctx->r3, 0X7F38);
++    ctx->r3 = S32(doraemon_localize_game_text_fragment(
++        rdram, (uint32_t)ctx->r3, 1, 1
++    ));
+     // 0x80077904: addiu       $a0, $zero, 0xFE
+     ctx->r4 = ADD32(0, 0XFE);
+@@ -73,4 +86,7 @@
+     // 0x8007793C: addiu       $v1, $v1, 0x1
+     ctx->r3 = ADD32(ctx->r3, 0X1);
++    ctx->r3 = S32(doraemon_localize_game_text_fragment(
++        rdram, (uint32_t)ctx->r3, 2, 0
++    ));
+     // 0x80077940: lbu         $t4, 0x0($v1)
+     ctx->r12 = MEM_BU(ctx->r3, 0X0);
+@@ -100,4 +116,7 @@
+     // 0x80077964: lw          $v1, 0x7F1C($v1)
+     ctx->r3 = MEM_W(ctx->r3, 0X7F1C);
++    ctx->r3 = S32(doraemon_localize_game_text_fragment(
++        rdram, (uint32_t)ctx->r3, 2, 1
++    ));
+     // 0x80077968: lw          $a3, 0x4($t0)
+     ctx->r7 = MEM_W(ctx->r8, 0X4);
+@@ -184,4 +203,5 @@
+     // 0x800779D8: addiu       $t8, $a2, 0x1
+     ctx->r24 = ADD32(ctx->r6, 0X1);
++    ctx->r24 = doraemon_localize_game_text_digit((uint32_t)ctx->r24);
+     // 0x800779DC: sb          $t8, 0x0($a3)
+     MEM_B(0X0, ctx->r7) = ctx->r24;
+@@ -195,4 +215,5 @@
+     // 0x800779EC: addiu       $t1, $t9, 0x1
+     ctx->r9 = ADD32(ctx->r25, 0X1);
++    ctx->r9 = doraemon_localize_game_text_digit((uint32_t)ctx->r9);
+     // 0x800779F0: sb          $t1, 0x0($a3)
+     MEM_B(0X0, ctx->r7) = ctx->r9;
+@@ -260,4 +281,5 @@
+     // 0x80077A44: nop
+ 
++    doraemon_finish_game_text_composition(rdram);
+     return;
+     // 0x80077A44: nop
+--- a/func_80077C3C.c
++++ b/func_80077C3C.c
+@@ -113,5 +113,5 @@
+     ctx->r14 = MEM_H(ctx->r14, 0X6390);
+     // 0x80077CDC: lw          $t9, 0x14A0($t9)
+-    ctx->r25 = MEM_W(ctx->r25, 0X14A0);
++    ctx->r25 = MEM_W(ctx->r25, (doraemon_model_table_offset));
+     // 0x80077CE0: sh          $t6, 0x6($t9)
+     MEM_H(0X6, ctx->r25) = ctx->r14;
+--- a/func_80078064.c
++++ b/func_80078064.c
+@@ -200,5 +200,5 @@
+ 
+     // 0x80078168: sw          $a0, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = ctx->r4;
++    MEM_W(0X74, ctx->r2) = (ctx->r4 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), ctx->r4));
+ L_8007816C:
+     // 0x8007816C: blez        $a0, L_800781C0
+@@ -256,5 +256,5 @@
+ L_800781C0:
+     // 0x800781C0: sw          $zero, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = 0;
++    MEM_W(0X74, ctx->r2) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), 0);
+     // 0x800781C4: sh          $a3, 0xB8($v0)
+     MEM_H(0XB8, ctx->r2) = ctx->r7;
+--- a/func_8007835C.c
++++ b/func_8007835C.c
+@@ -130,5 +130,5 @@
+     MEM_B(0XD, ctx->r2) = ctx->r14;
+     // 0x8007842C: sh          $t5, 0x24($a2)
+-    MEM_H(0X24, ctx->r6) = ctx->r13;
++    MEM_H(0X24, ctx->r6) = (ctx->r13 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r6, 0X24), ctx->r13));
+     // 0x80078430: sb          $v1, 0x42($a2)
+     MEM_B(0X42, ctx->r6) = ctx->r3;
+--- a/func_800785CC.c
++++ b/func_800785CC.c
+@@ -336,5 +336,5 @@
+     ctx->r9 = S32(ctx->r8 << 2);
+     // 0x8007876C: lw          $t4, 0x14A4($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A4);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset + 4));
+     // 0x80078770: addu        $t1, $t1, $t0
+     ctx->r9 = ADD32(ctx->r9, ctx->r8);
+@@ -476,5 +476,5 @@
+     ctx->r25 = ADD32(ctx->r24, -0X14);
+     // 0x80078830: sw          $t9, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r25;
++    MEM_W(0X74, ctx->r16) = (ctx->r25 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r25));
+     // 0x80078834: lw          $a2, 0x74($sp)
+     ctx->r6 = MEM_W(ctx->r29, 0X74);
+@@ -489,10 +489,10 @@
+     if (SIGNED(ctx->r8) <= 0) {
+         // 0x80078848: sw          $zero, 0x74($s0)
+-        MEM_W(0X74, ctx->r16) = 0;
++        MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+             goto L_800788EC;
+     }
+     goto skip_6;
+     // 0x80078848: sw          $zero, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = 0;
++    MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+     skip_6:
+     // 0x8007884C: sh          $zero, 0x52($s0)
+@@ -621,5 +621,5 @@
+     MEM_H(0XC2, ctx->r16) = ctx->r14;
+     // 0x800788E8: sw          $zero, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = 0;
++    MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+ L_800788EC:
+     // 0x800788EC: sh          $t7, 0xB8($s0)
+--- a/func_80078BA0.c
++++ b/func_80078BA0.c
+@@ -95,5 +95,5 @@
+     ctx->r8 = ADD32(ctx->r8, ctx->r25);
+     // 0x80078C34: lw          $t0, 0x14A0($t0)
+-    ctx->r8 = MEM_W(ctx->r8, 0X14A0);
++    ctx->r8 = MEM_W(ctx->r8, (doraemon_model_table_offset));
+     // 0x80078C38: mfhi        $t5
+     ctx->r13 = hi;
+--- a/func_80078DB0.c
++++ b/func_80078DB0.c
+@@ -62,5 +62,5 @@
+     ctx->r10 = ADD32(ctx->r10, ctx->r9);
+     // 0x80078E0C: lw          $t2, 0x14A0($t2)
+-    ctx->r10 = MEM_W(ctx->r10, 0X14A0);
++    ctx->r10 = MEM_W(ctx->r10, (doraemon_model_table_offset));
+     // 0x80078E10: mtc1        $at, $f4
+     ctx->f4.u32l = ctx->r1;
+--- a/func_8007A96C.c
++++ b/func_8007A96C.c
+@@ -2,4 +2,13 @@
+     uint64_t hi = 0, lo = 0, result = 0;
+     int c1cs = 0;
++    extern void doraemon_begin_game_text_composition(uint8_t* rdram);
++    extern uint32_t doraemon_localize_time_label(
++        uint8_t* rdram,
++        uint32_t source_address,
++        int label_index
++    );
++    extern uint32_t doraemon_localize_game_text_digit(uint32_t original_code);
++    extern void doraemon_finish_game_text_composition(uint8_t* rdram);
++    doraemon_begin_game_text_composition(rdram);
+     // 0x8007A96C: lui         $t0, 0x801C
+     ctx->r8 = S32(0X801C << 16);
+@@ -20,4 +29,7 @@
+     // 0x8007A98C: lw          $v1, 0x0($t0)
+     ctx->r3 = MEM_W(ctx->r8, 0X0);
++    ctx->r3 = S32(doraemon_localize_time_label(
++        rdram, (uint32_t)ctx->r3, 0
++    ));
+     // 0x8007A990: addiu       $t1, $zero, 0xFE
+     ctx->r9 = ADD32(0, 0XFE);
+@@ -51,4 +63,5 @@
+     // 0x8007A9BC: addiu       $t4, $t9, 0x1
+     ctx->r12 = ADD32(ctx->r25, 0X1);
++    ctx->r12 = doraemon_localize_game_text_digit((uint32_t)ctx->r12);
+     // 0x8007A9C0: sb          $t4, 0x0($v0)
+     MEM_B(0X0, ctx->r2) = ctx->r12;
+@@ -61,4 +74,5 @@
+     // 0x8007A9D0: addiu       $t6, $t5, 0x1
+     ctx->r14 = ADD32(ctx->r13, 0X1);
++    ctx->r14 = doraemon_localize_game_text_digit((uint32_t)ctx->r14);
+     // 0x8007A9D4: sb          $t6, 0x1($v0)
+     MEM_B(0X1, ctx->r2) = ctx->r14;
+@@ -69,4 +83,5 @@
+     // 0x8007A9E0: addiu       $t8, $t7, 0x1
+     ctx->r24 = ADD32(ctx->r15, 0X1);
++    ctx->r24 = doraemon_localize_game_text_digit((uint32_t)ctx->r24);
+     // 0x8007A9E4: sb          $t8, -0x6($v0)
+     MEM_B(-0X6, ctx->r2) = ctx->r24;
+@@ -77,4 +92,5 @@
+     // 0x8007A9F0: addiu       $t4, $t9, 0x1
+     ctx->r12 = ADD32(ctx->r25, 0X1);
++    ctx->r12 = doraemon_localize_game_text_digit((uint32_t)ctx->r12);
+     // 0x8007A9F4: sb          $t4, -0x5($v0)
+     MEM_B(-0X5, ctx->r2) = ctx->r12;
+@@ -85,4 +101,5 @@
+     // 0x8007AA00: addiu       $t6, $t5, 0x1
+     ctx->r14 = ADD32(ctx->r13, 0X1);
++    ctx->r14 = doraemon_localize_game_text_digit((uint32_t)ctx->r14);
+     // 0x8007AA04: sb          $t6, -0x3($v0)
+     MEM_B(-0X3, ctx->r2) = ctx->r14;
+@@ -95,4 +112,5 @@
+     // 0x8007AA14: addiu       $t8, $t7, 0x1
+     ctx->r24 = ADD32(ctx->r15, 0X1);
++    ctx->r24 = doraemon_localize_game_text_digit((uint32_t)ctx->r24);
+     // 0x8007AA18: sb          $t8, -0x2($v0)
+     MEM_B(-0X2, ctx->r2) = ctx->r24;
+@@ -101,4 +119,7 @@
+     // 0x8007AA20: addiu       $v1, $v1, 0x1
+     ctx->r3 = ADD32(ctx->r3, 0X1);
++    ctx->r3 = S32(doraemon_localize_time_label(
++        rdram, (uint32_t)ctx->r3, 1
++    ));
+     // 0x8007AA24: lbu         $t4, 0x0($v1)
+     ctx->r12 = MEM_BU(ctx->r3, 0X0);
+@@ -134,4 +155,5 @@
+     // 0x8007AA54: addiu       $t8, $t7, 0x1
+     ctx->r24 = ADD32(ctx->r15, 0X1);
++    ctx->r24 = doraemon_localize_game_text_digit((uint32_t)ctx->r24);
+     // 0x8007AA58: sb          $t8, -0x9($v0)
+     MEM_B(-0X9, ctx->r2) = ctx->r24;
+@@ -142,4 +164,5 @@
+     // 0x8007AA64: addiu       $t4, $t9, 0x1
+     ctx->r12 = ADD32(ctx->r25, 0X1);
++    ctx->r12 = doraemon_localize_game_text_digit((uint32_t)ctx->r12);
+     // 0x8007AA68: sb          $t4, -0x8($v0)
+     MEM_B(-0X8, ctx->r2) = ctx->r12;
+@@ -148,4 +171,5 @@
+     // 0x8007AA70: addiu       $t6, $t5, 0x1
+     ctx->r14 = ADD32(ctx->r13, 0X1);
++    ctx->r14 = doraemon_localize_game_text_digit((uint32_t)ctx->r14);
+     // 0x8007AA74: sb          $t6, -0x6($v0)
+     MEM_B(-0X6, ctx->r2) = ctx->r14;
+@@ -156,4 +180,5 @@
+     // 0x8007AA80: addiu       $t8, $t7, 0x1
+     ctx->r24 = ADD32(ctx->r15, 0X1);
++    ctx->r24 = doraemon_localize_game_text_digit((uint32_t)ctx->r24);
+     // 0x8007AA84: sb          $t8, -0x5($v0)
+     MEM_B(-0X5, ctx->r2) = ctx->r24;
+@@ -166,4 +191,5 @@
+     // 0x8007AA94: addiu       $t4, $t9, 0x1
+     ctx->r12 = ADD32(ctx->r25, 0X1);
++    ctx->r12 = doraemon_localize_game_text_digit((uint32_t)ctx->r12);
+     // 0x8007AA98: sb          $t4, -0x3($v0)
+     MEM_B(-0X3, ctx->r2) = ctx->r12;
+@@ -176,7 +202,9 @@
+     // 0x8007AAA8: addiu       $t6, $t5, 0x1
+     ctx->r14 = ADD32(ctx->r13, 0X1);
++    ctx->r14 = doraemon_localize_game_text_digit((uint32_t)ctx->r14);
+     // 0x8007AAAC: jr          $ra
+     // 0x8007AAB0: sb          $t6, -0x2($v0)
+     MEM_B(-0X2, ctx->r2) = ctx->r14;
++    doraemon_finish_game_text_composition(rdram);
+     return;
+     // 0x8007AAB0: sb          $t6, -0x2($v0)
+--- a/func_8007AB6C.c
++++ b/func_8007AB6C.c
+@@ -113,5 +113,5 @@
+     MEM_W(0X90, ctx->r2) = ctx->f0.u32l;
+     // 0x8007AC10: lw          $t0, 0x14A0($t0)
+-    ctx->r8 = MEM_W(ctx->r8, 0X14A0);
++    ctx->r8 = MEM_W(ctx->r8, (doraemon_model_table_offset));
+     // 0x8007AC14: sh          $t7, 0x6($t0)
+     MEM_H(0X6, ctx->r8) = ctx->r15;
+--- a/func_8007B4C4.c
++++ b/func_8007B4C4.c
+@@ -299,5 +299,5 @@
+     ctx->r14 = S32(ctx->r13 << 2);
+     // 0x8007B654: lw          $t9, 0x14A4($t9)
+-    ctx->r25 = MEM_W(ctx->r25, 0X14A4);
++    ctx->r25 = MEM_W(ctx->r25, (doraemon_model_table_offset + 4));
+     // 0x8007B658: addu        $t6, $t6, $t5
+     ctx->r14 = ADD32(ctx->r14, ctx->r13);
+@@ -715,5 +715,5 @@
+     MEM_W(0X60, ctx->r16) = ctx->f16.u32l;
+     // 0x8007B89C: lw          $t9, 0x14A4($t9)
+-    ctx->r25 = MEM_W(ctx->r25, 0X14A4);
++    ctx->r25 = MEM_W(ctx->r25, (doraemon_model_table_offset + 4));
+     // 0x8007B8A0: addu        $t6, $t6, $t5
+     ctx->r14 = ADD32(ctx->r14, ctx->r13);
+--- a/func_8007BE04.c
++++ b/func_8007BE04.c
+@@ -82,5 +82,5 @@
+     ctx->r19 = ADD32(ctx->r19, 0X63E0);
+     // 0x8007BE98: addiu       $s7, $s7, 0x14A0
+-    ctx->r23 = ADD32(ctx->r23, 0X14A0);
++    ctx->r23 = ADD32(ctx->r23, (doraemon_model_table_offset));
+     // 0x8007BE9C: addiu       $s6, $s6, -0x47E0
+     ctx->r22 = ADD32(ctx->r22, -0X47E0);
+--- a/func_8007C1BC.c
++++ b/func_8007C1BC.c
+@@ -90,5 +90,5 @@
+     ctx->r5 = S32(0X8014 << 16);
+     // 0x8007C268: addiu       $a1, $a1, 0x14A0
+-    ctx->r5 = ADD32(ctx->r5, 0X14A0);
++    ctx->r5 = ADD32(ctx->r5, (doraemon_model_table_offset));
+     // 0x8007C26C: lui         $t4, 0x8033
+     ctx->r12 = S32(0X8033 << 16);
+--- a/func_8007CE34.c
++++ b/func_8007CE34.c
+@@ -440,5 +440,5 @@
+     ctx->r12 = ADD32(ctx->r12, ctx->r11);
+     // 0x8007D108: lw          $t4, 0x14A0($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A0);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset));
+     // 0x8007D10C: addiu       $t0, $t0, 0x1
+     ctx->r8 = ADD32(ctx->r8, 0X1);
+--- a/func_8007D434.c
++++ b/func_8007D434.c
+@@ -328,5 +328,5 @@
+     ctx->r10 = S32(ctx->r9 << 2);
+     // 0x8007D5E8: lw          $t5, 0x14A4($t5)
+-    ctx->r13 = MEM_W(ctx->r13, 0X14A4);
++    ctx->r13 = MEM_W(ctx->r13, (doraemon_model_table_offset + 4));
+     // 0x8007D5EC: addu        $t2, $t2, $t1
+     ctx->r10 = ADD32(ctx->r10, ctx->r9);
+@@ -747,5 +747,5 @@
+     MEM_W(0X60, ctx->r16) = ctx->f6.u32l;
+     // 0x8007D844: lw          $t4, 0x14A4($t4)
+-    ctx->r12 = MEM_W(ctx->r12, 0X14A4);
++    ctx->r12 = MEM_W(ctx->r12, (doraemon_model_table_offset + 4));
+     // 0x8007D848: addu        $t1, $t1, $t9
+     ctx->r9 = ADD32(ctx->r9, ctx->r25);
+@@ -1218,11 +1218,11 @@
+     if (SIGNED(ctx->r24) >= 0) {
+         // 0x8007DAA0: sw          $t8, 0x74($s0)
+-        MEM_W(0X74, ctx->r16) = ctx->r24;
++        MEM_W(0X74, ctx->r16) = (ctx->r24 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r24));
+             goto L_8007DAA8;
+     }
+     // 0x8007DAA0: sw          $t8, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = ctx->r24;
++    MEM_W(0X74, ctx->r16) = (ctx->r24 = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), ctx->r24));
+     // 0x8007DAA4: sw          $zero, 0x74($s0)
+-    MEM_W(0X74, ctx->r16) = 0;
++    MEM_W(0X74, ctx->r16) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r16, 0X74), 0);
+ L_8007DAA8:
+     // 0x8007DAA8: lhu         $t2, 0x48($s0)
+--- a/func_8007FE6C.c
++++ b/func_8007FE6C.c
+@@ -57,5 +57,5 @@
+     ctx->r19 = 0 | 0;
+     // 0x8007FED0: sw          $zero, 0x74($v0)
+-    MEM_W(0X74, ctx->r2) = 0;
++    MEM_W(0X74, ctx->r2) = doraemon_cheats_health_value(rdram, (uint32_t)ADD32(ctx->r2, 0X74), 0);
+     // 0x8007FED4: or          $s0, $zero, $zero
+     ctx->r16 = 0 | 0;
+--- a/func_80080B48.c
++++ b/func_80080B48.c
+@@ -703,5 +703,8 @@
+     // 0x80080EA8: sw          $t9, 0x40($sp)
+     MEM_W(0X40, ctx->r29) = ctx->r25;
+-    func_8008010C(rdram, ctx);
++    {
++        extern void doraemon_draw_sky_panel(uint8_t*, recomp_context*);
++        doraemon_draw_sky_panel(rdram, ctx);
++    }
+         goto after_3;
+     // 0x80080EA8: sw          $t9, 0x40($sp)
+--- a/func_80081C40.c
++++ b/func_80081C40.c
+@@ -127,5 +127,5 @@
+     ctx->r1 = S32(0X800F << 16);
+     // 0x80081D28: sh          $t9, 0x24($a1)
+-    MEM_H(0X24, ctx->r5) = ctx->r25;
++    MEM_H(0X24, ctx->r5) = (ctx->r25 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r5, 0X24), ctx->r25));
+     // 0x80081D2C: sh          $t2, 0x22($a1)
+     MEM_H(0X22, ctx->r5) = ctx->r10;
+--- a/level_updateLifesFromBells.c
++++ b/level_updateLifesFromBells.c
+@@ -37,5 +37,5 @@
+     MEM_H(0X22, ctx->r2) = ctx->r14;
+     // 0x8000BB0C: sh          $t8, 0x24($v0)
+-    MEM_H(0X24, ctx->r2) = ctx->r24;
++    MEM_H(0X24, ctx->r2) = (ctx->r24 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r2, 0X24), ctx->r24));
+     // 0x8000BB10: sw          $t3, 0x2C($v0)
+     MEM_W(0X2C, ctx->r2) = ctx->r11;
+@@ -76,5 +76,5 @@
+     skip_0:
+     // 0x8000BB44: sh          $t4, 0x24($v0)
+-    MEM_H(0X24, ctx->r2) = ctx->r12;
++    MEM_H(0X24, ctx->r2) = (ctx->r12 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r2, 0X24), ctx->r12));
+     // 0x8000BB48: lw          $ra, 0x14($sp)
+     ctx->r31 = MEM_W(ctx->r29, 0X14);

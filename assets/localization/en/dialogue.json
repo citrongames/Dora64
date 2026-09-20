@@ -1,0 +1,3619 @@
+{
+  "format_version": 1,
+  "language": "en",
+  "notes": "English translation; terminology and constraints: ENGLISH_TRANSLATION_GUIDE.md. Formatting controls match the original.",
+  "messages": [
+    {
+      "id": "00124100",
+      "translation": "「Oh? It's the Earth King.」"
+    },
+    {
+      "id": "00124114",
+      "translation": "「Oh? It's the Sea King.」"
+    },
+    {
+      "id": "0012412C",
+      "translation": "「A statue of the king?」"
+    },
+    {
+      "id": "0012413C",
+      "translation": "「Hmm… This wasn't here before…"
+    },
+    {
+      "id": "00124160",
+      "translation": "And something's strange. There's a\nvery strong barrier around it.」"
+    },
+    {
+      "id": "0012418C",
+      "translation": "「I'm worried, but we'd better\nhurry.」"
+    },
+    {
+      "id": "001241A8",
+      "translation": "「It's a statue of the Earth King.\nThere's a powerful barrier around\nit.」"
+    },
+    {
+      "id": "001241D4",
+      "translation": "「It's a statue of the Sea King.\nThere's a powerful barrier around\nit.」"
+    },
+    {
+      "id": "00124204",
+      "translation": "「Hmm… Something's bothering me…」"
+    },
+    {
+      "id": "00124220",
+      "translation": "「It's the Earth King!」"
+    },
+    {
+      "id": "00124230",
+      "translation": "「It's the Sea King!」"
+    },
+    {
+      "id": "00124240",
+      "translation": "「The Demon King did this too?! Come\non, let's save him!」"
+    },
+    {
+      "id": "00124268",
+      "translation": "「Beat the Demon King's servant in\nthis castle, and the spell should\nbreak!」"
+    },
+    {
+      "id": "00124294",
+      "translation": "「Right! Let's go, everyone!」"
+    },
+    {
+      "id": "001242A4",
+      "translation": "「Oh! Father!!」"
+    },
+    {
+      "id": "001242B4",
+      "translation": "「Corona's father? Then he must be\nthe Sky King.」"
+    },
+    {
+      "id": "001242D8",
+      "translation": "「Is it a statue?」"
+    },
+    {
+      "id": "001242E4",
+      "translation": "「No, there was never a statue here…"
+    },
+    {
+      "id": "00124304",
+      "translation": "And there's a very powerful barrier\naround it… Something's wrong…」"
+    },
+    {
+      "id": "00124334",
+      "translation": "「Hmm… I'm worried, but let's keep\ngoing…」"
+    },
+    {
+      "id": "00124354",
+      "translation": "「Yes, you're right…」 (Father…)"
+    },
+    {
+      "id": "00124370",
+      "translation": "「That Demon King! He did this to\nFather, too… I'll never forgive\nhim!」"
+    },
+    {
+      "id": "00124398",
+      "translation": "「Let's beat the Demon King's servant\nin this castle and turn him back!」"
+    },
+    {
+      "id": "001243C8",
+      "translation": "「Thank you, everyone!」 (Hold on,\nFather…)"
+    },
+    {
+      "id": "001243E8",
+      "translation": "「A statue of Father…」 And such a\npowerful barrier… I'm worried.」"
+    },
+    {
+      "id": "00124418",
+      "translation": "「Hmm… But it looks like all we can\ndo for now is keep going.」"
+    },
+    {
+      "id": "0012443C",
+      "translation": "「Hold on, Father… I'll save you!」"
+    },
+    {
+      "id": "00124458",
+      "translation": "「All right, let's go!」"
+    },
+    {
+      "id": "00124464",
+      "translation": "「Oh! You defeated the Demon King's\nservant? Thank you!"
+    },
+    {
+      "id": "0012448C",
+      "translation": "「Oh! You defeated the Demon King's\nservant? Thank you!"
+    },
+    {
+      "id": "001244B4",
+      "translation": "「Oh! You defeated the Demon King's\nservant? You saved me."
+    },
+    {
+      "id": "001244DC",
+      "translation": "Thanks to you, the petrification\nspell has been broken.」"
+    },
+    {
+      "id": "001244F8",
+      "translation": "Thanks to you, the petrification\nspell has been broken.」"
+    },
+    {
+      "id": "00124514",
+      "translation": "The petrification spell is broken,\nthanks to all of you.」"
+    },
+    {
+      "id": "00124534",
+      "translation": "「Earth King! You're safe!」"
+    },
+    {
+      "id": "00124550",
+      "translation": "「Sea King! You're safe!」"
+    },
+    {
+      "id": "0012456C",
+      "translation": "「Father!! You're safe! …Thank\ngoodness…」"
+    },
+    {
+      "id": "00124590",
+      "translation": "「Oh! Princess Corona!"
+    },
+    {
+      "id": "001245A8",
+      "translation": "「Oh! Princess Corona!"
+    },
+    {
+      "id": "001245C0",
+      "translation": "「Oh, Corona! It really is you! But\nyour appearance…"
+    },
+    {
+      "id": "001245E4",
+      "translation": "Look what they've done to you… The\nDemon King's doing? You poor child…」"
+    },
+    {
+      "id": "00124610",
+      "translation": "Look what they've done to you… The\nDemon King's doing? You poor child…」"
+    },
+    {
+      "id": "0012463C",
+      "translation": "So, the Demon King did this? If only\nI'd seen through his plot…"
+    },
+    {
+      "id": "0012466C",
+      "translation": "I've put you through so much… Please\nforgive me…」"
+    },
+    {
+      "id": "00124698",
+      "translation": "「I'm all right. But Your Majesty, to\nsee you like this…」"
+    },
+    {
+      "id": "001246BC",
+      "translation": "「No, I'm fine. My friends here have\nbeen helping me.」"
+    },
+    {
+      "id": "001246E8",
+      "translation": "「Yes, you've freed me from the\npetrification spell, but…"
+    },
+    {
+      "id": "00124704",
+      "translation": "「Yes, you've freed me from the\npetrification spell, but…"
+    },
+    {
+      "id": "00124720",
+      "translation": "I cannot seem to break this barrier\nthe Demon King has cast…」"
+    },
+    {
+      "id": "0012474C",
+      "translation": "I cannot seem to break this barrier\nthe Demon King has cast…」"
+    },
+    {
+      "id": "00124778",
+      "translation": "「I see. Thank you all so much for\nlooking after Corona.」"
+    },
+    {
+      "id": "001247A0",
+      "translation": "「Aw, it was nothing!」"
+    },
+    {
+      "id": "001247B0",
+      "translation": "「We've gotta help each other out.」"
+    },
+    {
+      "id": "001247C8",
+      "translation": "「Corona is a dear friend of ours.」"
+    },
+    {
+      "id": "001247E8",
+      "translation": "「Yeah. We can't just stand by when a\nfriend's in trouble.」"
+    },
+    {
+      "id": "00124810",
+      "translation": "「Exactly. Even Nobita says something\nnice once in a while.」"
+    },
+    {
+      "id": "00124834",
+      "translation": "「What do you mean, once in a\nwhile?!」"
+    },
+    {
+      "id": "00124844",
+      "translation": "「Ha ha ha! I'm very glad to hear you\nsay that."
+    },
+    {
+      "id": "0012486C",
+      "translation": "Corona, you've made some wonderful\nfriends.」"
+    },
+    {
+      "id": "00124884",
+      "translation": "「Yes!」"
+    },
+    {
+      "id": "0012488C",
+      "translation": "「Mr. Woody told us you could restore\nthe Spirit Stones,"
+    },
+    {
+      "id": "001248B8",
+      "translation": "Your Majesty… Is that true?」"
+    },
+    {
+      "id": "001248C8",
+      "translation": "「Restore the Spirit Stones… So, you\nmean to seal away the Demon King?"
+    },
+    {
+      "id": "001248F4",
+      "translation": "「Restore the Spirit Stones… So, you\nmean to seal away the Demon King?"
+    },
+    {
+      "id": "00124920",
+      "translation": "「Restore the Spirit Stones… So, you\nmean to seal away the Demon King?"
+    },
+    {
+      "id": "0012494C",
+      "translation": "Very well. I may be able to do that.\nBut first,"
+    },
+    {
+      "id": "0012496C",
+      "translation": "Very well. I may be able to do that.\nBut first,"
+    },
+    {
+      "id": "0012498C",
+      "translation": "Very well. I may be able to do that.\nBut first,"
+    },
+    {
+      "id": "001249AC",
+      "translation": "I need all three pieces of the Earth\nSpirit Stone…」"
+    },
+    {
+      "id": "001249D4",
+      "translation": "I need all three pieces of the Sea\nSpirit Stone…」"
+    },
+    {
+      "id": "001249FC",
+      "translation": "I need all three pieces of the Sky\nSpirit Stone…」"
+    },
+    {
+      "id": "00124A24",
+      "translation": "「Spirits of the mighty earth… With\nthe light of your lives,"
+    },
+    {
+      "id": "00124A50",
+      "translation": "「Spirits of the mighty sea… With the\nlight of your lives,"
+    },
+    {
+      "id": "00124A78",
+      "translation": "「Spirits of the mighty sky… With the\nlight of your lives,"
+    },
+    {
+      "id": "00124AA4",
+      "translation": "restore this sacred stone's\nradiance, that it may seal away evil\nonce more!」"
+    },
+    {
+      "id": "00124AD4",
+      "translation": "restore this sacred stone's\nradiance, that it may seal away evil\nonce more!」"
+    },
+    {
+      "id": "00124B04",
+      "translation": "restore this sacred stone's\nradiance, that it may seal away evil\nonce more!」"
+    },
+    {
+      "id": "00124B34",
+      "translation": "The Earth Spirit Stone was restored."
+    },
+    {
+      "id": "00124B4C",
+      "translation": "The Sea Spirit Stone was restored."
+    },
+    {
+      "id": "00124B64",
+      "translation": "The Sky Spirit Stone was restored."
+    },
+    {
+      "id": "00124B7C",
+      "translation": "「Phew… It seems to have worked. But\nthe spirits have grown weak, so"
+    },
+    {
+      "id": "00124BAC",
+      "translation": "「Phew… It seems to have worked. But\nthe spirits have grown weak, so"
+    },
+    {
+      "id": "00124BDC",
+      "translation": "「Phew… It seems to have worked. But\nthe spirits have grown weak, so"
+    },
+    {
+      "id": "00124C0C",
+      "translation": "it no longer shines as brightly. To\nseal away the Demon King,"
+    },
+    {
+      "id": "00124C2C",
+      "translation": "it no longer shines as brightly. To\nseal away the Demon King,"
+    },
+    {
+      "id": "00124C4C",
+      "translation": "it no longer shines as brightly. To\nseal away the Demon King,"
+    },
+    {
+      "id": "00124C6C",
+      "translation": "you must weaken him first. It will\nbe hard, but for our world… No,"
+    },
+    {
+      "id": "00124C98",
+      "translation": "you must weaken him first. It will\nbe hard, but for our world… No,"
+    },
+    {
+      "id": "00124CC4",
+      "translation": "you must weaken him first. It will\nbe hard, but for our world… No,"
+    },
+    {
+      "id": "00124CF0",
+      "translation": "for the human world as well, please\ndo your best. You are our last\nhope…」"
+    },
+    {
+      "id": "00124D20",
+      "translation": "for the human world as well, please\ndo your best. You are our last\nhope…」"
+    },
+    {
+      "id": "00124D50",
+      "translation": "for the human world as well, please\ndo your best. You are our last\nhope…」"
+    },
+    {
+      "id": "00124D80",
+      "translation": "「We'll do our best. Please take\ncare, Your Majesty!」"
+    },
+    {
+      "id": "00124D9C",
+      "translation": "「Thank you. Spirits, please watch\nover these children…」"
+    },
+    {
+      "id": "00124DC4",
+      "translation": "「Thank you. Spirits, please watch\nover these children…」"
+    },
+    {
+      "id": "00124DEC",
+      "translation": "「Thank you. Spirits, please watch\nover these children…」"
+    },
+    {
+      "id": "00124E14",
+      "translation": "「Hmm… You still need more pieces of\nthe Earth Spirit Stone."
+    },
+    {
+      "id": "00124E3C",
+      "translation": "「Hmm… You still need more pieces of\nthe Sea Spirit Stone."
+    },
+    {
+      "id": "00124E64",
+      "translation": "「Hmm… You still need more pieces of\nthe Sky Spirit Stone."
+    },
+    {
+      "id": "00124E8C",
+      "translation": "The pieces must be somewhere in the\nLand of Earth."
+    },
+    {
+      "id": "00124EB0",
+      "translation": "The pieces must be somewhere in the\nLand of Sea."
+    },
+    {
+      "id": "00124ED8",
+      "translation": "The pieces must be somewhere in the\nLand of Sky."
+    },
+    {
+      "id": "00124F00",
+      "translation": "I'm sorry to ask this of you, but\nplease find them.」"
+    },
+    {
+      "id": "00124F1C",
+      "translation": "I'm sorry to ask this of you, but\nplease find them.」"
+    },
+    {
+      "id": "00124F38",
+      "translation": "I'm sorry to ask this of you, but\nplease find them.」"
+    },
+    {
+      "id": "00124F54",
+      "translation": "「We will. We'll come back with all\nthree. Please wait for us.」"
+    },
+    {
+      "id": "00124F7C",
+      "translation": "「In that case, here they are…」"
+    },
+    {
+      "id": "00124F8C",
+      "translation": "「Yes, these should do nicely…」"
+    },
+    {
+      "id": "00124FA8",
+      "translation": "「Yes, these should do nicely…」"
+    },
+    {
+      "id": "00124FC4",
+      "translation": "「Yes, these should do nicely…」"
+    },
+    {
+      "id": "00124FE0",
+      "translation": "「Your Majesty, we came to ask a\nfavor."
+    },
+    {
+      "id": "00124FFC",
+      "translation": "Please restore the Spirit Stones!」"
+    },
+    {
+      "id": "00125018",
+      "translation": "「Leave it to us!"
+    },
+    {
+      "id": "00125028",
+      "translation": "We'll restore the Spirit Stones and\nseal away the Demon King!」"
+    },
+    {
+      "id": "00125054",
+      "translation": "「What! …Well, perhaps you really can\ndo it."
+    },
+    {
+      "id": "00125078",
+      "translation": "「What! …Well, perhaps you really can\ndo it."
+    },
+    {
+      "id": "0012509C",
+      "translation": "「What! …Well, perhaps you really can\ndo it."
+    },
+    {
+      "id": "001250C0",
+      "translation": "Very well. Bring me all three pieces\nof the Earth Spirit Stone."
+    },
+    {
+      "id": "001250E8",
+      "translation": "Very well. Bring me all three pieces\nof the Sea Spirit Stone."
+    },
+    {
+      "id": "00125114",
+      "translation": "Very well. Bring me all three pieces\nof the Sky Spirit Stone."
+    },
+    {
+      "id": "00125140",
+      "translation": "Then I should be able to restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "00125164",
+      "translation": "Then I should be able to restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "00125188",
+      "translation": "Then I should be able to restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "001251AC",
+      "translation": "「Three pieces of the Spirit Stone…」"
+    },
+    {
+      "id": "001251C4",
+      "translation": "「Ah, you're back. Have you found the\npieces of the Spirit Stone?」"
+    },
+    {
+      "id": "001251E8",
+      "translation": "「Ah, you're back. Have you found the\npieces of the Spirit Stone?」"
+    },
+    {
+      "id": "0012520C",
+      "translation": "「Ah, you're back. Have you found the\npieces of the Spirit Stone?」"
+    },
+    {
+      "id": "00125230",
+      "translation": "「Yes. We have all three right here.」"
+    },
+    {
+      "id": "00125248",
+      "translation": "「Well done. Now, let us restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "00125274",
+      "translation": "「Well done. Now, let us restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "001252A0",
+      "translation": "「Well done. Now, let us restore the\nSpirit Stone.」"
+    },
+    {
+      "id": "001252CC",
+      "translation": "「No, not yet, I'm afraid…」"
+    },
+    {
+      "id": "001252E0",
+      "translation": "「If the Demon King regains his full\nstrength, the Spirit World"
+    },
+    {
+      "id": "00125310",
+      "translation": "「If the Demon King regains his full\nstrength, the Spirit World"
+    },
+    {
+      "id": "00125340",
+      "translation": "「If the Demon King regains his full\nstrength, the Spirit World"
+    },
+    {
+      "id": "00125370",
+      "translation": "will be engulfed in darkness. Who\nknows what will happen to your\nworld…"
+    },
+    {
+      "id": "0012539C",
+      "translation": "will be engulfed in darkness. Who\nknows what will happen to your\nworld…"
+    },
+    {
+      "id": "001253C8",
+      "translation": "will be engulfed in darkness. Who\nknows what will happen to your\nworld…"
+    },
+    {
+      "id": "001253F4",
+      "translation": "Seal away the Demon King and restore\npeace, as quickly as you can.」"
+    },
+    {
+      "id": "00125420",
+      "translation": "Seal away the Demon King and restore\npeace, as quickly as you can.」"
+    },
+    {
+      "id": "0012544C",
+      "translation": "Seal away the Demon King and restore\npeace, as quickly as you can.」"
+    },
+    {
+      "id": "00125478",
+      "translation": "「Oh! At last, all the Spirit Stones\nhave been restored!"
+    },
+    {
+      "id": "00125498",
+      "translation": "「Oh! At last, all the Spirit Stones\nhave been restored!"
+    },
+    {
+      "id": "001254B8",
+      "translation": "「Oh! At last, all the Spirit Stones\nhave been restored!"
+    },
+    {
+      "id": "001254D8",
+      "translation": "Now we can seal away the Demon King.\nHowever…"
+    },
+    {
+      "id": "001254FC",
+      "translation": "Now we can seal away the Demon King.\nHowever…"
+    },
+    {
+      "id": "00125520",
+      "translation": "Now we can seal away the Demon King.\nHowever…"
+    },
+    {
+      "id": "00125544",
+      "translation": "The Spirit Stones no longer shine as\nbrightly as they once did…"
+    },
+    {
+      "id": "00125564",
+      "translation": "The Spirit Stones no longer shine as\nbrightly as they once did…"
+    },
+    {
+      "id": "00125584",
+      "translation": "The Spirit Stones no longer shine as\nbrightly as they once did…"
+    },
+    {
+      "id": "001255A4",
+      "translation": "Before you can seal away the Demon\nKing, you must weaken him."
+    },
+    {
+      "id": "001255CC",
+      "translation": "Before you can seal away the Demon\nKing, you must weaken him."
+    },
+    {
+      "id": "001255F4",
+      "translation": "Before you can seal away the Demon\nKing, you must weaken him."
+    },
+    {
+      "id": "0012561C",
+      "translation": "It will be difficult, but I know you\ncan do it. Give it your all.」"
+    },
+    {
+      "id": "00125648",
+      "translation": "It will be difficult, but I know you\ncan do it. Give it your all.」"
+    },
+    {
+      "id": "00125674",
+      "translation": "It will be difficult, but I know you\ncan do it. Give it your all.」"
+    },
+    {
+      "id": "001256A0",
+      "translation": "「How do we get to the Demon King?」"
+    },
+    {
+      "id": "001256C0",
+      "translation": "「The Spirit Stones should guide you\nto him."
+    },
+    {
+      "id": "001256E8",
+      "translation": "「The Spirit Stones should guide you\nto him."
+    },
+    {
+      "id": "00125710",
+      "translation": "「The Spirit Stones should guide you\nto him."
+    },
+    {
+      "id": "00125738",
+      "translation": "Beware of the Demon King's magic\nattacks."
+    },
+    {
+      "id": "00125758",
+      "translation": "Beware of the Demon King's magic\nattacks."
+    },
+    {
+      "id": "00125778",
+      "translation": "Beware of the Demon King's magic\nattacks."
+    },
+    {
+      "id": "00125798",
+      "translation": "When you see an opening, aim for the\npendant on his chest.」"
+    },
+    {
+      "id": "001257B8",
+      "translation": "When you see an opening, aim for the\npendant on his chest.」"
+    },
+    {
+      "id": "001257D8",
+      "translation": "When you see an opening, aim for the\npendant on his chest.」"
+    },
+    {
+      "id": "001257F8",
+      "translation": "「That's his weak point!」"
+    },
+    {
+      "id": "00125810",
+      "translation": "「Indeed.」"
+    },
+    {
+      "id": "0012581C",
+      "translation": "「Indeed.」"
+    },
+    {
+      "id": "00125828",
+      "translation": "「Indeed.」"
+    },
+    {
+      "id": "00125834",
+      "translation": "「All right! Let's seal away the\nDemon King and bring peace to this\nworld!」"
+    },
+    {
+      "id": "00125860",
+      "translation": "「Take care. Spirits, please protect\nthese children.」"
+    },
+    {
+      "id": "0012588C",
+      "translation": "「Take care. Spirits, please protect\nthese children.」"
+    },
+    {
+      "id": "001258B8",
+      "translation": "「Take care. Spirits, please protect\nthese children.」"
+    },
+    {
+      "id": "0021CCC0",
+      "translation": "「Heh heh heh…」"
+    },
+    {
+      "id": "0021CCD0",
+      "translation": "「Th-this is the Demon King?!」"
+    },
+    {
+      "id": "0021CCE0",
+      "translation": "「That's right!」"
+    },
+    {
+      "id": "0021CCE8",
+      "translation": "「What a scary face…」"
+    },
+    {
+      "id": "0021CCF8",
+      "translation": "「He looks way stronger than all the\nothers!」"
+    },
+    {
+      "id": "0021CD14",
+      "translation": "「We have to fight THAT?」"
+    },
+    {
+      "id": "0021CD24",
+      "translation": "「We came all this way to defeat him,\ndidn't we?!」"
+    },
+    {
+      "id": "0021CD48",
+      "translation": "「We're almost there! You can do it,\neveryone!!」"
+    },
+    {
+      "id": "0021CD60",
+      "translation": "「Heh heh heh. Fools! You've come\nhere of your own free will to die…"
+    },
+    {
+      "id": "0021CD8C",
+      "translation": "Still, I commend you for making it\nthis far. To reward your courage…"
+    },
+    {
+      "id": "0021CDB4",
+      "translation": "I'll grant you a painless death. You\nshould be grateful! Gwah ha ha ha…」"
+    },
+    {
+      "id": "0021CDE4",
+      "translation": "「Heh heh heh… Still alive, are you?\nYou stubborn little pests!"
+    },
+    {
+      "id": "0021CE0C",
+      "translation": "This time, I shall bury you in\ndarkness!"
+    },
+    {
+      "id": "0021CE2C",
+      "translation": "Gwah ha ha ha!」"
+    },
+    {
+      "id": "0021CE3C",
+      "translation": "「He's really feeling it now! Just a\nlittle more! Keep going, everyone!」"
+    },
+    {
+      "id": "0021CE64",
+      "translation": "「Grr… I see defeating my servants\nwas no mere fluke."
+    },
+    {
+      "id": "0021CE90",
+      "translation": "But… now you've made me fight for\nreal."
+    },
+    {
+      "id": "0021CEA8",
+      "translation": "And you will soon regret it! Gwah ha\nha ha!」"
+    },
+    {
+      "id": "0021CECC",
+      "translation": "「Graaaargh…!!」"
+    },
+    {
+      "id": "0021CEDC",
+      "translation": "「Now!"
+    },
+    {
+      "id": "0021CEE4",
+      "translation": "Spirit Stones! With your sacred\nlight, banish this evil one"
+    },
+    {
+      "id": "0021CF10",
+      "translation": "far beyond the darkness! Seal him\naway!!!」"
+    },
+    {
+      "id": "0021CF2C",
+      "translation": "「Grrr… You brats! If only you hadn't\ninterfered…"
+    },
+    {
+      "id": "0021CF54",
+      "translation": "But this is not the end! I will rise\nagain and again!"
+    },
+    {
+      "id": "0021CF7C",
+      "translation": "Oh, my chance will come soon enough…\nAs long as"
+    },
+    {
+      "id": "0021CFA0",
+      "translation": "you humans still exist!!"
+    },
+    {
+      "id": "0021CFB0",
+      "translation": "Gwah ha ha ha…」"
+    },
+    {
+      "id": "0022B3E0",
+      "translation": "This is 「Case 1」."
+    },
+    {
+      "id": "0022B3F0",
+      "translation": "This is 「Case 2」."
+    },
+    {
+      "id": "0022B400",
+      "translation": "This is 「Case 3」."
+    },
+    {
+      "id": "0022B410",
+      "translation": "This is 「Case 4」."
+    },
+    {
+      "id": "0022B420",
+      "translation": "「Hey! You forgot something. Could\nyou get this thing off my head?」"
+    },
+    {
+      "id": "0022B450",
+      "translation": "「Oh! I forgot.」"
+    },
+    {
+      "id": "0022B460",
+      "translation": "「Let's get the Anywhere Door, then\nhead out!」"
+    },
+    {
+      "id": "0022B47C",
+      "translation": "「Mew, mew, mew!」"
+    },
+    {
+      "id": "0022B48C",
+      "translation": "「Whoa!! A d-d-dinosaur!!」"
+    },
+    {
+      "id": "0022B4AC",
+      "translation": "「It's a baby Pokera."
+    },
+    {
+      "id": "0022B4BC",
+      "translation": "If we tame the Pokera, it'll let us\nride in its pouch.」"
+    },
+    {
+      "id": "0022B4E4",
+      "translation": "The Pokera is blocking the way."
+    },
+    {
+      "id": "0022B504",
+      "translation": "「Wild Beast-Taming Pellets!"
+    },
+    {
+      "id": "0022B520",
+      "translation": "Feed these to any animal, and you\ncan tame it.」"
+    },
+    {
+      "id": "0022B548",
+      "translation": "「Let's ride in its pouch to get over\nthe mountain ahead.」"
+    },
+    {
+      "id": "0022B56C",
+      "translation": "「Please help us, Mr. Dinosaur.」"
+    },
+    {
+      "id": "0022B584",
+      "translation": "「Mew, mew!」"
+    },
+    {
+      "id": "0022B590",
+      "translation": "「There's a cave entrance ahead… But\na rock's blocking it.」"
+    },
+    {
+      "id": "0022B5C0",
+      "translation": "「This thing won't budge!」"
+    },
+    {
+      "id": "0022B5D4",
+      "translation": "「We're not strong enough to move\nit.」"
+    },
+    {
+      "id": "0022B5F0",
+      "translation": "A huge rock is blocking the cave\nentrance."
+    },
+    {
+      "id": "0022B60C",
+      "translation": "「Shrink Ray!"
+    },
+    {
+      "id": "0022B618",
+      "translation": "Come on, let's go!」"
+    },
+    {
+      "id": "0022B624",
+      "translation": "「Wow… That door looks really\nsturdy.」"
+    },
+    {
+      "id": "0022B640",
+      "translation": "「Volcano Castle, the castle of the\nLand of Earth, is just ahead…」"
+    },
+    {
+      "id": "0022B668",
+      "translation": "But it looks like we can't go any\nfurther…」"
+    },
+    {
+      "id": "0022B684",
+      "translation": "A sturdy steel gate blocks the way\nto Volcano Castle."
+    },
+    {
+      "id": "0022B6AC",
+      "translation": "「Pass Loop!"
+    },
+    {
+      "id": "0022B6B8",
+      "translation": "With this, we can go right through\nto the other side.」"
+    },
+    {
+      "id": "0022B6D4",
+      "translation": "「One of the Demon King's servants is\nin Volcano Castle. Be careful.」"
+    },
+    {
+      "id": "0022B700",
+      "translation": "Come on!"
+    },
+    {
+      "id": "0022B70C",
+      "translation": "「Case 1」 Stage 2-1 is ahead."
+    },
+    {
+      "id": "0022B728",
+      "translation": "「Case 2」 Stage 2-1 is ahead."
+    },
+    {
+      "id": "0022B744",
+      "translation": "「Case 3」 Stage 2-1 is ahead."
+    },
+    {
+      "id": "0022B760",
+      "translation": "「Case 4」 Stage 2-1 is ahead."
+    },
+    {
+      "id": "0022B77C",
+      "translation": "「Hey! The Underwater Buggy is here!」"
+    },
+    {
+      "id": "0022B79C",
+      "translation": "…Huh? Hmm… It looks like it's\nbroken.」"
+    },
+    {
+      "id": "0022B7C4",
+      "translation": "「Can't you fix it?」"
+    },
+    {
+      "id": "0022B7D0",
+      "translation": "「It's badly damaged…"
+    },
+    {
+      "id": "0022B7E8",
+      "translation": "I'm afraid I can't fix it myself…」"
+    },
+    {
+      "id": "0022B808",
+      "translation": "How can we fix the Underwater\nBuggy…?"
+    },
+    {
+      "id": "0022B820",
+      "translation": "「…I know!"
+    },
+    {
+      "id": "0022B82C",
+      "translation": "Time Kerchief!"
+    },
+    {
+      "id": "0022B838",
+      "translation": "We can turn back time to before it\nbroke.」"
+    },
+    {
+      "id": "0022B858",
+      "translation": "「All right! It's fixed!」"
+    },
+    {
+      "id": "0022B868",
+      "translation": "「Waaah! Thank you so much!"
+    },
+    {
+      "id": "0022B880",
+      "translation": "For a moment, I thought I was done\nfor."
+    },
+    {
+      "id": "0022B89C",
+      "translation": "Still, you could have come to my\nrescue a little sooner…」"
+    },
+    {
+      "id": "0022B8C8",
+      "translation": "「We fix it, and all it does is\ncomplain…」"
+    },
+    {
+      "id": "0022B8E8",
+      "translation": "「I'm glad you're all better, Buggy.」"
+    },
+    {
+      "id": "0022B900",
+      "translation": "「Oh! Miss Shizuka!」"
+    },
+    {
+      "id": "0022B910",
+      "translation": "「Oh, Buggy… Have you seen any pieces\nof the Spirit Stones around here?」"
+    },
+    {
+      "id": "0022B93C",
+      "translation": "「Hmm… I'm not sure, but"
+    },
+    {
+      "id": "0022B954",
+      "translation": "a fairy told me there's a racetrack\ndeep inside this cave."
+    },
+    {
+      "id": "0022B984",
+      "translation": "If you race the Demon King's servant\nthere"
+    },
+    {
+      "id": "0022B9A0",
+      "translation": "and win, you get an amazing prize!」"
+    },
+    {
+      "id": "0022B9C0",
+      "translation": "「Sounds fun! Let's check it out!」"
+    },
+    {
+      "id": "0022B9DC",
+      "translation": "「Maybe the prize is a piece of a\nSpirit Stone.」"
+    },
+    {
+      "id": "0022BA08",
+      "translation": "「Ah, now I feel like going for a\ngood, fast run myself!」"
+    },
+    {
+      "id": "0022BA2C",
+      "translation": "「All right. Let's head for that\nracetrack!」"
+    },
+    {
+      "id": "0022BA48",
+      "translation": "「This hole leads down to the Sea\nGraveyard.」"
+    },
+    {
+      "id": "0022BA68",
+      "translation": "「Ugh… No good. If we dive any\ndeeper, the water pressure will\ncrush us…」"
+    },
+    {
+      "id": "0022BA9C",
+      "translation": "「We have no choice… Let's turn\nback.」"
+    },
+    {
+      "id": "0022BAB8",
+      "translation": "The water pressure is too high to\ndive any deeper."
+    },
+    {
+      "id": "0022BAD4",
+      "translation": "「Deep Sea Cream!"
+    },
+    {
+      "id": "0022BAE0",
+      "translation": "Rub this cream on your body, and you\ncan withstand any water pressure.」"
+    },
+    {
+      "id": "0022BB08",
+      "translation": "「They say ghosts haunt the Sea\nGraveyard. Be careful, everyone.」"
+    },
+    {
+      "id": "0022BB34",
+      "translation": "「Sea ghosts… That sounds pretty\nscary.」"
+    },
+    {
+      "id": "0022BB54",
+      "translation": "「Undersea Castle, the castle of the\nLand of Sea, is just ahead.」"
+    },
+    {
+      "id": "0022BB74",
+      "translation": "「It's awfully cold here.」"
+    },
+    {
+      "id": "0022BB88",
+      "translation": "「Yes. Undersea Castle is made of\nice, after all.」"
+    },
+    {
+      "id": "0022BBB0",
+      "translation": "「Achoo! Brrr… W-we'll freeze to\ndeath at this rate!」"
+    },
+    {
+      "id": "0022BBDC",
+      "translation": "「Y-yeah. Let's c-come back later.」"
+    },
+    {
+      "id": "0022BBF4",
+      "translation": "It's too cold to approach the icy\nUndersea Castle."
+    },
+    {
+      "id": "0022BC14",
+      "translation": "「Adapting Ray!"
+    },
+    {
+      "id": "0022BC20",
+      "translation": "Its light lets you adapt to any\nenvironment.」"
+    },
+    {
+      "id": "0022BC4C",
+      "translation": "「You're right! I'm not cold at all\nanymore!」"
+    },
+    {
+      "id": "0022BC68",
+      "translation": "「Come on, let's hurry to Undersea\nCastle.」"
+    },
+    {
+      "id": "0022BC84",
+      "translation": "「Wow! The sea!」"
+    },
+    {
+      "id": "0022BC94",
+      "translation": "「Beyond here lies the Land of Sea, a\nworld beneath the waves."
+    },
+    {
+      "id": "0022BCB0",
+      "translation": "But humans can't breathe underwater,\nso we can't go any further.」"
+    },
+    {
+      "id": "0022BCE0",
+      "translation": "To enter the Land of Sea, we'll need\na way to breathe underwater…"
+    },
+    {
+      "id": "0022BD0C",
+      "translation": "「Air Tubes!"
+    },
+    {
+      "id": "0022BD18",
+      "translation": "Put these in your nose, and you can\nbreathe underwater.」"
+    },
+    {
+      "id": "0022BD40",
+      "translation": "「Then even I can go, and I can't\nswim!」"
+    },
+    {
+      "id": "0022BD5C",
+      "translation": "「Let's go find the Sea Spirit\nStone.」"
+    },
+    {
+      "id": "0022BD7C",
+      "translation": "「Long ago, a giant beanstalk grew\nhere."
+    },
+    {
+      "id": "0022BD98",
+      "translation": "Even humans could climb it to reach\nthe Land of Sky."
+    },
+    {
+      "id": "0022BDC0",
+      "translation": "But it withered when the Spirit\nStones began to lose their power.」"
+    },
+    {
+      "id": "0022BDF0",
+      "translation": "We need to find a way to reach the\nLand of Sky."
+    },
+    {
+      "id": "0022BE10",
+      "translation": "「Jack Bean!」"
+    },
+    {
+      "id": "0022BE1C",
+      "translation": "「Wow… It's just like the legendary\nbeanstalk."
+    },
+    {
+      "id": "0022BE38",
+      "translation": "If we climb it, we should be able to\nreach the Land of Sky.」"
+    },
+    {
+      "id": "0022BE58",
+      "translation": "「All right, let's climb up!」"
+    },
+    {
+      "id": "0022C2C0",
+      "translation": "「So this is the Spirit World…」"
+    },
+    {
+      "id": "0022C2D4",
+      "translation": "「What do we do now?」"
+    },
+    {
+      "id": "0022C2E4",
+      "translation": "「First, let's find Corona.」"
+    },
+    {
+      "id": "0022C2F8",
+      "translation": "「Oh, look over there!」"
+    },
+    {
+      "id": "0022C308",
+      "translation": "「Oh, everyone… You came for me…?」"
+    },
+    {
+      "id": "0022C324",
+      "translation": "「Corona! You look… What happened to\nyou?」"
+    },
+    {
+      "id": "0022C348",
+      "translation": "「The Demon King cast a spell to\ntransform me…"
+    },
+    {
+      "id": "0022C368",
+      "translation": "But more importantly, your pocket…」"
+    },
+    {
+      "id": "0022C37C",
+      "translation": "「You got it back?! Thank you!」"
+    },
+    {
+      "id": "0022C394",
+      "translation": "「W-well, you see…」"
+    },
+    {
+      "id": "0022C3A4",
+      "translation": "「Huh…?"
+    },
+    {
+      "id": "0022C3B0",
+      "translation": "Aah!! All my gadgets are gone!」"
+    },
+    {
+      "id": "0022C3C8",
+      "translation": "「I'm so sorry!!"
+    },
+    {
+      "id": "0022C3D4",
+      "translation": "As I struggled with the enemy, the\ngadgets scattered across the Spirit\nWorld!」"
+    },
+    {
+      "id": "0022C404",
+      "translation": "「What?! You can't be serious!!」"
+    },
+    {
+      "id": "0022C418",
+      "translation": "「I've done something terrible…」"
+    },
+    {
+      "id": "0022C438",
+      "translation": "「What's done is done. We need to\nthink about what to do next.」"
+    },
+    {
+      "id": "0022C46C",
+      "translation": "「Yes. If we all work together, I'm\nsure we can do something.」"
+    },
+    {
+      "id": "0022C494",
+      "translation": "「We've gotten out of all kinds of\ntrouble before.」"
+    },
+    {
+      "id": "0022C4BC",
+      "translation": "「With me around, the Demon King\nwon't stand a chance!」"
+    },
+    {
+      "id": "0022C4E0",
+      "translation": "「Everyone… Thank you…」"
+    },
+    {
+      "id": "0022C4F8",
+      "translation": "「Anyway, we need to find a way to\nfight the Demon King…」"
+    },
+    {
+      "id": "0022C524",
+      "translation": "「Old Mr. Woody might know\nsomething.」"
+    },
+    {
+      "id": "0022C548",
+      "translation": "「Mr. Woody?」"
+    },
+    {
+      "id": "0022C558",
+      "translation": "「Yes. He's an old tree spirit who's\nlived here for ages."
+    },
+    {
+      "id": "0022C584",
+      "translation": "He knows everything about this\nworld."
+    },
+    {
+      "id": "0022C5A0",
+      "translation": "I'm sure he knows something about\nthe Demon King, too.」"
+    },
+    {
+      "id": "0022C5C4",
+      "translation": "「Then let's go ask Mr. Woody about\nthe Demon King!」"
+    },
+    {
+      "id": "0022C5E8",
+      "translation": "「Yes, let's. Follow me, everyone.」"
+    },
+    {
+      "id": "0022C608",
+      "translation": "「Mr. Woody!」"
+    },
+    {
+      "id": "0022C614",
+      "translation": "「Hmm?"
+    },
+    {
+      "id": "0022C61C",
+      "translation": "Oh? If it isn't the princess of the\nLand of Sky!"
+    },
+    {
+      "id": "0022C640",
+      "translation": "I seem to recall you being a little\nbigger…」"
+    },
+    {
+      "id": "0022C668",
+      "translation": "「Well, that's… Anyway, there's\nsomething we'd like to ask.」"
+    },
+    {
+      "id": "0022C68C",
+      "translation": "「Please tell us about the Demon\nKing.」"
+    },
+    {
+      "id": "0022C6A8",
+      "translation": "「Oh, my… Human children! I haven't\nseen any in thousands of years.」"
+    },
+    {
+      "id": "0022C6D8",
+      "translation": "「Please tell us. How can we defeat\nthe Demon King?」"
+    },
+    {
+      "id": "0022C704",
+      "translation": "「Hmm… That is a very difficult\nquestion."
+    },
+    {
+      "id": "0022C728",
+      "translation": "The Demon King has already conquered\nthe Lands of Earth and Sea."
+    },
+    {
+      "id": "0022C748",
+      "translation": "Now I hear he has taken the Land of\nSky as well.」"
+    },
+    {
+      "id": "0022C768",
+      "translation": "「What?! Then what about Father?!」"
+    },
+    {
+      "id": "0022C780",
+      "translation": "「Yes… It seems the Sky King has been\ncaptured, too.」"
+    },
+    {
+      "id": "0022C7A4",
+      "translation": "「That Demon King! Even Father…」"
+    },
+    {
+      "id": "0022C7BC",
+      "translation": "「Corona…"
+    },
+    {
+      "id": "0022C7C8",
+      "translation": "Mr. Woody! Isn't there any way to\ndefeat the Demon King?」"
+    },
+    {
+      "id": "0022C7F0",
+      "translation": "「Hmm… In the battle long ago, after\na bitter struggle, we used"
+    },
+    {
+      "id": "0022C818",
+      "translation": "the Earth Spirit Stone, made by the\nspirits of soil and trees,"
+    },
+    {
+      "id": "0022C83C",
+      "translation": "the Sea Spirit Stone, made by the\nspirits of water and ice,"
+    },
+    {
+      "id": "0022C860",
+      "translation": "and the Sky Spirit Stone, made by\nthe spirits of light and wind."
+    },
+    {
+      "id": "0022C888",
+      "translation": "With these three Spirit Stones, we\nfinally managed to seal the Demon\nKing"
+    },
+    {
+      "id": "0022C8B0",
+      "translation": "away in the world of darkness."
+    },
+    {
+      "id": "0022C8C8",
+      "translation": "To defeat him, we must seal him away\nwith the three Spirit Stones again.」"
+    },
+    {
+      "id": "0022C8F4",
+      "translation": "「But the Spirit Stones shattered\nwhen the Demon King returned.」"
+    },
+    {
+      "id": "0022C920",
+      "translation": "「Then we can't defeat the Demon King\nanymore?」"
+    },
+    {
+      "id": "0022C940",
+      "translation": "「No, there is one way…"
+    },
+    {
+      "id": "0022C958",
+      "translation": "The three fairy kings should be able\nto restore the Spirit Stones."
+    },
+    {
+      "id": "0022C988",
+      "translation": "…But first, somewhere in the three\nlands,"
+    },
+    {
+      "id": "0022C9A8",
+      "translation": "you must find the pieces of the\nSpirit Stones,"
+    },
+    {
+      "id": "0022C9C0",
+      "translation": "then rescue the kings imprisoned in\ntheir castles.」"
+    },
+    {
+      "id": "0022C9E8",
+      "translation": "「If that's the only way, we'll just\nhave to do it ourselves!」"
+    },
+    {
+      "id": "0022CA10",
+      "translation": "「Hmm… But you see…"
+    },
+    {
+      "id": "0022CA24",
+      "translation": "This world is overrun with monsters\nnow. It's terribly dangerous!」"
+    },
+    {
+      "id": "0022CA50",
+      "translation": "「But… If we don't do it, no one can\nsave the Spirit World"
+    },
+    {
+      "id": "0022CA6C",
+      "translation": "or our own world, right?"
+    },
+    {
+      "id": "0022CA88",
+      "translation": "Then… even though I'm scared, we\nhave to defeat the Demon King!」"
+    },
+    {
+      "id": "0022CAB0",
+      "translation": "「Ho ho ho! What brave children you\nare."
+    },
+    {
+      "id": "0022CAD4",
+      "translation": "I will help you as best I can."
+    },
+    {
+      "id": "0022CAEC",
+      "translation": "My duty is to remember everything\nthat happens in this world."
+    },
+    {
+      "id": "0022CB10",
+      "translation": "Come and tell me what you have seen\non your travels."
+    },
+    {
+      "id": "0022CB38",
+      "translation": "Then, if anything should happen to\nyou,"
+    },
+    {
+      "id": "0022CB54",
+      "translation": "I can bring you back from my\nmemories."
+    },
+    {
+      "id": "0022CB78",
+      "translation": "Now, off you go. You have nothing to\nfear.」"
+    },
+    {
+      "id": "0022CB90",
+      "translation": "「Thank you. We'll come back.」"
+    },
+    {
+      "id": "0022CBA8",
+      "translation": "「Oh, one more thing. Something fell\nonto my head a little while ago."
+    },
+    {
+      "id": "0022CBD4",
+      "translation": "Could you get it off for me? It's\nterribly itchy.」"
+    },
+    {
+      "id": "0022CBF4",
+      "translation": "「Oh! The Anywhere Door!"
+    },
+    {
+      "id": "0022CC04",
+      "translation": "…I know! Why don't we use it to go\nstraight to the Spirit Stones?」"
+    },
+    {
+      "id": "0022CC34",
+      "translation": "「That won't work."
+    },
+    {
+      "id": "0022CC40",
+      "translation": "The Anywhere Door doesn't have a map\nof this world. …But"
+    },
+    {
+      "id": "0022CC70",
+      "translation": "it should be able to bring us back\nhere.」"
+    },
+    {
+      "id": "0022CC8C",
+      "translation": "「Then we can come back if things get\ndangerous.」"
+    },
+    {
+      "id": "0022CCAC",
+      "translation": "「All right! Let's get the Anywhere\nDoor and get going!」"
+    },
+    {
+      "id": "0022CCD4",
+      "translation": "「If I weren't in this form, I could\nfight alongside you…"
+    },
+    {
+      "id": "0022CD00",
+      "translation": "But I can at least show you the way.\nPlease take me with you!」"
+    },
+    {
+      "id": "0022CD28",
+      "translation": "「Of course. We'll be glad to have\nyou! Let's bring peace back to this\nworld."
+    },
+    {
+      "id": "0022CD54",
+      "translation": "All right, off we go!!」"
+    },
+    {
+      "id": "00238870",
+      "translation": "「This is the Land of Sky, the world\nwhere I was born and raised.」"
+    },
+    {
+      "id": "00238898",
+      "translation": "「Oh, what a lovely place!」"
+    },
+    {
+      "id": "002388A8",
+      "translation": "「It has already fallen to the Demon\nKing, too…」"
+    },
+    {
+      "id": "002388C8",
+      "translation": "「All right! Let's find the Sky\nSpirit Stone"
+    },
+    {
+      "id": "002388E4",
+      "translation": "and take this world back from the\nDemon King!」"
+    },
+    {
+      "id": "00238900",
+      "translation": "Come on!"
+    },
+    {
+      "id": "0023890C",
+      "translation": "「Case 1」 Stage 3-1 is ahead."
+    },
+    {
+      "id": "00238928",
+      "translation": "「Case 2」 Stage 3-1 is ahead."
+    },
+    {
+      "id": "00238944",
+      "translation": "「Case 3」 Stage 3-1 is ahead."
+    },
+    {
+      "id": "00238960",
+      "translation": "「Case 4」 Stage 3-1 is ahead."
+    },
+    {
+      "id": "0023897C",
+      "translation": "「Wow… What a huge bird!」"
+    },
+    {
+      "id": "00238994",
+      "translation": "「This bird is a Roc. It used to live\nat the very top of this great tree…"
+    },
+    {
+      "id": "002389C4",
+      "translation": "But monsters took over the tree and\ndrove it out of its nest.」"
+    },
+    {
+      "id": "002389F0",
+      "translation": "「Oh, the poor thing…」"
+    },
+    {
+      "id": "00238A00",
+      "translation": "「They say the monsters hid something\nin the Roc's nest…」"
+    },
+    {
+      "id": "00238A2C",
+      "translation": "「Maybe it's a piece of a Spirit\nStone.」"
+    },
+    {
+      "id": "00238A4C",
+      "translation": "「Could the Roc carry us up to its\nnest?」"
+    },
+    {
+      "id": "00238A74",
+      "translation": "「Well… The Roc is very gentle, and\nfrightfully timid."
+    },
+    {
+      "id": "00238A9C",
+      "translation": "It would surely flee along the way.」"
+    },
+    {
+      "id": "00238AB4",
+      "translation": "「If it were a remote-control toy, I\ncould fly it wherever I wanted.」"
+    },
+    {
+      "id": "00238AD8",
+      "translation": "The Roc is too timid to carry us to\nthe top of the tree."
+    },
+    {
+      "id": "00238B00",
+      "translation": "「Anything Controller!"
+    },
+    {
+      "id": "00238B10",
+      "translation": "Attach this control stick to\nanything, and you can steer it\nhowever you like.」"
+    },
+    {
+      "id": "00238B40",
+      "translation": "We can use it to guide the Roc up to\nits nest in the treetop.」"
+    },
+    {
+      "id": "00238B6C",
+      "translation": "「We're counting on you, Roc. You can\ndo it!」"
+    },
+    {
+      "id": "00238B84",
+      "translation": "「Wow, what a storm!」"
+    },
+    {
+      "id": "00238B94",
+      "translation": "「The storm never stops in this part\nof the sky.」"
+    },
+    {
+      "id": "00238BB8",
+      "translation": "「…Oh? I think I saw something\nshining up on that moon.」"
+    },
+    {
+      "id": "00238BE0",
+      "translation": "「Hey, you're right! Maybe it's a\npiece of a Spirit Stone!」"
+    },
+    {
+      "id": "00238C04",
+      "translation": "「All right, let's go!」"
+    },
+    {
+      "id": "00238C14",
+      "translation": "「Wait a minute! We'll never get up\nthere unless we can fly!」"
+    },
+    {
+      "id": "00238C44",
+      "translation": "To reach the moon, we'll need some\nway to fly…"
+    },
+    {
+      "id": "00238C64",
+      "translation": "「Hopter!"
+    },
+    {
+      "id": "00238C70",
+      "translation": "…Oh! The battery's almost dead."
+    },
+    {
+      "id": "00238C94",
+      "translation": "We won't be able to fly for very\nlong…」"
+    },
+    {
+      "id": "00238CB4",
+      "translation": "「What?! Then what do we do?」"
+    },
+    {
+      "id": "00238CCC",
+      "translation": "「It should last if we take little\nbreaks while we fly…」"
+    },
+    {
+      "id": "00238CF8",
+      "translation": "「There are floating islands on the\nway to the moon. Why not rest on\nthose?」"
+    },
+    {
+      "id": "00238D24",
+      "translation": "「But we could fall at any moment!」"
+    },
+    {
+      "id": "00238D44",
+      "translation": "「If there's no other way, we've just\ngotta do it!!」"
+    },
+    {
+      "id": "00238D64",
+      "translation": "「All right, let's go. But don't push\nyour luck."
+    },
+    {
+      "id": "00238D80",
+      "translation": "If the Hopter slows down, land on a\nfloating island right away.」"
+    },
+    {
+      "id": "00238DB0",
+      "translation": "「Oh… What a lovely castle…」"
+    },
+    {
+      "id": "00238DC8",
+      "translation": "「That's Sky Castle. My father, the\nSky King, rules there.」"
+    },
+    {
+      "id": "00238DF8",
+      "translation": "「So that's where you used to live,\nCorona."
+    },
+    {
+      "id": "00238E18",
+      "translation": "It's way bigger than Suneo's house.」"
+    },
+    {
+      "id": "00238E30",
+      "translation": "「Don't compare my house to a\ncastle!」"
+    },
+    {
+      "id": "00238E40",
+      "translation": "「Hee hee…"
+    },
+    {
+      "id": "00238E4C",
+      "translation": "…I hope Father is safe…」"
+    },
+    {
+      "id": "00238E68",
+      "translation": "「Right! Let's hurry and save\nCorona's dad!」"
+    },
+    {
+      "id": "00238E88",
+      "translation": "「Hmm… But how do we get to the\ncastle?」"
+    },
+    {
+      "id": "00238EAC",
+      "translation": "「Oh, that's right. Humans can't walk\non clouds.」"
+    },
+    {
+      "id": "00238ECC",
+      "translation": "「No choice, then. We'll come back\nlater.」"
+    },
+    {
+      "id": "00238EE0",
+      "translation": "If only we could cross the clouds,\nwe could reach Sky Castle…"
+    },
+    {
+      "id": "00238F04",
+      "translation": "「Extra Hold Cloud Spray!"
+    },
+    {
+      "id": "00238F10",
+      "translation": "Spray this gas on clouds, and they\nbecome solid.」"
+    },
+    {
+      "id": "00238F2C",
+      "translation": "「All right! Let's cross the clouds\nand charge into Sky Castle!」"
+    },
+    {
+      "id": "00238F50",
+      "translation": "「Hold on, Father. We're coming to\nsave you!」"
+    },
+    {
+      "id": "00244E60",
+      "translation": "Who's barging into MY territory?\nThis is Ponta's turf!"
+    },
+    {
+      "id": "00244E80",
+      "translation": "You've got a death wish, brats! Take\nmy killer punch!"
+    },
+    {
+      "id": "00244EA4",
+      "translation": "Huh?! You again? You just never\nlearn, do you?"
+    },
+    {
+      "id": "00244EC4",
+      "translation": "Try all you like. You'll never beat\nme!"
+    },
+    {
+      "id": "00244EDC",
+      "translation": "I let my guard down last time, but I\nwon't lose again!"
+    },
+    {
+      "id": "00244F00",
+      "translation": "All right, brats! Get ready!"
+    },
+    {
+      "id": "00244F10",
+      "translation": "Ow, ow, ow! How dare you hit my\nprecious belly button!"
+    },
+    {
+      "id": "00244F30",
+      "translation": "Grr… Y-you'll pay for this!"
+    },
+    {
+      "id": "00244F40",
+      "translation": "Ugh… I lost again…"
+    },
+    {
+      "id": "00244F58",
+      "translation": "I'm… starting to lose confidence."
+    },
+    {
+      "id": "00244F6C",
+      "translation": "「You…! Did you come from the human\nworld?"
+    },
+    {
+      "id": "00244F94",
+      "translation": "I'm a fairy who lives in this\nforest.」"
+    },
+    {
+      "id": "00244FB0",
+      "translation": "「What?! You're fairies?!」"
+    },
+    {
+      "id": "00244FCC",
+      "translation": "「Not quite how I pictured fairies…」"
+    },
+    {
+      "id": "00244FE8",
+      "translation": "「The Demon King used magic to turn\nus into this, so we couldn't resist\nhim…"
+    },
+    {
+      "id": "0024501C",
+      "translation": "We may not be much help, but we're\non your side."
+    },
+    {
+      "id": "00245048",
+      "translation": "If you see any of our friends out\nthere, please talk to them."
+    },
+    {
+      "id": "00245074",
+      "translation": "I'm sure they'll help you.」"
+    },
+    {
+      "id": "00245090",
+      "translation": "「Thank you.」"
+    },
+    {
+      "id": "0024509C",
+      "translation": "「You're our last hope. Please bring\npeace back to this world.」"
+    },
+    {
+      "id": "002450CC",
+      "translation": "「To think the world has come to\nthis…"
+    },
+    {
+      "id": "002450E8",
+      "translation": "Will we ever have peace again?」"
+    },
+    {
+      "id": "00245104",
+      "translation": "「I came to beat Ponta. But I'm too\nscared to go any further…」"
+    },
+    {
+      "id": "00245130",
+      "translation": "「We've already beaten him.」"
+    },
+    {
+      "id": "00245148",
+      "translation": "「Really? What a relief!"
+    },
+    {
+      "id": "0024515C",
+      "translation": "Everyone told me to go defeat Ponta,\nbut…"
+    },
+    {
+      "id": "00245184",
+      "translation": "I wasn't sure I could. Here, I found\nthis. Take it as thanks.」"
+    },
+    {
+      "id": "002451AC",
+      "translation": "「I saw Ponta carrying a Spirit\nStone."
+    },
+    {
+      "id": "002451C8",
+      "translation": "He should be on the other side of\nthe mountain.」"
+    },
+    {
+      "id": "00252560",
+      "translation": "「Zzz… Zzz…」"
+    },
+    {
+      "id": "0025256C",
+      "translation": "「Do you know what happened to the\none who lives in this nest?"
+    },
+    {
+      "id": "0025258C",
+      "translation": "They caused so much trouble that\nthey got locked up"
+    },
+    {
+      "id": "002525B4",
+      "translation": "in the cave by the pond."
+    },
+    {
+      "id": "002525C8",
+      "translation": "Come to think of it… I heard they\nhad a beautiful stone.」"
+    },
+    {
+      "id": "002525F4",
+      "translation": "「Squeak! Is anyone there? Please let\nme out!"
+    },
+    {
+      "id": "00252618",
+      "translation": "I'll be good! I'll even give you a\nSpirit Stone piece as thanks!\nSqueak!」"
+    },
+    {
+      "id": "00252644",
+      "translation": "「Really? You mean it?」"
+    },
+    {
+      "id": "00252650",
+      "translation": "「But how do we open it?」"
+    },
+    {
+      "id": "00252668",
+      "translation": "「Squeak! Hit the door, and it should\nopen. Please help me!」"
+    },
+    {
+      "id": "00252694",
+      "translation": "「Now that I'm out, try stopping me!\nSqueak!」"
+    },
+    {
+      "id": "002526AC",
+      "translation": "「A Spirit Stone? I don't know\nanything about that! Squeak!"
+    },
+    {
+      "id": "002526CC",
+      "translation": "If you're so upset, catch me!\nSqueak!」"
+    },
+    {
+      "id": "002526E8",
+      "translation": "「Squeak! You found me! There's\nnowhere left to run!"
+    },
+    {
+      "id": "0025270C",
+      "translation": "I'm sorry! Take the Spirit Stone and\nforgive me! Squeak!」"
+    },
+    {
+      "id": "00252738",
+      "translation": "「Back again? Squeak!」"
+    },
+    {
+      "id": "00252748",
+      "translation": "「You're ruining my nap! Squeak!」"
+    },
+    {
+      "id": "00252758",
+      "translation": "「You just won't quit, will you?\nSqueak!」"
+    },
+    {
+      "id": "00252768",
+      "translation": "「Nobody likes a pest, you know!\nSqueak!」"
+    },
+    {
+      "id": "00252784",
+      "translation": "「…」"
+    },
+    {
+      "id": "0025278C",
+      "translation": "「Oh, all right! Take this and leave\nme alone! Squeak!」"
+    },
+    {
+      "id": "002527B0",
+      "translation": "「I don't have anything else!\nSqueak!」"
+    },
+    {
+      "id": "002527C8",
+      "translation": "「You're wasting your time here!\nSqueak!」"
+    },
+    {
+      "id": "00263E50",
+      "translation": "「There's a mechanism ahead. Press\nthe right buttons to open the way,"
+    },
+    {
+      "id": "00263E78",
+      "translation": "but it won't work unless you get the\ncombination right.」"
+    },
+    {
+      "id": "00263EB0",
+      "translation": "Mere humans, making it this far?\nWell, this is where it ends."
+    },
+    {
+      "id": "00263ED8",
+      "translation": "I'll warn you now: your weapons\nwon't work on me!"
+    },
+    {
+      "id": "00263EF8",
+      "translation": "I'll cleave you in two with my axe!"
+    },
+    {
+      "id": "00263F10",
+      "translation": "Back for more, are you? I don't have\ntime to play with you."
+    },
+    {
+      "id": "00263F38",
+      "translation": "I'll finish you off right now!"
+    },
+    {
+      "id": "00263F4C",
+      "translation": "There you are, brats! Losing to you\nruined my reputation!"
+    },
+    {
+      "id": "00263F78",
+      "translation": "I won't lose this time! …Here I\ncome!"
+    },
+    {
+      "id": "00263F90",
+      "translation": "Aaaargh! How dare you stomp on my\nmagnificent horns!"
+    },
+    {
+      "id": "00263FB4",
+      "translation": "Uuugh… I can't take any mooore…"
+    },
+    {
+      "id": "00263FC8",
+      "translation": "Beaten by these little brats again…"
+    },
+    {
+      "id": "00263FE4",
+      "translation": "I'm getting too old for this… Moo…"
+    },
+    {
+      "id": "00263FF8",
+      "translation": "「I'm glad you're here. Is the lava\nin your way? Don't worry."
+    },
+    {
+      "id": "00264020",
+      "translation": "We'll lower the lava for you…"
+    },
+    {
+      "id": "00264038",
+      "translation": "Please defeat the Demon King's\nservant up ahead and save our king!」"
+    },
+    {
+      "id": "00264068",
+      "translation": "「The Demon King's servant here is so\ntough that weapons don't hurt him."
+    },
+    {
+      "id": "00264098",
+      "translation": "But I saw something."
+    },
+    {
+      "id": "002640AC",
+      "translation": "A little rock fell on his head, and\nhe was in terrible pain!"
+    },
+    {
+      "id": "002640DC",
+      "translation": "That must be his weak point!」"
+    },
+    {
+      "id": "002640F8",
+      "translation": "The door is locked. We need to find\nthe key somewhere."
+    },
+    {
+      "id": "00264120",
+      "translation": "Used the Earth Key."
+    },
+    {
+      "id": "0027D360",
+      "translation": "「Got you!」"
+    },
+    {
+      "id": "0027D36C",
+      "translation": "「Aw, you caught me! Too bad. I\nwanted to play some more."
+    },
+    {
+      "id": "0027D394",
+      "translation": "All right, here's your hint. The\nSpirit Stone is…"
+    },
+    {
+      "id": "0027D3B0",
+      "translation": "not underwater! Now that's a big\nhint!」"
+    },
+    {
+      "id": "0027D3D4",
+      "translation": "「Did you find the Spirit Stone?」"
+    },
+    {
+      "id": "0027D3EC",
+      "translation": "「Yes, but the water's too low to\nclimb onto land…」"
+    },
+    {
+      "id": "0027D414",
+      "translation": "「Hmm… I might be able to raise the\nwater.」"
+    },
+    {
+      "id": "0027D430",
+      "translation": "「What?! Really?! How?」"
+    },
+    {
+      "id": "0027D448",
+      "translation": "「If you can catch me one more time!"
+    },
+    {
+      "id": "0027D464",
+      "translation": "「Yes! I caught you!」"
+    },
+    {
+      "id": "0027D478",
+      "translation": "「I was sure I'd get away this time!\nAw, man!"
+    },
+    {
+      "id": "0027D498",
+      "translation": "Oh, all right. I'll raise the water\nfor you.」"
+    },
+    {
+      "id": "0027D4B4",
+      "translation": "「Hi! Want to play with me again?"
+    },
+    {
+      "id": "0027D4C8",
+      "translation": "This time, I'll even give you my\ntreasure!」"
+    },
+    {
+      "id": "0027D4E4",
+      "translation": "「Sure, but… What shall we play?」"
+    },
+    {
+      "id": "0027D4FC",
+      "translation": "「Tag, of course! You're it!」"
+    },
+    {
+      "id": "0027D518",
+      "translation": "「Got you!」"
+    },
+    {
+      "id": "0027D524",
+      "translation": "「Aw, you caught me! Too bad. I\nwanted to play some more."
+    },
+    {
+      "id": "0027D550",
+      "translation": "Here, take this. But promise you'll\ncome and play again!」"
+    },
+    {
+      "id": "0027D574",
+      "translation": "「Hi! I'm bored. If you play with me,"
+    },
+    {
+      "id": "0027D594",
+      "translation": "I'll give you a hint about where the\nSpirit Stone is! Come on, let's\nplay!」"
+    },
+    {
+      "id": "0027D5BC",
+      "translation": "「Sure, but… What shall we play?」"
+    },
+    {
+      "id": "0027D5D4",
+      "translation": "「Let's play tag! I bet you can't\ncatch me!"
+    },
+    {
+      "id": "0027D5F4",
+      "translation": "You're it!」"
+    },
+    {
+      "id": "0027D600",
+      "translation": "「Huh? A Spirit Stone piece? Oh, it's\nup on dry land."
+    },
+    {
+      "id": "0027D62C",
+      "translation": "But you can't reach it if the\nwater's too low."
+    },
+    {
+      "id": "0027D64C",
+      "translation": "One of my friends can raise the\nwater. Why don't you ask?」"
+    },
+    {
+      "id": "0027D67C",
+      "translation": "「What is it? Who are you…?」"
+    },
+    {
+      "id": "0027D690",
+      "translation": "「We're looking for someone who can\nraise the water. Do you know\nanyone?」"
+    },
+    {
+      "id": "0027D6BC",
+      "translation": "「That's me! You want the water\nraised? No problem!」"
+    },
+    {
+      "id": "0028F1B4",
+      "translation": "You look pretty fast. If you can\nbeat me in a race,"
+    },
+    {
+      "id": "0028F1D8",
+      "translation": "I might give back what you're\nlooking for."
+    },
+    {
+      "id": "0028F1F8",
+      "translation": "Hmph! You look awfully sure of\nyourself. Get careless, and you'll\nregret it!"
+    },
+    {
+      "id": "0028F220",
+      "translation": "Let's begin. We start at the signal!"
+    },
+    {
+      "id": "0028F240",
+      "translation": "What, you again? It'll end the same\nway no matter how often you try."
+    },
+    {
+      "id": "0028F260",
+      "translation": "Oh, fine. I'm bored anyway, so I'll\nplay along. We start at the signal!"
+    },
+    {
+      "id": "0028F28C",
+      "translation": "Oh, so you're the one who beat my\nlittle brother? I hear you're fast."
+    },
+    {
+      "id": "0028F2B8",
+      "translation": "I'll be your opponent this time.\nLet's see how long you can keep up."
+    },
+    {
+      "id": "0028F2DC",
+      "translation": "Back again? I admire your spirit, at\nleast."
+    },
+    {
+      "id": "0028F2FC",
+      "translation": "But try a little harder this time.\nKeep me entertained. Heh heh heh…"
+    },
+    {
+      "id": "0028F328",
+      "translation": "Hey! I hear you gave my little\nbrothers quite a time."
+    },
+    {
+      "id": "0028F348",
+      "translation": "Don't get cocky just because you\nbeat them! I'm in a whole other\nleague!"
+    },
+    {
+      "id": "0028F378",
+      "translation": "I'll show you the difference in our\nskill. Get ready!"
+    },
+    {
+      "id": "0028F39C",
+      "translation": "You again? Isn't it about time you\ngave up?"
+    },
+    {
+      "id": "0028F3BC",
+      "translation": "Try as hard as you like. You'll\nnever beat me."
+    },
+    {
+      "id": "0028F3DC",
+      "translation": "I'll race you any time, but you'd\nbetter not bore me!"
+    },
+    {
+      "id": "0028F404",
+      "translation": "You cheated! You must have! There's\nno way I'd lose to you otherwise!\nSniff…"
+    },
+    {
+      "id": "0028F438",
+      "translation": "I'm telling my big brother! He's way\nfaster than I am!"
+    },
+    {
+      "id": "0028F464",
+      "translation": "Don't believe me? Come back and see!\nI hate to do it, but here's your\nprize!"
+    },
+    {
+      "id": "0028F494",
+      "translation": "Phew… Huh. You're not so tough."
+    },
+    {
+      "id": "0028F4B0",
+      "translation": "If you don't like losing, get\nbetter!"
+    },
+    {
+      "id": "0028F4CC",
+      "translation": "Impossible! How could I lose?!"
+    },
+    {
+      "id": "0028F4E8",
+      "translation": "Hmm… I admit you're fast. You might\neven be a match for my big brother."
+    },
+    {
+      "id": "0028F51C",
+      "translation": "Come back if you're interested. Good\nluck. Oh, and here. This is yours."
+    },
+    {
+      "id": "0028F550",
+      "translation": "Ha ha ha! And here I thought I was\ngoing easy on you."
+    },
+    {
+      "id": "0028F574",
+      "translation": "Don't take it so hard. I'm simply\ntoo fast. Ha ha ha…"
+    },
+    {
+      "id": "0028F5A4",
+      "translation": "I… I lost… You're good. I like you.\nFrom now on, this place is yours."
+    },
+    {
+      "id": "0028F5D8",
+      "translation": "My brothers and I are leaving. Use\nthis place however you like."
+    },
+    {
+      "id": "0028F604",
+      "translation": "Here's your prize, as promised. See\nyou!"
+    },
+    {
+      "id": "0028F61C",
+      "translation": "Sorry, sorry! I got carried away and\nwent all out against a bunch of\nkids."
+    },
+    {
+      "id": "0028F644",
+      "translation": "But now you understand. Give up. You\ndon't stand a chance against me."
+    },
+    {
+      "id": "002A1A10",
+      "translation": "Who's messing with my ship?! This is\nno place for little brats like you!"
+    },
+    {
+      "id": "002A1A44",
+      "translation": "Heh heh heh. Still, you've come this\nfar. Down to the deck! I'll amuse\nmyself."
+    },
+    {
+      "id": "002A1A78",
+      "translation": "Heh heh heh. You've got nerve. I\ncommend you… But it'll be your\nundoing!"
+    },
+    {
+      "id": "002A1AA8",
+      "translation": "Kah ha ha ha!"
+    },
+    {
+      "id": "002A1AB4",
+      "translation": "What, you again…? After the beating\nI gave you, you still haven't\nlearned…"
+    },
+    {
+      "id": "002A1AE8",
+      "translation": "Very well. I'll fight you as often\nas you like. Follow me. Kah ha ha\nha!"
+    },
+    {
+      "id": "002A1B10",
+      "translation": "Heh heh heh. Ready? Try to be more\nentertaining this time. Kah ha ha\nha!"
+    },
+    {
+      "id": "002A1B40",
+      "translation": "Back again? Cocky little brats!\nFine, I'll take you on! Get down\nthere!"
+    },
+    {
+      "id": "002A1B78",
+      "translation": "Underestimate me, and you'll get\nburned. Kah ha ha ha!"
+    },
+    {
+      "id": "002A1B94",
+      "translation": "Heh heh heh… You've got some\nbackbone."
+    },
+    {
+      "id": "002A1BAC",
+      "translation": "But don't celebrate yet. I can come\nback to life as often as I like!"
+    },
+    {
+      "id": "002A1BD0",
+      "translation": "Next time we meet will be your last!\nKah ha ha ha…"
+    },
+    {
+      "id": "002A1BF4",
+      "translation": "Grr… Beaten by little brats over and\nover…"
+    },
+    {
+      "id": "002A1C10",
+      "translation": "Enough! Let me sleep in peace. Don't\nwake me up again!"
+    },
+    {
+      "id": "002A1C34",
+      "translation": "「What's wrong?」"
+    },
+    {
+      "id": "002A1C40",
+      "translation": "「Oh, please help! My little brother\nis trapped inside the ship!」"
+    },
+    {
+      "id": "002A1C6C",
+      "translation": "「Trapped?」"
+    },
+    {
+      "id": "002A1C78",
+      "translation": "「Yes. To save him, you need to knock\nstalactites off the ceiling"
+    },
+    {
+      "id": "002A1CA4",
+      "translation": "and block the water's outlet."
+    },
+    {
+      "id": "002A1CC0",
+      "translation": "Then the water will rise, and the\nship should float."
+    },
+    {
+      "id": "002A1CE0",
+      "translation": "But I can't go on land…」"
+    },
+    {
+      "id": "002A1CFC",
+      "translation": "「Then we'll go and do it for you.」"
+    },
+    {
+      "id": "002A1D1C",
+      "translation": "「Thank you so much!」"
+    },
+    {
+      "id": "002A1D2C",
+      "translation": "「I was exploring the ghost ship with\nmy big brother,"
+    },
+    {
+      "id": "002A1D4C",
+      "translation": "when suddenly I got trapped…"
+    },
+    {
+      "id": "002A1D64",
+      "translation": "But you saved me. Thank you!」"
+    },
+    {
+      "id": "002A1D7C",
+      "translation": "「Oh, right! Let me tell you\nsomething useful to thank you."
+    },
+    {
+      "id": "002A1D9C",
+      "translation": "I think there's a mechanism behind\nthe waterfall. Go take a look!」"
+    },
+    {
+      "id": "002B5E20",
+      "translation": "Ho ho ho! Welcome, my dear little\nchildren. I'll give you a present."
+    },
+    {
+      "id": "002B5E50",
+      "translation": "That is… if you can beat me! Ho ho\nho…"
+    },
+    {
+      "id": "002B5E70",
+      "translation": "Ho ho ho! Do you want a present that\nbadly?"
+    },
+    {
+      "id": "002B5E8C",
+      "translation": "Yes, take it… if you can defeat me!\nHo ho ho…"
+    },
+    {
+      "id": "002B5EB4",
+      "translation": "Hmm… Have you come to steal my\npresents again?"
+    },
+    {
+      "id": "002B5ED8",
+      "translation": "Show some respect for your elders!\nThis time, I'll teach you a lesson!"
+    },
+    {
+      "id": "002B5F0C",
+      "translation": "Grrr… You little rascals! Picking on\nan old man!"
+    },
+    {
+      "id": "002B5F34",
+      "translation": "Hmph! You want a present? Here, take\nit!"
+    },
+    {
+      "id": "002B5F54",
+      "translation": "Ow, ow… Have mercy… There's no\nbeating old age… Oh, dear."
+    },
+    {
+      "id": "002B5F88",
+      "translation": "「I hear there's a hidden room\nsomewhere in this castle."
+    },
+    {
+      "id": "002B5FB0",
+      "translation": "You have to find it before you can\nreach Big Santa's room."
+    },
+    {
+      "id": "002B5FDC",
+      "translation": "I hear Big Santa is a tough\nopponent. Please be careful.」"
+    },
+    {
+      "id": "002B6004",
+      "translation": "The door is locked. We need to find\nthe key somewhere."
+    },
+    {
+      "id": "002B602C",
+      "translation": "Used the Sea Key."
+    },
+    {
+      "id": "002BFD10",
+      "translation": "Nooooo! I can't be crashing down!"
+    },
+    {
+      "id": "002BFD34",
+      "translation": "You'll pay for thiiiis!"
+    },
+    {
+      "id": "002BFD48",
+      "translation": "Oh, my! What adorable little guests.\nI'll give you a very warm welcome."
+    },
+    {
+      "id": "002BFD74",
+      "translation": "How lucky you are to be defeated by\nme. Now, be grateful… and perish!"
+    },
+    {
+      "id": "002BFDA8",
+      "translation": "Oh? You're back? What troublesome\nchildren."
+    },
+    {
+      "id": "002BFDC8",
+      "translation": "You'll be so dazzled by my beauty,\nyou won't stand a chance. Lose with\ngrace!"
+    },
+    {
+      "id": "002BFE04",
+      "translation": "Hee hee… Back again? How dare you\ntarnish my lovely reputation last\ntime!"
+    },
+    {
+      "id": "002BFE38",
+      "translation": "I'll show you what happens when you\nmake me angry!"
+    },
+    {
+      "id": "002BFE54",
+      "translation": "Grr… I couldn't possibly lose to\nthose children… This must be a\ndream!"
+    },
+    {
+      "id": "002BFE8C",
+      "translation": "Oof… I lost again… I-I just wasn't\nat my best today!"
+    },
+    {
+      "id": "002BFEB8",
+      "translation": "I'll let you off this time… Sniff."
+    },
+    {
+      "id": "002BFED8",
+      "translation": "「There's a gadget up in the tree.\nBut it might be too high for you to\nreach."
+    },
+    {
+      "id": "002BFF08",
+      "translation": "I'd get it for you, but the owls\nkeep getting in the way.」"
+    },
+    {
+      "id": "002BFF30",
+      "translation": "Get rid of the owls, and I'll fetch\nit for you."
+    },
+    {
+      "id": "002C9B30",
+      "translation": "A huge {F8:32}bird{F7} has a {F8:31}Spirit Stone{F7}! This\n{F8:32}tree{F7} has the {F8:32}bird{F7}'s nest at its"
+    },
+    {
+      "id": "002C9B70",
+      "translation": "top. The {F8:31}Spirit Stone{F7} must be there.\nCome on, everyone!"
+    },
+    {
+      "id": "002CE9E0",
+      "translation": "「I heard there's a Spirit Stone on\nthe moon, so I came to find it."
+    },
+    {
+      "id": "002CE9FC",
+      "translation": "But I can't go any higher in this\nrain."
+    },
+    {
+      "id": "002CEA18",
+      "translation": "It should be sunny above that big\ncloud, too. What a shame."
+    },
+    {
+      "id": "002CEA40",
+      "translation": "Oh, I know. I found this on the way\nhere. You can have it.」"
+    },
+    {
+      "id": "002CEA68",
+      "translation": "It should be sunny above that big\ncloud, too. What a shame.」"
+    },
+    {
+      "id": "002CEA90",
+      "translation": "「Here's a tip for you. If you beat\nall the owls on the moon…"
+    },
+    {
+      "id": "002CEABC",
+      "translation": "An item is supposed to appear on one\nof the islands!」"
+    },
+    {
+      "id": "002CEAE0",
+      "translation": "「The moon here has the power to\nattract all sorts of things."
+    },
+    {
+      "id": "002CEB08",
+      "translation": "I heard it pulled in a Spirit Stone\npiece once."
+    },
+    {
+      "id": "002CEB28",
+      "translation": "Maybe it's drawn in other things,\ntoo."
+    },
+    {
+      "id": "002E0680",
+      "translation": "Heh heh heh… So, you've finally made\nit."
+    },
+    {
+      "id": "002E0698",
+      "translation": "Defeating children is hardly to my\ntaste, but I have no choice."
+    },
+    {
+      "id": "002E06C0",
+      "translation": "I cannot spare anyone who stands in\nthe Demon King's way."
+    },
+    {
+      "id": "002E06E8",
+      "translation": "Now then… Have at you!"
+    },
+    {
+      "id": "002E06FC",
+      "translation": "My, my. You really don't know when\nto quit. Nobody likes a pest, you\nknow."
+    },
+    {
+      "id": "002E0728",
+      "translation": "…Very well. One more match. Don't\nworry. I'll end your suffering\nquickly."
+    },
+    {
+      "id": "002E0764",
+      "translation": "You're here. I underestimated you\nbecause you're children. No more\nmercy."
+    },
+    {
+      "id": "002E0794",
+      "translation": "The Demon King will soon regain his\nfull power."
+    },
+    {
+      "id": "002E07B0",
+      "translation": "I cannot afford to fall here so\neasily!"
+    },
+    {
+      "id": "002E07D4",
+      "translation": "Hmm… You're quite skilled. Then I\nshall fight a little more seriously."
+    },
+    {
+      "id": "002E0804",
+      "translation": "Gah! I mustn't underestimate you.\nBut the battle has only begun! Here\nI come!"
+    },
+    {
+      "id": "002E0830",
+      "translation": "Curse you… Using my own charge\nagainst me… H-how bitter…"
+    },
+    {
+      "id": "002E085C",
+      "translation": "Gah! Why? Why can't I win…? I still\nneed more training…"
+    },
+    {
+      "id": "002E0884",
+      "translation": "「I came here to rescue the king."
+    },
+    {
+      "id": "002E089C",
+      "translation": "But the Demon King's servant was\nstronger than I expected. I had to\nflee…"
+    },
+    {
+      "id": "002E08CC",
+      "translation": "Still, I did manage to steal a\ngadget from the Demon King's\nservant."
+    },
+    {
+      "id": "002E08F8",
+      "translation": "That's all I could do…"
+    },
+    {
+      "id": "002E0914",
+      "translation": "Please save the king.」"
+    },
+    {
+      "id": "002E092C",
+      "translation": "The door is locked. We need to find\nthe key somewhere."
+    },
+    {
+      "id": "002E0958",
+      "translation": "Used the Sky Key."
+    },
+    {
+      "id": "002E0968",
+      "translation": "「Please save the king.」"
+    },
+    {
+      "id": "002E8580",
+      "translation": "「Ugh! I'm bored to death!」"
+    },
+    {
+      "id": "002E8598",
+      "translation": "「Me too. Isn't there anything fun to\ndo?」"
+    },
+    {
+      "id": "002E85B8",
+      "translation": "「…Oh! Here come Nobita and\nDoraemon.」"
+    },
+    {
+      "id": "002E85D8",
+      "translation": "「Hi!」"
+    },
+    {
+      "id": "002E85E0",
+      "translation": "「What are you all doing?」"
+    },
+    {
+      "id": "002E85F0",
+      "translation": "「We were just trying to think of\nsomething to do.」"
+    },
+    {
+      "id": "002E860C",
+      "translation": "「Oh… We couldn't think of anything\neither, so we came to play.」"
+    },
+    {
+      "id": "002E8630",
+      "translation": "「Guess it can't be helped.」"
+    },
+    {
+      "id": "002E863C",
+      "translation": "「Then I'll treat you to a special\nperformance of my new song!」"
+    },
+    {
+      "id": "002E8664",
+      "translation": "「Whaaaat?!」"
+    },
+    {
+      "id": "002E8670",
+      "translation": "「What's that?! You got a problem\nwith it?!」"
+    },
+    {
+      "id": "002E868C",
+      "translation": "「N-no! It's just… It would be such a\nwaste…」"
+    },
+    {
+      "id": "002E86AC",
+      "translation": "「Right, right… To sing your\nbrand-new song in a place like\nthis…」"
+    },
+    {
+      "id": "002E86D8",
+      "translation": "「It wouldn't be fair for just us to\nhear it first.」"
+    },
+    {
+      "id": "002E86FC",
+      "translation": "「It'd spoil the surprise at your\nnext recital.」"
+    },
+    {
+      "id": "002E871C",
+      "translation": "「Hmm… You've got a point.」"
+    },
+    {
+      "id": "002E872C",
+      "translation": "「Phew…」"
+    },
+    {
+      "id": "002E8738",
+      "translation": "「All right! Go round up an audience!"
+    },
+    {
+      "id": "002E8758",
+      "translation": "I'm holding a recital right now!」"
+    },
+    {
+      "id": "002E8770",
+      "translation": "「What?! Oh, no…」"
+    },
+    {
+      "id": "002E8780",
+      "translation": "「And I thought we'd talked our way\nout of it…」"
+    },
+    {
+      "id": "002E87A0",
+      "translation": "「What was that, Suneo?! What's that\nsupposed to mean?! Say it again!」"
+    },
+    {
+      "id": "002E87CC",
+      "translation": "「W-well, I… Um…"
+    },
+    {
+      "id": "002E87E0",
+      "translation": "Oh! Wait a second! What's that?!」"
+    },
+    {
+      "id": "002E87FC",
+      "translation": "「Don't try to change the subject!」"
+    },
+    {
+      "id": "002E880C",
+      "translation": "「Over there! Look!」"
+    },
+    {
+      "id": "002E881C",
+      "translation": "「?!」"
+    },
+    {
+      "id": "002E8824",
+      "translation": "「Whoa!!」"
+    },
+    {
+      "id": "002E8830",
+      "translation": "「Phew… So this is the human world…!」"
+    },
+    {
+      "id": "002E884C",
+      "translation": "「Excuse me… May I ask you something?"
+    },
+    {
+      "id": "002E8864",
+      "translation": "Do you know someone named Doraemon?」"
+    },
+    {
+      "id": "002E8884",
+      "translation": "「I'm Doraemon.」"
+    },
+    {
+      "id": "002E8898",
+      "translation": "「Oh… You're not human."
+    },
+    {
+      "id": "002E88B0",
+      "translation": "I didn't know the human world's\nraccoon dogs could talk, too.」"
+    },
+    {
+      "id": "002E88DC",
+      "translation": "「R-raccoon dog?!」"
+    },
+    {
+      "id": "002E88E8",
+      "translation": "「I'm a cat-type robot! How rude!」"
+    },
+    {
+      "id": "002E8908",
+      "translation": "「Now, now… Calm down, Doraemon.\nAnyway… Who are you?」"
+    },
+    {
+      "id": "002E8930",
+      "translation": "「Oh, I'm sorry. My name is Corona.\nI've come from the Spirit World.」"
+    },
+    {
+      "id": "002E895C",
+      "translation": "「The Spirit World…?」"
+    },
+    {
+      "id": "002E896C",
+      "translation": "「Yes, the world of fairies."
+    },
+    {
+      "id": "002E897C",
+      "translation": "It lies alongside your human world,\nbeyond a dimensional barrier.」"
+    },
+    {
+      "id": "002E89AC",
+      "translation": "「Fairies? Do you mean the ones in\nfairy tales?」"
+    },
+    {
+      "id": "002E89D4",
+      "translation": "「That's a little hard to believe…」"
+    },
+    {
+      "id": "002E89EC",
+      "translation": "「There's no time to explain.」"
+    },
+    {
+      "id": "002E8A04",
+      "translation": "「What do you mean?」"
+    },
+    {
+      "id": "002E8A10",
+      "translation": "「The Demon King has returned from\nthe world of darkness…"
+    },
+    {
+      "id": "002E8A38",
+      "translation": "And now he's about to conquer the\nSpirit World.」"
+    },
+    {
+      "id": "002E8A50",
+      "translation": "「What? The Demon King?」"
+    },
+    {
+      "id": "002E8A60",
+      "translation": "「Yes. Long, long ago,"
+    },
+    {
+      "id": "002E8A70",
+      "translation": "our ancestors fought a fierce battle\nagainst the Demon King and his army."
+    },
+    {
+      "id": "002E8AA0",
+      "translation": "The Demon King was terribly\npowerful, but"
+    },
+    {
+      "id": "002E8AC4",
+      "translation": "with the power of stones made by the\nfairies, called Spirit Stones,"
+    },
+    {
+      "id": "002E8AEC",
+      "translation": "they finally managed to seal him\naway."
+    },
+    {
+      "id": "002E8B10",
+      "translation": "But as time passed, the Spirit\nStones slowly lost their power,"
+    },
+    {
+      "id": "002E8B40",
+      "translation": "until he broke the seal and\nreturned.」"
+    },
+    {
+      "id": "002E8B68",
+      "translation": "「…」"
+    },
+    {
+      "id": "002E8B74",
+      "translation": "「It's only a matter of time before\nthe Spirit World falls to him…"
+    },
+    {
+      "id": "002E8BA0",
+      "translation": "So, Doraemon, I have a favor to ask."
+    },
+    {
+      "id": "002E8BBC",
+      "translation": "Would you please lend me your\npocket?」"
+    },
+    {
+      "id": "002E8BDC",
+      "translation": "「Whaaat?!」"
+    },
+    {
+      "id": "002E8BE8",
+      "translation": "「I don't know why, but… the Demon\nKing wants your pocket…"
+    },
+    {
+      "id": "002E8C14",
+      "translation": "If it's that special, I thought we\nmight be able to defeat him with it."
+    },
+    {
+      "id": "002E8C3C",
+      "translation": "So… please. Lend me your pocket,\njust for a little while!」"
+    },
+    {
+      "id": "002E8C68",
+      "translation": "「Hmm… That's an awful lot to ask out\nof the blue.」"
+    },
+    {
+      "id": "002E8C84",
+      "translation": "「The Spirit World and the human\nworld lie side by side…"
+    },
+    {
+      "id": "002E8CA4",
+      "translation": "They have a powerful influence on\neach other."
+    },
+    {
+      "id": "002E8CC0",
+      "translation": "If the Demon King keeps ravaging the\nSpirit World,"
+    },
+    {
+      "id": "002E8CE4",
+      "translation": "something terrible may happen in the\nhuman world, too…」"
+    },
+    {
+      "id": "002E8D10",
+      "translation": "「I'm starting to get scared…」"
+    },
+    {
+      "id": "002E8D28",
+      "translation": "「I'm sorry. I don't mean to frighten\nyou… But it's the truth.」"
+    },
+    {
+      "id": "002E8D54",
+      "translation": "「Hey, Doraemon. Isn't there\nsomething you can do to help?」"
+    },
+    {
+      "id": "002E8D74",
+      "translation": "「Yes. It sounds like this affects\nus, too. We can't just ignore it.」"
+    },
+    {
+      "id": "002E8DA0",
+      "translation": "「Then you'll…」"
+    },
+    {
+      "id": "002E8DB0",
+      "translation": "「I can't lend you my pocket, but\nI'll come with you.」"
+    },
+    {
+      "id": "002E8DDC",
+      "translation": "「Really?! Thank you!! …"
+    },
+    {
+      "id": "002E8DF8",
+      "translation": "But… The Demon King is truly\nterrifying…"
+    },
+    {
+      "id": "002E8E1C",
+      "translation": "I can't promise you'll survive…」"
+    },
+    {
+      "id": "002E8E34",
+      "translation": "「It'll be fine! With Doraemon's\ngadgets, we'll never lose to a guy\nlike that!」"
+    },
+    {
+      "id": "002E8E60",
+      "translation": "「I think not!!」"
+    },
+    {
+      "id": "002E8E6C",
+      "translation": "「!?」"
+    },
+    {
+      "id": "002E8E74",
+      "translation": "「Aah!」"
+    },
+    {
+      "id": "002E8E80",
+      "translation": "「Heh heh heh… The pocket is mine."
+    },
+    {
+      "id": "002E8E9C",
+      "translation": "Thank you for your hard work,\nPrincess Corona.」"
+    },
+    {
+      "id": "002E8EB8",
+      "translation": "「What did you say?!」"
+    },
+    {
+      "id": "002E8EC4",
+      "translation": "「You opened the door to the human\nworld for me, after all."
+    },
+    {
+      "id": "002E8EEC",
+      "translation": "Thanks to you, nothing stands in the\nway of my ambition.」"
+    },
+    {
+      "id": "002E8F10",
+      "translation": "Heh heh heh… Wah ha ha ha…」"
+    },
+    {
+      "id": "002E8F2C",
+      "translation": "「No… The Demon King used me…"
+    },
+    {
+      "id": "002E8F50",
+      "translation": "I'll never forgive you!!」"
+    },
+    {
+      "id": "002E8F64",
+      "translation": "「What do we do…?」"
+    },
+    {
+      "id": "002E8F74",
+      "translation": "「If Corona was telling the truth, we\nhave to do something,"
+    },
+    {
+      "id": "002E8F98",
+      "translation": "or our world will be in terrible\ndanger, too!」"
+    },
+    {
+      "id": "002E8FB4",
+      "translation": "「And we have to get Doraemon's\npocket back…」"
+    },
+    {
+      "id": "002E8FD8",
+      "translation": "「It's a little scary, but Doraemon's\ngadgets have helped us so many\ntimes.」"
+    },
+    {
+      "id": "002E9008",
+      "translation": "「We were bored anyway. Let's go!」"
+    },
+    {
+      "id": "002E9028",
+      "translation": "「…Right. There's no time to\nhesitate."
+    },
+    {
+      "id": "002E9048",
+      "translation": "Let's go after Corona!!」"
+    },
+    {
+      "id": "002EE2F0",
+      "translation": "「…」"
+    },
+    {
+      "id": "002EE2FC",
+      "translation": "「Father.」"
+    },
+    {
+      "id": "002EE308",
+      "translation": "「Ah, Corona…」"
+    },
+    {
+      "id": "002EE318",
+      "translation": "「Is it true the Demon King's army\ncaptured the Earth King and the Sea\nKing?!」"
+    },
+    {
+      "id": "002EE348",
+      "translation": "「Yes… The Demon King says that if we\nwant to save their lives,"
+    },
+    {
+      "id": "002EE36C",
+      "translation": "we must take the pocket of someone\nnamed Doraemon,"
+    },
+    {
+      "id": "002EE388",
+      "translation": "who lives in the human world, and\nbring it to him…」"
+    },
+    {
+      "id": "002EE3A4",
+      "translation": "「…I don't understand. Why go to all\nthat trouble?"
+    },
+    {
+      "id": "002EE3D4",
+      "translation": "Why doesn't he go and get it\nhimself…?」"
+    },
+    {
+      "id": "002EE3F0",
+      "translation": "「Hmm… Though the Spirit Stones have\ngrown weaker,"
+    },
+    {
+      "id": "002EE418",
+      "translation": "breaking the seal to return must\nhave drained much of his strength."
+    },
+    {
+      "id": "002EE448",
+      "translation": "Perhaps he no longer has enough\npower to cross the dimensional\nbarrier.」"
+    },
+    {
+      "id": "002EE478",
+      "translation": "「I have heard rumors that he's\nhiding somewhere in this world,"
+    },
+    {
+      "id": "002EE49C",
+      "translation": "gathering his strength."
+    },
+    {
+      "id": "002EE4B8",
+      "translation": "But…"
+    },
+    {
+      "id": "002EE4C4",
+      "translation": "Why does he want that pocket?」"
+    },
+    {
+      "id": "002EE4E0",
+      "translation": "「If the Demon King desires it so\nbadly… That pocket"
+    },
+    {
+      "id": "002EE500",
+      "translation": "must hold some great power."
+    },
+    {
+      "id": "002EE520",
+      "translation": "Does he intend to make that power\nhis own…?」"
+    },
+    {
+      "id": "002EE53C",
+      "translation": "(If that pocket really is so\npowerful…"
+    },
+    {
+      "id": "002EE55C",
+      "translation": "…Then…!)"
+    },
+    {
+      "id": "002EE56C",
+      "translation": "「I'll go to the human world!"
+    },
+    {
+      "id": "002EE584",
+      "translation": "I have an idea. Leave it to me!」"
+    },
+    {
+      "id": "002EE59C",
+      "translation": "「Wait, Corona!"
+    },
+    {
+      "id": "002EE5A8",
+      "translation": "That headstrong girl… I hope she\ndoesn't do anything reckless…」"
+    },
+    {
+      "id": "002EE5CC",
+      "translation": "「Heh heh heh…」"
+    },
+    {
+      "id": "002EE5DC",
+      "translation": "「?!」"
+    },
+    {
+      "id": "002EE5E4",
+      "translation": "「That foolish girl… She fell right\ninto my trap!」"
+    },
+    {
+      "id": "002EE604",
+      "translation": "「There!」"
+    },
+    {
+      "id": "002EE60C",
+      "translation": "「Phew… I'm finally back to normal."
+    },
+    {
+      "id": "002EE624",
+      "translation": "Thank you, everyone. You helped us\nsave the Spirit World.」"
+    },
+    {
+      "id": "002EE650",
+      "translation": "「Aw, you're making me blush.」"
+    },
+    {
+      "id": "002EE664",
+      "translation": "「Oh, Nobita! Look at you, all\nstarry-eyed!」"
+    },
+    {
+      "id": "002EE680",
+      "translation": "「You didn't beat the Demon King all\nby yourself, you know!」"
+    },
+    {
+      "id": "002EE6A0",
+      "translation": "「Yeah! If I hadn't been there, by\nnow you'd be…」"
+    },
+    {
+      "id": "002EE6C0",
+      "translation": "「Now, now… We did it because we all\nworked together.」"
+    },
+    {
+      "id": "002EE6E8",
+      "translation": "「Indeed. Even when you cannot\nsucceed alone, with friends you can\ntrust,"
+    },
+    {
+      "id": "002EE714",
+      "translation": "your strength grows many times over.\nEnough to defeat even the Demon\nKing…」"
+    },
+    {
+      "id": "002EE740",
+      "translation": "「If I hadn't been transformed, I'd\nhave loved to join in the action!」"
+    },
+    {
+      "id": "002EE770",
+      "translation": "「Now, now! Don't get carried away!」"
+    },
+    {
+      "id": "002EE784",
+      "translation": "「Hee hee…」"
+    },
+    {
+      "id": "002EE790",
+      "translation": "「We cannot rest easy just because\nthe Demon King is sealed away."
+    },
+    {
+      "id": "002EE7B0",
+      "translation": "The Spirit Stones no longer shine as\nbrightly as they once did."
+    },
+    {
+      "id": "002EE7CC",
+      "translation": "He could return at any time. We must\nnever let our guard down.」"
+    },
+    {
+      "id": "002EE7FC",
+      "translation": "「We'll keep watch over the Spirit\nStones."
+    },
+    {
+      "id": "002EE820",
+      "translation": "But that alone isn't enough."
+    },
+    {
+      "id": "002EE834",
+      "translation": "We need your help to protect them,\ntoo.」"
+    },
+    {
+      "id": "002EE860",
+      "translation": "「Huh? What do you mean?」"
+    },
+    {
+      "id": "002EE870",
+      "translation": "「As I said before, this world and\nthe human world"
+    },
+    {
+      "id": "002EE898",
+      "translation": "have a powerful influence on each\nother.」"
+    },
+    {
+      "id": "002EE8B0",
+      "translation": "「The Spirit Stones draw their power"
+    },
+    {
+      "id": "002EE8CC",
+      "translation": "from the spirits of wind, water,\nsoil and trees. In other words,"
+    },
+    {
+      "id": "002EE8F8",
+      "translation": "from the life force of nature\nitself. But…"
+    },
+    {
+      "id": "002EE920",
+      "translation": "over the ages, humans have forgotten\nhow precious these things are."
+    },
+    {
+      "id": "002EE94C",
+      "translation": "They have polluted the sky and sea,"
+    },
+    {
+      "id": "002EE95C",
+      "translation": "even though they cannot live without\nthem…」"
+    },
+    {
+      "id": "002EE988",
+      "translation": "「Then it's because of us humans…」"
+    },
+    {
+      "id": "002EE9A4",
+      "translation": "「It's as if we helped bring the\nDemon King back.」"
+    },
+    {
+      "id": "002EE9D0",
+      "translation": "「Oh, I see! The Demon King's last\nwords…」"
+    },
+    {
+      "id": "002EE9F0",
+      "translation": "(Oh, my chance will come soon\nenough… As long as"
+    },
+    {
+      "id": "002EEA14",
+      "translation": "you humans still exist!!)"
+    },
+    {
+      "id": "002EEA28",
+      "translation": "「So that's what he meant…」"
+    },
+    {
+      "id": "002EEA44",
+      "translation": "「If the Demon King returns once\nmore,"
+    },
+    {
+      "id": "002EEA64",
+      "translation": "we may no longer be able to restore\nthe Spirit Stones…"
+    },
+    {
+      "id": "002EEA8C",
+      "translation": "And if that happens…」"
+    },
+    {
+      "id": "002EEA9C",
+      "translation": "「We won't let that happen! No way!」"
+    },
+    {
+      "id": "002EEAB4",
+      "translation": "「But is there anything we can do?」"
+    },
+    {
+      "id": "002EEAD0",
+      "translation": "「Of course there is."
+    },
+    {
+      "id": "002EEAD8",
+      "translation": "Protect the beauty of the sky and\nsea."
+    },
+    {
+      "id": "002EEAF0",
+      "translation": "Love and care for trees and flowers."
+    },
+    {
+      "id": "002EEB08",
+      "translation": "Understand birds and animals, and\nlive alongside them."
+    },
+    {
+      "id": "002EEB30",
+      "translation": "And remember that you, too, are part\nof nature."
+    },
+    {
+      "id": "002EEB54",
+      "translation": "…Traveling with you has shown me\nthat you can do all of those\nthings.」"
+    },
+    {
+      "id": "002EEB80",
+      "translation": "「Yes. I think I'm starting to\nunderstand."
+    },
+    {
+      "id": "002EEBA4",
+      "translation": "I'll never forget what you told us!」"
+    },
+    {
+      "id": "002EEBC4",
+      "translation": "「Come on, everyone. It's time we\nwent back to the human world…」"
+    },
+    {
+      "id": "002EEBEC",
+      "translation": "「Corona… I'll never forget you.」"
+    },
+    {
+      "id": "002EEC0C",
+      "translation": "「Me neither! I'll never… forget\nyou.」"
+    },
+    {
+      "id": "002EEC28",
+      "translation": "「That's right. We'll always be\nfriends. Don't forget me, either!」"
+    },
+    {
+      "id": "002EEC54",
+      "translation": "「My dear friend! Don't you go\nforgetting me, either!!」"
+    },
+    {
+      "id": "002EEC78",
+      "translation": "「Hee hee. Of course. I'll never\nforget any of you."
+    },
+    {
+      "id": "002EEC9C",
+      "translation": "Because… you're my dear friends!」"
+    },
+    {
+      "id": "002EECBC",
+      "translation": "「We'll… meet again, won't we?」"
+    },
+    {
+      "id": "002EECCC",
+      "translation": "「Sometimes, the Spirit World and the\nhuman world connect."
+    },
+    {
+      "id": "002EECF4",
+      "translation": "But most people can't see us."
+    },
+    {
+      "id": "002EED18",
+      "translation": "As long as you keep caring for\nnature,"
+    },
+    {
+      "id": "002EED38",
+      "translation": "and never forget how to dream, I'm\nsure…"
+    },
+    {
+      "id": "002EED54",
+      "translation": "I'm sure we'll meet again!」"
+    },
+    {
+      "id": "002EED64",
+      "translation": "「Yes! We'll never forget…"
+    },
+    {
+      "id": "002EED78",
+      "translation": "We promise!」"
+    },
+    {
+      "id": "002EED84",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EED9C",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EEDB4",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EEDCC",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EEDE4",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EEDFC",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EEE18",
+      "translation": "{F8:32}Doraemon{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EEE30",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EEE44",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EEE58",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EEE6C",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EEE80",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EEE94",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EEEAC",
+      "translation": "{F8:32}Shizuka{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EEEC0",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EEED4",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EEEE8",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EEEFC",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EEF10",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EEF24",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EEF3C",
+      "translation": "{F8:32}Nobita{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EEF50",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EEF64",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EEF78",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EEF8C",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EEFA0",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EEFB4",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EEFCC",
+      "translation": "{F8:32}Suneo{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EEFE0",
+      "translation": "{F8:32}Gian{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EEFF8",
+      "translation": "{F8:32}Gian{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EF010",
+      "translation": "{F8:32}Gian{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EF028",
+      "translation": "{F8:32}Gian{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EF040",
+      "translation": "{F8:32}Gian{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EF058",
+      "translation": "{F8:32}Gian{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EF074",
+      "translation": "{F8:32}Gian{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EF08C",
+      "translation": "{F8:32}Corona{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF0A0",
+      "translation": "{F8:32}Corona{F7}: {F8:34}smiling{F7} face."
+    },
+    {
+      "id": "002EF0B4",
+      "translation": "{F8:32}Corona{F7}: {F8:34}surprised{F7} face."
+    },
+    {
+      "id": "002EF0C8",
+      "translation": "{F8:32}Corona{F7}: {F8:34}worried{F7} face."
+    },
+    {
+      "id": "002EF0DC",
+      "translation": "{F8:32}Corona{F7}: {F8:34}angry{F7} face."
+    },
+    {
+      "id": "002EF0F0",
+      "translation": "{F8:32}Corona{F7}: {F8:34}expressionless{F7} face."
+    },
+    {
+      "id": "002EF108",
+      "translation": "{F8:32}Corona{F7}: {F8:34}sad{F7} face."
+    },
+    {
+      "id": "002EF11C",
+      "translation": "{F8:32}Demon King{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF130",
+      "translation": "{F8:32}Demon King{F7}: {F8:34}silhouette{F7}."
+    },
+    {
+      "id": "002EF148",
+      "translation": "{F8:32}Old tree{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF15C",
+      "translation": "{F8:32}Pokera{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF170",
+      "translation": "{F8:32}Underwater Buggy{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF188",
+      "translation": "{F8:32}Sky King{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF1A0",
+      "translation": "{F8:32}Sea King{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF1B8",
+      "translation": "{F8:32}Earth King{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF1D0",
+      "translation": "{F8:32}Spinner{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF1E8",
+      "translation": "{F8:32}Merman{F7}: {F8:34}normal{F7} face."
+    },
+    {
+      "id": "002EF200",
+      "translation": "{F8:32}Strange bird{F7}: {F8:34}normal{F7} face."
+    }
+  ]
+}

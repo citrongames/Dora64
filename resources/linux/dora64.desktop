@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Dora64
+Comment=Doraemon: Nobita to 3tsu no Seireiseki
+Exec=Dora64
+Icon=dora64
+Terminal=false
+Categories=Game;AdventureGame;
+StartupWMClass=dora64

@@ -1,0 +1,532 @@
+{
+  "format_version": 1,
+  "language": "en",
+  "notes": "English translation; terminology and constraints: ENGLISH_TRANSLATION_GUIDE.md. Formatting controls match the original.",
+  "records": [
+    {
+      "id": "000ACBC0",
+      "category": "system_message",
+      "translation": "No {F8:32}controller{F7} {F8:31}connected{F7}.\n{F8:31}Connect{F7} it to a {F8:32}port{F7},\nthen restart the {F8:32}power{F7}."
+    },
+    {
+      "id": "000ACC08",
+      "category": "system_message",
+      "translation": "{F8:32}EEPROM{F7} is missing or {F8:31}damaged{F7}!"
+    },
+    {
+      "id": "001236E1",
+      "category": "item_description",
+      "translation": "Put it on your hand and say \"Bang!\"\nto fire a blast of air."
+    },
+    {
+      "id": "00123703",
+      "category": "item_description",
+      "translation": "Fires bursts of compressed air\ninstead of bullets to strike\nthe target."
+    },
+    {
+      "id": "0012372D",
+      "category": "item_description",
+      "translation": "Any song or story heard through\nthis microphone will deeply\nmove the listener."
+    },
+    {
+      "id": "0012375F",
+      "category": "item_description",
+      "translation": "Wear these gloves to beat even\nthe strongest opponent\nin a fistfight."
+    },
+    {
+      "id": "00123785",
+      "category": "item_description",
+      "translation": "Throw it to scare enemies with\na deafening bang and a bright flash."
+    },
+    {
+      "id": "001237AB",
+      "category": "item_description",
+      "translation": "Just put it on your head\nand you can fly with ease."
+    },
+    {
+      "id": "001237CA",
+      "category": "item_description",
+      "translation": "Need a time-out? Press the switch\non this watch to stop time."
+    },
+    {
+      "id": "001237FE",
+      "category": "item_description",
+      "translation": "Stick this on your belly\nto keep all kinds of misfortune\naway."
+    },
+    {
+      "id": "0012382B",
+      "category": "item_description",
+      "translation": "Open the door to go anywhere,\nas long as the destination\nis on its built-in map."
+    },
+    {
+      "id": "0012385C",
+      "category": "item_description",
+      "translation": "Place this hoop against any wall\nand you can pass right through it."
+    },
+    {
+      "id": "0012387E",
+      "category": "item_description",
+      "translation": "Drink this and shout loudly\nto turn your voice into\nsolid objects."
+    },
+    {
+      "id": "001238A0",
+      "category": "item_description",
+      "translation": "Anything caught in this light's\nbeam will shrink."
+    },
+    {
+      "id": "001238BF",
+      "category": "item_description",
+      "translation": "Any animal that eats these\ndumplings will obey you."
+    },
+    {
+      "id": "001238E2",
+      "category": "item_description",
+      "translation": "Put these tubes in your nose\nto breathe underwater."
+    },
+    {
+      "id": "00123908",
+      "category": "item_description",
+      "translation": "Cover an object to turn its time\nforward or back."
+    },
+    {
+      "id": "0012392D",
+      "category": "item_description",
+      "translation": "Rub this cream over your body\nto withstand water pressure\n10,000 meters deep."
+    },
+    {
+      "id": "0012395F",
+      "category": "item_description",
+      "translation": "Plant this bean, and it will grow\ninto a giant beanstalk\nin an instant."
+    },
+    {
+      "id": "00123985",
+      "category": "item_description",
+      "translation": "Shine this light on your body\nto adapt to any environment."
+    },
+    {
+      "id": "001239AF",
+      "category": "item_description",
+      "translation": "Attach this control stick\nto anything and you can steer it\nhowever you like."
+    },
+    {
+      "id": "001239DF",
+      "category": "item_description",
+      "translation": "Spray this gas on clouds\nto make them solid enough\nto stand on."
+    },
+    {
+      "id": "00123A09",
+      "category": "item_description",
+      "translation": "Apply this liquid to anything\nto improve its performance\nfor a short time."
+    },
+    {
+      "id": "00123A32",
+      "category": "item_description",
+      "translation": "A television that lets you see\nthe past or future."
+    },
+    {
+      "id": "00123A4B",
+      "category": "item_description",
+      "translation": "Insert an outfit picture,\naim at someone and snap a photo\nto dress them in it."
+    },
+    {
+      "id": "00123A85",
+      "category": "item_description",
+      "translation": "A tennis-ball-sized capsule.\nPlant it in the ground\nto grow a camping cabin."
+    },
+    {
+      "id": "00123ABA",
+      "category": "item_description",
+      "translation": "Eat this to talk with people\nfrom other countries,\nor even aliens."
+    },
+    {
+      "id": "00123AE4",
+      "category": "item_description",
+      "translation": "Say \"What if the world were…\"\ninto the receiver, and\nyour wish becomes reality."
+    },
+    {
+      "id": "00123B1E",
+      "category": "item_description",
+      "translation": "Shows seas and rivers on a 4D\nscreen so you can go fishing\nright in your room."
+    },
+    {
+      "id": "00123B4A",
+      "category": "item_description",
+      "translation": "Returns an echo at the exact time\nyou choose."
+    },
+    {
+      "id": "00123B68",
+      "category": "item_description",
+      "translation": "Two people can use these to talk\nwithout a string connecting\nthe phones."
+    },
+    {
+      "id": "00123B90",
+      "category": "item_description",
+      "translation": "Wear these shoes to enter\nthe world of a picture book."
+    },
+    {
+      "id": "00123BB4",
+      "category": "item_description",
+      "translation": "A tiny Doraemon with gadgets\njust like the real one's,\nbut all in miniature."
+    },
+    {
+      "id": "00123BE3",
+      "category": "item_description",
+      "translation": "A buggy that can drive underwater.\nYou can even talk to its\nbuilt-in computer."
+    },
+    {
+      "id": "00123CA2",
+      "category": "item_name",
+      "translation": "{F8:34}Your Time{F7}"
+    },
+    {
+      "id": "00123CAE",
+      "category": "item_name",
+      "translation": "{F8:32}Best Time{F7}"
+    },
+    {
+      "id": "00123CC4",
+      "category": "item_name",
+      "translation": "{F8:31}Air Cannon{F7}"
+    },
+    {
+      "id": "00123CD4",
+      "category": "item_name",
+      "translation": "{F8:31}Shock Wave Pistol{F7}"
+    },
+    {
+      "id": "00123CE8",
+      "category": "item_name",
+      "translation": "{F8:31}Danger Bomb{F7}"
+    },
+    {
+      "id": "00123CFC",
+      "category": "item_name",
+      "translation": "{F8:31}Champion Gloves{F7}"
+    },
+    {
+      "id": "00123D10",
+      "category": "item_name",
+      "translation": "{F8:31}Gene Mic{F7}"
+    },
+    {
+      "id": "00123D20",
+      "category": "item_name",
+      "translation": "{F8:31}Upgrade Spray{F7}"
+    },
+    {
+      "id": "00123D34",
+      "category": "item_name",
+      "translation": "{F8:31}Tanma Watch{F7}"
+    },
+    {
+      "id": "00123D44",
+      "category": "item_name",
+      "translation": "{F8:31}Safety Charm Sticker{F7}"
+    },
+    {
+      "id": "00123D52",
+      "category": "item_name",
+      "translation": "{F8:31}Wild Beast-Taming Pellets{F7}"
+    },
+    {
+      "id": "00123D68",
+      "category": "item_name",
+      "translation": "{F8:31}Shrink Ray{F7}"
+    },
+    {
+      "id": "00123D78",
+      "category": "item_name",
+      "translation": "{F8:31}Pass Loop{F7}"
+    },
+    {
+      "id": "00123D88",
+      "category": "item_name",
+      "translation": "{F8:31}Air Tubes{F7}"
+    },
+    {
+      "id": "00123D98",
+      "category": "item_name",
+      "translation": "{F8:31}Time Kerchief{F7}"
+    },
+    {
+      "id": "00123DA8",
+      "category": "item_name",
+      "translation": "{F8:31}Deep Sea Cream{F7}"
+    },
+    {
+      "id": "00123DB8",
+      "category": "item_name",
+      "translation": "{F8:31}Adapting Ray{F7}"
+    },
+    {
+      "id": "00123DC8",
+      "category": "item_name",
+      "translation": "{F8:31}Jack Bean{F7}"
+    },
+    {
+      "id": "00123DD8",
+      "category": "item_name",
+      "translation": "{F8:31}Anything Controller{F7}"
+    },
+    {
+      "id": "00123DEC",
+      "category": "item_name",
+      "translation": "{F8:31}Hopter{F7}"
+    },
+    {
+      "id": "00123DFC",
+      "category": "item_name",
+      "translation": "{F8:31}Cloud Spray{F7}"
+    },
+    {
+      "id": "00123E0C",
+      "category": "item_name",
+      "translation": "{F8:31}Anywhere Door{F7}"
+    },
+    {
+      "id": "00123E1C",
+      "category": "item_name",
+      "translation": "{F8:31}Underwater Buggy{F7}"
+    },
+    {
+      "id": "00123E2C",
+      "category": "item_name",
+      "translation": "{F8:31}Time TV{F7}"
+    },
+    {
+      "id": "00123E3C",
+      "category": "item_name",
+      "translation": "{F8:31}Instant Wardrobe Cam{F7}"
+    },
+    {
+      "id": "00123E4C",
+      "category": "item_name",
+      "translation": "{F8:31}Camping Capsule{F7}"
+    },
+    {
+      "id": "00123E60",
+      "category": "item_name",
+      "translation": "{F8:31}Translation Gummy{F7}"
+    },
+    {
+      "id": "00123E74",
+      "category": "item_name",
+      "translation": "{F8:31}What-If Phone Booth{F7}"
+    },
+    {
+      "id": "00123E84",
+      "category": "item_name",
+      "translation": "{F8:31}Mobile Fishing Pond{F7}"
+    },
+    {
+      "id": "00123E94",
+      "category": "item_name",
+      "translation": "{F8:31}Echo Mountain{F7}"
+    },
+    {
+      "id": "00123EA4",
+      "category": "item_name",
+      "translation": "{F8:31}Cordless Can Phone{F7}"
+    },
+    {
+      "id": "00123EB8",
+      "category": "item_name",
+      "translation": "{F8:31}Picture Book Entry Shoes{F7}"
+    },
+    {
+      "id": "00123ECC",
+      "category": "item_name",
+      "translation": "{F8:31}Mini-Dora{F7}"
+    },
+    {
+      "id": "00123EDC",
+      "category": "item_name",
+      "translation": "{F8:31}Sonic Solidifier{F7}"
+    },
+    {
+      "id": "00123EEA",
+      "category": "item_name",
+      "translation": "{F8:31}Earth Spirit Stone Piece{F7}"
+    },
+    {
+      "id": "00123EFE",
+      "category": "item_name",
+      "translation": "{F8:31}Sea Spirit Stone Piece{F7}"
+    },
+    {
+      "id": "00123F16",
+      "category": "item_name",
+      "translation": "{F8:31}Sky Spirit Stone Piece{F7}"
+    },
+    {
+      "id": "00123F30",
+      "category": "item_name",
+      "translation": "{F8:31}Earth Key{F7}"
+    },
+    {
+      "id": "00123F40",
+      "category": "item_name",
+      "translation": "{F8:31}Sea Key{F7}"
+    },
+    {
+      "id": "00123F50",
+      "category": "item_name",
+      "translation": "{F8:31}Sky Key{F7}"
+    },
+    {
+      "id": "00123F64",
+      "category": "item_notification",
+      "translation": " recovered!"
+    },
+    {
+      "id": "00123F6E",
+      "category": "item_notification",
+      "translation": " obtained!"
+    },
+    {
+      "id": "00123F81",
+      "category": "item_notification",
+      "translation": " found!"
+    },
+    {
+      "id": "00123F94",
+      "category": "item_notification",
+      "translation": " Use it as a {F8:32}weapon{F7}!"
+    },
+    {
+      "id": "00123FA2",
+      "category": "item_notification",
+      "translation": " That's your second weapon!"
+    },
+    {
+      "id": "00123FAE",
+      "category": "item_notification",
+      "translation": " That's your third weapon!"
+    },
+    {
+      "id": "00123FBA",
+      "category": "item_notification",
+      "translation": " Just one weapon left to find!"
+    },
+    {
+      "id": "00123FCB",
+      "category": "item_notification",
+      "translation": " You have all the weapons!"
+    },
+    {
+      "id": "00123FDF",
+      "category": "item_notification",
+      "translation": " in your collection!"
+    },
+    {
+      "id": "0022B2F0",
+      "category": "system_message",
+      "translation": "{F8:31}Save{F7} your progress?"
+    },
+    {
+      "id": "0022B308",
+      "category": "system_message",
+      "translation": "{F8:31}Saving{F7}…"
+    },
+    {
+      "id": "0022B318",
+      "category": "system_message",
+      "translation": "{F8:31}Save{F7} {F8:32}complete{F7}."
+    },
+    {
+      "id": "0022B330",
+      "category": "system_message",
+      "translation": "I'm {F8:32}Doraemon{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B344",
+      "category": "system_message",
+      "translation": "I'm {F8:32}Nobita{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B354",
+      "category": "system_message",
+      "translation": "I'm {F8:32}Shizuka{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B368",
+      "category": "system_message",
+      "translation": "I'm {F8:32}Suneo{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B37C",
+      "category": "system_message",
+      "translation": "I'm {F8:32}Gian{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B390",
+      "category": "system_message",
+      "translation": "Nice to meet you!\nI'm {F8:32}Corona{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "003DF6E0",
+      "category": "menu",
+      "translation": "Choose a {F8:32}game file{F7}"
+    },
+    {
+      "id": "003DF6F8",
+      "category": "menu",
+      "translation": "Start the {F8:32}game{F7}?"
+    },
+    {
+      "id": "003DF710",
+      "category": "menu",
+      "translation": "Choose a {F8:32}file{F7} to {F8:31}delete{F7}"
+    },
+    {
+      "id": "003DF72C",
+      "category": "menu",
+      "translation": "{F8:31}Delete{F7} this file?"
+    },
+    {
+      "id": "003DF740",
+      "category": "menu",
+      "translation": "Choose a {F8:32}file{F7} to {F8:31}copy{F7}"
+    },
+    {
+      "id": "003DF75C",
+      "category": "menu",
+      "translation": "Choose a {F8:32}file{F7} to {F8:31}copy{F7} to"
+    },
+    {
+      "id": "003DF778",
+      "category": "menu",
+      "translation": "{F8:31}Copy{F7} this file?"
+    },
+    {
+      "id": "003DF78C",
+      "category": "menu",
+      "translation": "{F8:31}Save{F7} the game?"
+    },
+    {
+      "id": "003DF7A0",
+      "category": "menu",
+      "translation": "{F8:31}Saving{F7}…"
+    },
+    {
+      "id": "003DF7B0",
+      "category": "menu",
+      "translation": "{F8:31}Save{F7} {F8:32}complete{F7}"
+    },
+    {
+      "id": "003DF7C8",
+      "category": "menu",
+      "translation": "{F8:31}Command Mode{F7}"
+    },
+    {
+      "id": "003DF7D8",
+      "category": "menu",
+      "translation": "{F8:31}Clearing{F7}…"
+    },
+    {
+      "id": "003DF7E4",
+      "category": "menu",
+      "translation": "{F8:31}Clearing{F7} complete"
+    }
+  ]
+}

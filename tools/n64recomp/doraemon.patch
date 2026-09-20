@@ -1,0 +1,175 @@
+diff --git a/src/cgenerator.cpp b/src/cgenerator.cpp
+index 94f85c50c7375b5906b9ecfc9648c225ed7c88bf..f20e73ff36ce0169d1dbf37bfef4f86111a43ffb 100644
+--- a/src/cgenerator.cpp
++++ b/src/cgenerator.cpp
+@@ -567,9 +567,19 @@ void N64Recomp::CGenerator::process_binary_op(const BinaryOp& op, const Instruct
+     // TODO these thread locals probably don't actually help right now, so figure out a better way to prevent allocations.
+     thread_local std::string output{};
+     thread_local std::string expression{};
++
+     get_operand_string(op.output, UnaryOpType::None, ctx, output);
+     get_binary_expr_string(op.type, op.operands, ctx, output, expression);
+-    fmt::print(output_file, "{} = {};\n", output, expression);
++
++    // MIPS register $zero discards all writes.
++    // Keep evaluating the expression so memory reads and any other
++    // potential side effects are preserved.
++    if (output == "0") {
++        fmt::print(output_file, "(void)({});\n", expression);
++    }
++    else {
++        fmt::print(output_file, "{} = {};\n", output, expression);
++    }
+ }
+ 
+ void N64Recomp::CGenerator::process_unary_op(const UnaryOp& op, const InstructionContext& ctx) const {
+@@ -577,9 +587,17 @@ void N64Recomp::CGenerator::process_unary_op(const UnaryOp& op, const Instructio
+     // TODO these thread locals probably don't actually help right now, so figure out a better way to prevent allocations.
+     thread_local std::string output{};
+     thread_local std::string input{};
++
+     get_operand_string(op.output, UnaryOpType::None, ctx, output);
+     get_operand_string(op.input, op.operation, ctx, input);
+-    fmt::print(output_file, "{} = {};\n", output, input);
++
++    // MIPS register $zero discards all writes.
++    if (output == "0") {
++        fmt::print(output_file, "(void)({});\n", input);
++    }
++    else {
++        fmt::print(output_file, "{} = {};\n", output, input);
++    }
+ }
+ 
+ void N64Recomp::CGenerator::process_store_op(const StoreOp& op, const InstructionContext& ctx) const {
+diff --git a/src/main.cpp b/src/main.cpp
+index 669c4a16091626fb0c04877c64295e00d2738278..98d3c4c8de1924789ef896e2ee7c8816d5804dc1 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -450,9 +450,23 @@ int main(int argc, char** argv) {
+             context.functions_by_name[func.name] = func_index;
+         };
+ 
++	const std::unordered_set<std::string> force_recompile_funcs {
++	    "osPiReadIo",
++	    "rmonPrintf",
++	    "__osSiGetAccess",
++	    "__osSiRawStartDma",
++	    "__osPfsGetStatus",
++	    "__osSiRelAccess",
++	    "__osPopThread",
++	};
++
+         for (size_t func_index = 0; func_index < context.functions.size(); func_index++) {
+-            N64Recomp::Function& func = context.functions[func_index];
+-            if (N64Recomp::reimplemented_funcs.contains(func.name)) {
++	    N64Recomp::Function& func = context.functions[func_index];
++
++	    if (force_recompile_funcs.contains(func.name)) {
++		func.reimplemented = false;
++		func.ignored = false;
++	    } else if (N64Recomp::reimplemented_funcs.contains(func.name)) {
+                 rename_function(func_index, func.name + "_recomp");
+                 func.reimplemented = true;
+                 func.ignored = true;
+diff --git a/src/symbol_lists.cpp b/src/symbol_lists.cpp
+index 9c8f27d1aac03aca863972bc676baf71907237a8..0097f6d9d967d1291668aef0b162659ff6158aca 100644
+--- a/src/symbol_lists.cpp
++++ b/src/symbol_lists.cpp
+@@ -48,6 +48,7 @@ const std::unordered_set<std::string> N64Recomp::reimplemented_funcs {
+     "osMotorStart",
+     "osMotorStop",
+     // PFS functions
++    "osPfsInit",
+     "osPfsInitPak",
+     "osPfsFreeBlocks",
+     "osPfsAllocateFile",
+@@ -58,7 +59,6 @@ const std::unordered_set<std::string> N64Recomp::reimplemented_funcs {
+     // Parallel interface (cartridge, DMA, etc.) functions
+     "osCartRomInit",
+     "osCreatePiManager",
+-    "osPiReadIo",
+     "osPiStartDma",
+     "osEPiStartDma",
+     "osPiGetStatus",
+@@ -202,7 +202,6 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "__osContAddressCrc",
+     "__osContDataCrc",
+     "__osContGetInitData",
+-    "__osContRamRead",
+     "__osContRamWrite",
+     "__osContChannelReset",
+     // EEPROM functions
+@@ -220,12 +219,7 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "_MakeMotorData",
+     // Pack functions
+     "__osCheckId",
+-    "__osCheckPackId",
+-    "__osGetId",
+     "__osPfsRWInode",
+-    "__osRepairPackId",
+-    "__osPfsSelectBank",
+-    "__osCheckPackId",
+     "ramromMain",
+     // PFS functions
+     "osPfsAllocateFile",
+@@ -235,7 +229,6 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "osPfsFindFile",
+     "osPfsFreeBlocks",
+     "osPfsGetLabel",
+-    "osPfsInit",
+     "osPfsInitPak",
+     "osPfsIsPlug",
+     "osPfsNumFiles",
+@@ -243,14 +236,10 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "osPfsReadWriteFile",
+     "__osPackEepReadData",
+     "__osPackEepWriteData",
+-    "__osPackRamReadData",
+     "__osPackRamWriteData",
+     "__osPackReadData",
+     "__osPackRequestData",
+-    "__osPfsGetInitData",
+     "__osPfsGetOneChannelData",
+-    "__osPfsGetStatus",
+-    "__osPfsRequestData",
+     "__osPfsRequestOneChannel",
+     "__osPfsCreateAccessQueue",
+     "__osPfsCheckRamArea",
+@@ -258,12 +247,8 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     // Low level serial interface functions
+     "__osSiDeviceBusy",
+     "__osSiGetStatus",
+-    "__osSiRawStartDma",
+     "__osSiRawReadIo",
+     "__osSiRawWriteIo",
+-    "__osSiCreateAccessQueue",
+-    "__osSiGetAccess",
+-    "__osSiRelAccess",
+     // Parallel interface (cartridge, DMA, etc.) functions
+     "osCartRomInit",
+     "osLeoDiskInit",
+@@ -284,7 +269,6 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "osEPiRawReadIo",
+     "osEPiRawWriteIo",
+     "__osPiRawStartDma",
+-    "__osPiRawReadIo",
+     "__osPiRawWriteIo",
+     "__osEPiRawStartDma",
+     "__osEPiRawReadIo",
+@@ -365,7 +349,6 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "handle_CpU",
+     "__osEnqueueAndYield",
+     "__osEnqueueThread",
+-    "__osPopThread",
+     "__osNop",
+     "__osDispatchThread",
+     "__osCleanupThread",
+@@ -489,7 +472,6 @@ const std::unordered_set<std::string> N64Recomp::ignored_funcs {
+     "__rmonRunThread",
+     "rmonFindFaultedThreads",
+     "rmonMain",
+-    "rmonPrintf",
+     "rmonGetRcpRegister",
+     "kdebugserver",
+     "send",

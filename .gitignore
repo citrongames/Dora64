@@ -1,0 +1,49 @@
+# Local builds and generated CMake files
+/build/
+/build-debug/
+/build-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+compile_commands.json
+__pycache__/
+*.pyc
+
+# Copyrighted game images are never stored in this repository
+/*.z64
+/*.n64
+/*.v64
+
+# Generated locally from the copyrighted ROM (legacy paths kept only as local backups)
+/RecompiledFuncs/
+/src/aspMain.cpp
+/assets/localization/*_source.json
+
+# Runtime-generated user data
+/saves/
+/mods/
+/mod_config/
+/mods.json
+/mods.json.bak
+/doraemon_pc_settings.json
+
+# Debugging output and local scratch files
+/*.log
+/*.gdb
+*.orig
+*.bak
+core
+core.*
+
+# Locally copied executables and runtime libraries
+/*.exe
+/*.dll
+/*.so
+/*.dylib
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

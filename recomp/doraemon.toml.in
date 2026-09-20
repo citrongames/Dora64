@@ -1,0 +1,53 @@
+# Paths are filled by tools/generate_recompiled_base.py.
+# This produces the historical baseline, not the current PC-patched game.
+[input]
+entrypoint = 0x80000400
+symbols_file_path = @SYMBOLS@
+rom_file_path = @ROM@
+output_func_path = @FUNCTIONS@
+
+[patches]
+renamed = [
+    "getc",
+    "putc",
+]
+
+# The native recomp reaches the game thread before the first VI retrace. The
+# original console initialized these pointers from the controller thread first.
+hook = [
+    { func = "func_80001EF0", before_vram = 0x80001F38, text = '''
+{
+    const gpr controller_config = (gpr)(int32_t)0x800E6270u;
+    const gpr controller_pointers = (gpr)(int32_t)0x800F3940u;
+    const uint32_t controller_inputs = 0x800E6468u;
+    const uint32_t controller_map_offset = 5;
+    const uint32_t controller_input_stride = 0x110;
+    const uint32_t controller_buttons_offset = 0x48;
+    const uint8_t fallback_controller = 4;
+
+    for (uint32_t i = 0; i < 4; i++) {
+        uint8_t controller = MEM_BU(controller_map_offset + i, controller_config);
+        if (controller > fallback_controller) {
+            controller = fallback_controller;
+        }
+        MEM_W(i * 4, controller_pointers) = (int32_t)(controller_inputs +
+            controller * controller_input_stride + controller_buttons_offset);
+    }
+}
+''' },
+    # Dialogue glyphs are copied by CPU code directly into the active 16-bit
+    # framebuffer. Notify RT64 after each completed glyph copy so the CPU-authored
+    # pixels are imported without disturbing the normal VI/display-list order.
+    { func = "func_800120F8", before_vram = 0x800121D8, text = '''
+{
+    extern void ultramodern_notify_cpu_framebuffer_write(uint8_t *rdram);
+    ultramodern_notify_cpu_framebuffer_write(rdram);
+}
+''' },
+    { func = "func_800121E0", before_vram = 0x800123AC, text = '''
+{
+    extern void ultramodern_notify_cpu_framebuffer_write(uint8_t *rdram);
+    ultramodern_notify_cpu_framebuffer_write(rdram);
+}
+''' },
+]

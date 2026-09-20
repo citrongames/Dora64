@@ -1,0 +1,11 @@
+{
+  "rom": {
+    "size": 8388608,
+    "sha256": "3a8c50fd245158cfd37bf6fffd496abd7c68b185e4dc2d901c7cc492659d38cc"
+  },
+  "functions": {
+    "count": 1092,
+    "sha256": "46f528248ead7d98da5fe9cbf70b4eb3e5e9f37efbed2d42fd4d877bc19510c3"
+  },
+  "normalized_rsp_sha256": "1a5901bd6971732ad92f654214a512638d0f010fa55352da84d7cabcd182d909"
+}

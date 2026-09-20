@@ -1,0 +1,5 @@
+# Keep patch hashes and exact context stable on Windows.
+*.patch text eol=lf whitespace=-blank-at-eol
+
+# Preserve the symbol export bytes used by generation receipts.
+recomp/doraemon.syms.toml whitespace=-blank-at-eof

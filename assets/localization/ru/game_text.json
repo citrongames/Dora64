@@ -1,0 +1,532 @@
+{
+  "format_version": 1,
+  "language": "ru",
+  "notes": "Other game text systems. Formatting controls use {F7} and {F8:XX}; Japanese source stays in the generated game_text_source.json.",
+  "records": [
+    {
+      "id": "000ACBC0",
+      "category": "system_message",
+      "translation": "{F8:32}Контроллер{F7} не {F8:31}подключён{F7}.\n{F8:31}Подключите{F7} его к {F8:32}разъёму{F7},\nзатем снова {F8:32}включите питание{F7}."
+    },
+    {
+      "id": "000ACC08",
+      "category": "system_message",
+      "translation": "{F8:32}EEPROM{F7} отсутствует или {F8:31}повреждена{F7}!"
+    },
+    {
+      "id": "001236E1",
+      "category": "item_description",
+      "translation": "Надень на руку и скажи: «Бах!» -\nвылетит сгусток сжатого воздуха."
+    },
+    {
+      "id": "00123703",
+      "category": "item_description",
+      "translation": "Вместо пули выстреливает сгустком\nвоздуха, который поражает цель."
+    },
+    {
+      "id": "0012372D",
+      "category": "item_description",
+      "translation": "Любая песня или история, услышанная\nчерез этот микрофон, растрогает\nкого угодно."
+    },
+    {
+      "id": "0012375F",
+      "category": "item_description",
+      "translation": "В этих перчатках можно победить\nв рукопашной даже самого\nсильного противника."
+    },
+    {
+      "id": "00123785",
+      "category": "item_description",
+      "translation": "При броске создаёт оглушительный\nзвук и яркую вспышку, пугая врага."
+    },
+    {
+      "id": "001237AB",
+      "category": "item_description",
+      "translation": "Надень его на голову -\nи сможешь свободно летать."
+    },
+    {
+      "id": "001237CA",
+      "category": "item_description",
+      "translation": "Если захочется сказать: «Стоп!»,\nнажми кнопку на этих часах -\nи время остановится."
+    },
+    {
+      "id": "001237FE",
+      "category": "item_description",
+      "translation": "Наклей её на живот, и она поможет\nизбежать любых несчастий."
+    },
+    {
+      "id": "0012382B",
+      "category": "item_description",
+      "translation": "Открой дверь - и попадёшь куда\nугодно, кроме мест, которых нет\nна её карте."
+    },
+    {
+      "id": "0012385C",
+      "category": "item_description",
+      "translation": "Приложи этот обруч к любой стене,\nчтобы пройти сквозь неё."
+    },
+    {
+      "id": "0012387E",
+      "category": "item_description",
+      "translation": "Выпей его и крикни погромче -\nтвой голос превратится в твёрдые\nснаряды."
+    },
+    {
+      "id": "001238A0",
+      "category": "item_description",
+      "translation": "Всё, что осветит этот фонарь,\nуменьшится."
+    },
+    {
+      "id": "001238BF",
+      "category": "item_description",
+      "translation": "Любое животное, съев это лакомство,\nстанет послушным."
+    },
+    {
+      "id": "001238E2",
+      "category": "item_description",
+      "translation": "Вставь эти трубки в нос,\nчтобы дышать под водой."
+    },
+    {
+      "id": "00123908",
+      "category": "item_description",
+      "translation": "Перемещает время накрытого предмета\nв будущее или обратно в прошлое."
+    },
+    {
+      "id": "0012392D",
+      "category": "item_description",
+      "translation": "Намажься кремом, чтобы выдержать\nдавление воды на глубине\nдесяти километров."
+    },
+    {
+      "id": "0012395F",
+      "category": "item_description",
+      "translation": "Посади этот боб в землю,\nи он мгновенно вырастет\nв огромное бобовое дерево."
+    },
+    {
+      "id": "00123985",
+      "category": "item_description",
+      "translation": "Свет этого фонаря позволяет телу\nприспособиться к любым условиям."
+    },
+    {
+      "id": "001239AF",
+      "category": "item_description",
+      "translation": "Прикрепи этот штурвал к чему угодно,\nчтобы свободно этим управлять."
+    },
+    {
+      "id": "001239DF",
+      "category": "item_description",
+      "translation": "Распылённый на облако газ делает\nего твёрдым, чтобы сверху можно\nбыло стоять."
+    },
+    {
+      "id": "00123A09",
+      "category": "item_description",
+      "translation": "Эта жидкость на время улучшает\nсвойства любого предмета."
+    },
+    {
+      "id": "00123A32",
+      "category": "item_description",
+      "translation": "Телевизор, на котором можно увидеть\nпрошлое или будущее."
+    },
+    {
+      "id": "00123A4B",
+      "category": "item_description",
+      "translation": "Вставь фото одежды, наведи камеру\nна человека, нажми затвор -\nон переоденется."
+    },
+    {
+      "id": "00123A85",
+      "category": "item_description",
+      "translation": "Капсула размером с теннисный мяч.\nВоткни её в землю - вырастет\nпоходный домик."
+    },
+    {
+      "id": "00123ABA",
+      "category": "item_description",
+      "translation": "Съешь его, чтобы говорить\nс иностранцами и даже пришельцами."
+    },
+    {
+      "id": "00123AE4",
+      "category": "item_description",
+      "translation": "Скажи в трубку: «Что, если мир\nстанет таким-то...» - и он\nдействительно изменится."
+    },
+    {
+      "id": "00123B1E",
+      "category": "item_description",
+      "translation": "Показывает море или реку на\nчетырёхмерном экране. Можно\nрыбачить прямо в комнате."
+    },
+    {
+      "id": "00123B4A",
+      "category": "item_description",
+      "translation": "Возвращает эхо точно в заданное\nвремя."
+    },
+    {
+      "id": "00123B68",
+      "category": "item_description",
+      "translation": "Если у каждого есть такой телефон,\nможно говорить без соединяющей их\nнити."
+    },
+    {
+      "id": "00123B90",
+      "category": "item_description",
+      "translation": "Надень эти туфли, чтобы войти\nв мир истории из книжки."
+    },
+    {
+      "id": "00123BB4",
+      "category": "item_description",
+      "translation": "Мини-Дораэмон, как настоящий,\nдостаёт секретные гаджеты,\nно лишь миниатюрные."
+    },
+    {
+      "id": "00123BE3",
+      "category": "item_description",
+      "translation": "Багги свободно ездит под водой.\nС его встроенным компьютером\nможно разговаривать."
+    },
+    {
+      "id": "00123CA2",
+      "category": "item_name",
+      "translation": "{F8:34}Текущее время{F7}"
+    },
+    {
+      "id": "00123CAE",
+      "category": "item_name",
+      "translation": "{F8:32}Лучшее время{F7}"
+    },
+    {
+      "id": "00123CC4",
+      "category": "item_name",
+      "translation": "{F8:31}Воздушная пушка{F7}"
+    },
+    {
+      "id": "00123CD4",
+      "category": "item_name",
+      "translation": "{F8:31}Ударно-волновой пистолет{F7}"
+    },
+    {
+      "id": "00123CE8",
+      "category": "item_name",
+      "translation": "{F8:31}Светошумовая граната{F7}"
+    },
+    {
+      "id": "00123CFC",
+      "category": "item_name",
+      "translation": "{F8:31}Перчатки чемпиона{F7}"
+    },
+    {
+      "id": "00123D10",
+      "category": "item_name",
+      "translation": "{F8:31}Сердечный микрофон{F7}"
+    },
+    {
+      "id": "00123D20",
+      "category": "item_name",
+      "translation": "{F8:31}Жидкость-улучшитель{F7}"
+    },
+    {
+      "id": "00123D34",
+      "category": "item_name",
+      "translation": "{F8:31}Стоп-часы{F7}"
+    },
+    {
+      "id": "00123D44",
+      "category": "item_name",
+      "translation": "{F8:31}Наклейка-оберег{F7}"
+    },
+    {
+      "id": "00123D52",
+      "category": "item_name",
+      "translation": "{F8:31}Кибиданго Момотаро{F7}"
+    },
+    {
+      "id": "00123D68",
+      "category": "item_name",
+      "translation": "{F8:31}Уменьшающий фонарь{F7}"
+    },
+    {
+      "id": "00123D78",
+      "category": "item_name",
+      "translation": "{F8:31}Сквозной обруч{F7}"
+    },
+    {
+      "id": "00123D88",
+      "category": "item_name",
+      "translation": "{F8:31}Жаберные трубки{F7}"
+    },
+    {
+      "id": "00123D98",
+      "category": "item_name",
+      "translation": "{F8:31}Платок времени{F7}"
+    },
+    {
+      "id": "00123DA8",
+      "category": "item_name",
+      "translation": "{F8:31}Глубоководный крем{F7}"
+    },
+    {
+      "id": "00123DB8",
+      "category": "item_name",
+      "translation": "{F8:31}Лампа адаптации{F7}"
+    },
+    {
+      "id": "00123DC8",
+      "category": "item_name",
+      "translation": "{F8:31}Боб Джека{F7}"
+    },
+    {
+      "id": "00123DD8",
+      "category": "item_name",
+      "translation": "{F8:31}Универсальный штурвал{F7}"
+    },
+    {
+      "id": "00123DEC",
+      "category": "item_name",
+      "translation": "{F8:31}Такекоптер{F7}"
+    },
+    {
+      "id": "00123DFC",
+      "category": "item_name",
+      "translation": "{F8:31}Отвердитель облаков{F7}"
+    },
+    {
+      "id": "00123E0C",
+      "category": "item_name",
+      "translation": "{F8:31}Дверь куда угодно{F7}"
+    },
+    {
+      "id": "00123E1C",
+      "category": "item_name",
+      "translation": "{F8:31}Подводный багги{F7}"
+    },
+    {
+      "id": "00123E2C",
+      "category": "item_name",
+      "translation": "{F8:31}Телевизор времени{F7}"
+    },
+    {
+      "id": "00123E3C",
+      "category": "item_name",
+      "translation": "{F8:31}Камера-переодеватель{F7}"
+    },
+    {
+      "id": "00123E4C",
+      "category": "item_name",
+      "translation": "{F8:31}Походная капсула{F7}"
+    },
+    {
+      "id": "00123E60",
+      "category": "item_name",
+      "translation": "{F8:31}Переводной конняку{F7}"
+    },
+    {
+      "id": "00123E74",
+      "category": "item_name",
+      "translation": "{F8:31}Телефон «Что, если?»{F7}"
+    },
+    {
+      "id": "00123E84",
+      "category": "item_name",
+      "translation": "{F8:31}Комнатная рыбалка{F7}"
+    },
+    {
+      "id": "00123E94",
+      "category": "item_name",
+      "translation": "{F8:31}Эхо-гора{F7}"
+    },
+    {
+      "id": "00123EA4",
+      "category": "item_name",
+      "translation": "{F8:31}Беспроводной телефон{F7}"
+    },
+    {
+      "id": "00123EB8",
+      "category": "item_name",
+      "translation": "{F8:31}Туфли для входа в книгу{F7}"
+    },
+    {
+      "id": "00123ECC",
+      "category": "item_name",
+      "translation": "{F8:31}Мини-Дораэмон{F7}"
+    },
+    {
+      "id": "00123EDC",
+      "category": "item_name",
+      "translation": "{F8:31}Затвердитель голоса{F7}"
+    },
+    {
+      "id": "00123EEA",
+      "category": "item_name",
+      "translation": "{F8:31}Осколок Камня духов Земли{F7}"
+    },
+    {
+      "id": "00123EFE",
+      "category": "item_name",
+      "translation": "{F8:31}Осколок Камня духов Моря{F7}"
+    },
+    {
+      "id": "00123F16",
+      "category": "item_name",
+      "translation": "{F8:31}Осколок Камня духов Неба{F7}"
+    },
+    {
+      "id": "00123F30",
+      "category": "item_name",
+      "translation": "{F8:31}Ключ Земли{F7}"
+    },
+    {
+      "id": "00123F40",
+      "category": "item_name",
+      "translation": "{F8:31}Ключ Моря{F7}"
+    },
+    {
+      "id": "00123F50",
+      "category": "item_name",
+      "translation": "{F8:31}Ключ Неба{F7}"
+    },
+    {
+      "id": "00123F64",
+      "category": "item_notification",
+      "translation": " - возвращено!!"
+    },
+    {
+      "id": "00123F6E",
+      "category": "item_notification",
+      "translation": " - получено!!"
+    },
+    {
+      "id": "00123F81",
+      "category": "item_notification",
+      "translation": " - найдено!!"
+    },
+    {
+      "id": "00123F94",
+      "category": "item_notification",
+      "translation": " Можно применить как {F8:32}оружие{F7}!"
+    },
+    {
+      "id": "00123FA2",
+      "category": "item_notification",
+      "translation": " Это второе оружие!"
+    },
+    {
+      "id": "00123FAE",
+      "category": "item_notification",
+      "translation": " Это третье оружие!"
+    },
+    {
+      "id": "00123FBA",
+      "category": "item_notification",
+      "translation": " Осталось найти одно оружие!"
+    },
+    {
+      "id": "00123FCB",
+      "category": "item_notification",
+      "translation": " Всё оружие собрано!"
+    },
+    {
+      "id": "00123FDF",
+      "category": "item_notification",
+      "translation": "-й секретный гаджет!!"
+    },
+    {
+      "id": "0022B2F0",
+      "category": "system_message",
+      "translation": "{F8:31}Сохранить{F7} данные?"
+    },
+    {
+      "id": "0022B308",
+      "category": "system_message",
+      "translation": "Идёт {F8:31}сохранение{F7}."
+    },
+    {
+      "id": "0022B318",
+      "category": "system_message",
+      "translation": "{F8:31}Сохранение{F7} {F8:32}завершено{F7}."
+    },
+    {
+      "id": "0022B330",
+      "category": "system_message",
+      "translation": "Я {F8:32}Дораэмон{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B344",
+      "category": "system_message",
+      "translation": "Я {F8:32}Нобита{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B354",
+      "category": "system_message",
+      "translation": "Я {F8:32}Сидзука{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B368",
+      "category": "system_message",
+      "translation": "Я {F8:32}Сунэо{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B37C",
+      "category": "system_message",
+      "translation": "Я {F8:32}Джайан{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "0022B390",
+      "category": "system_message",
+      "translation": "Рада знакомству!\nЯ {F8:32}Корона{F7}{F8:34}!{F7}"
+    },
+    {
+      "id": "003DF6E0",
+      "category": "menu",
+      "translation": "Выберите {F8:32}файл игры{F7}"
+    },
+    {
+      "id": "003DF6F8",
+      "category": "menu",
+      "translation": "Начать {F8:32}игру{F7}?"
+    },
+    {
+      "id": "003DF710",
+      "category": "menu",
+      "translation": "Выберите {F8:32}файл{F7} для {F8:31}удаления{F7}"
+    },
+    {
+      "id": "003DF72C",
+      "category": "menu",
+      "translation": "{F8:31}Удалить{F7} файл?"
+    },
+    {
+      "id": "003DF740",
+      "category": "menu",
+      "translation": "Выберите {F8:32}файл{F7} для {F8:31}копирования{F7}"
+    },
+    {
+      "id": "003DF75C",
+      "category": "menu",
+      "translation": "Куда {F8:31}скопировать{F7} {F8:32}файл{F7}?"
+    },
+    {
+      "id": "003DF778",
+      "category": "menu",
+      "translation": "{F8:31}Скопировать{F7} файл?"
+    },
+    {
+      "id": "003DF78C",
+      "category": "menu",
+      "translation": "{F8:31}Сохранить{F7} игру?"
+    },
+    {
+      "id": "003DF7A0",
+      "category": "menu",
+      "translation": "Идёт {F8:31}сохранение{F7}"
+    },
+    {
+      "id": "003DF7B0",
+      "category": "menu",
+      "translation": "{F8:31}Сохранение{F7} {F8:32}завершено{F7}"
+    },
+    {
+      "id": "003DF7C8",
+      "category": "menu",
+      "translation": "{F8:31}Режим команд{F7}"
+    },
+    {
+      "id": "003DF7D8",
+      "category": "menu",
+      "translation": "Идёт {F8:31}очистка{F7}"
+    },
+    {
+      "id": "003DF7E4",
+      "category": "menu",
+      "translation": "{F8:31}Очистка{F7} завершена"
+    }
+  ]
+}

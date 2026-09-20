@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/N64Recomp/N64Recomp.git",
+  "commit": "ffb39cdad1da5de07eaaa48bd1db4a89a7986771",
+  "patch": "doraemon.patch",
+  "patch_sha256": "5a627b071f4bce76d6a2d5c117f0064c09af275dac5b78acc6d9c316ededfebc",
+  "files": {
+    "src/cgenerator.cpp": {
+      "original_sha256": "e64cfa0fb6f660c311a8e8f4bd2a5b67554abfd72cd83fa10f9e7ee62e484176",
+      "patched_sha256": "5a8f00b684ea53cfadd955c5d439d1d3ceb99ce36d6db4562fb7f2c9ad45e36e"
+    },
+    "src/main.cpp": {
+      "original_sha256": "3c0163afb8fda5a39e18d63b9bead04605135feacf598d37588c39fa42c9ace7",
+      "patched_sha256": "66a8afcd727c749ff010555bf0de53ca064f4d78cfb99d500fb2fd3be3615c97"
+    },
+    "src/symbol_lists.cpp": {
+      "original_sha256": "781deb7ec351c1864c72a02e720c236645518b3177ed9744e8bd5c5e0e496364",
+      "patched_sha256": "ba8fcba33b2d9d4413c77359b749a8422b6fbcf6738acf4c35f82c250a1d7cbb"
+    }
+  }
+}
