@@ -15,6 +15,22 @@ The project recompiles the original MIPS game code into native code and uses N64
 - `PC_ENHANCEMENTS_ROADMAP.md` — planned PC-specific improvements.
 - `MANUAL_REFERENCE.md` — notes extracted from the original Japanese manual.
 
+## Walkthroughs
+
+Compact routes for all 32 gadgets: entry requirements, items, repeat visits
+and essential boss hints for each stage.
+
+- [Русское прохождение](docs/walkthrough_ru.txt)
+- [English walkthrough](docs/walkthrough_en.txt)
+
+Names follow the project localizations. References:
+[CurtMac](https://gamefaqs.gamespot.com/n64/197143-doraemon-nobita-to-3-tsu-no-seireiseki/faqs/3518)
+(permits reuse with attribution),
+[Teary Eyes](https://gamefaqs.gamespot.com/n64/197143-doraemon-nobita-to-3-tsu-no-seireiseki/faqs/49978),
+[スブキエ](https://note.com/gio_subukie/n/n1ff3e652c140),
+[官兵衛](https://ameblo.jp/naganun/entry-12258446619.html), and the game's dialogue/manual.
+A fresh 32/32 playthrough following the written route remains pending.
+
 ## Required game data
 
 The original ROM is copyrighted and is intentionally not included. Place your
