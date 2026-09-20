@@ -196,9 +196,13 @@ start with Modern camera enabled. Existing
 camera key bindings (I/J/K/L by default) also rotate continuously. The same menu
 provides stick speed, mouse sensitivity and independent X/Y inversion; settings persist.
 Both inversion switches are off by default and affect mouse and stick rotation.
-Zoom with the mouse wheel, Page Up / Page Down, or hold Camera mode (RB / E
-by default) while moving the right stick vertically. Dedicated zoom bindings
-can be changed in Controls. The chosen distance survives dialogue close-ups and
+Zoom with D-pad up (closer) / down (farther), the mouse wheel, Page Up / Page
+Down, or hold Camera mode (RB / E by default) while moving the right stick
+vertically. D-pad zoom follows the D-pad up/down bindings in Controls, including
+their keyboard bindings (Up/Down arrows by default). Dedicated zoom bindings
+also remain available. D-pad zoom is active only while the modern camera has
+manual control, preserving dialogue, boss and cutscene locks.
+The chosen distance survives dialogue close-ups and
 scene changes during the current run.
 Vertical orbit is limited to 0–80 degrees: the camera can reach a horizontal
 view of its focus, but cannot orbit below it.

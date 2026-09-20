@@ -59,8 +59,8 @@ namespace {
         "Pause / Character menu (Start)",
         "Left trigger (N64 L)",
         "Camera mode (N64 R)",
-        "D-pad up",
-        "D-pad down",
+        "D-pad up / Modern zoom in",
+        "D-pad down / Modern zoom out",
         "D-pad left",
         "D-pad right",
         "Camera up / Zoom in",
@@ -567,7 +567,9 @@ void doraemon::input::update() {
     if (modernCamera) {
         const float vertical = value(Action::CameraDown) - value(Action::CameraUp);
         const bool zoomModifier = active(Action::CameraMode);
-        const float zoom = value(Action::CameraZoomOut) - value(Action::CameraZoomIn) +
+        // Use logical D-pad actions so both keyboard and gamepad remapping apply.
+        const float zoom = std::max(value(Action::CameraZoomOut), value(Action::DpadDown)) -
+            std::max(value(Action::CameraZoomIn), value(Action::DpadUp)) +
             (zoomModifier ? vertical : 0.0f);
         doraemon::camera::submit_input(value(Action::CameraRight) - value(Action::CameraLeft),
             zoomModifier ? 0.0f : vertical, float(mouseX), float(mouseY), zoom,
@@ -584,8 +586,8 @@ void doraemon::input::update() {
     if (active(Action::Pause)) buttons |= N64_START;
     if (active(Action::LeftTrigger)) buttons |= N64_L;
     if (!modernCamera && active(Action::CameraMode)) buttons |= N64_R;
-    if (active(Action::DpadUp)) buttons |= N64_DPAD_UP;
-    if (active(Action::DpadDown)) buttons |= N64_DPAD_DOWN;
+    if (!modernCamera && active(Action::DpadUp)) buttons |= N64_DPAD_UP;
+    if (!modernCamera && active(Action::DpadDown)) buttons |= N64_DPAD_DOWN;
     if (active(Action::DpadLeft)) buttons |= N64_DPAD_LEFT;
     if (active(Action::DpadRight)) buttons |= N64_DPAD_RIGHT;
     if (!modernCamera && active(Action::CameraUp)) buttons |= N64_C_UP;

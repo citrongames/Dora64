@@ -701,7 +701,7 @@ namespace {
             cameraChanged |= ImGui::SliderFloat("Camera mouse sensitivity", &settings.cameraMouseSensitivity, 0.02f, 1.0f, "%.2f deg/pixel");
             cameraChanged |= ImGui::Checkbox("Invert camera X", &settings.cameraInvertX);
             cameraChanged |= ImGui::Checkbox("Invert camera Y", &settings.cameraInvertY);
-            ImGui::TextWrapped("Zoom: mouse wheel, Page Up / Page Down, or hold Camera mode (RB / E by default) and move the camera stick vertically.");
+            ImGui::TextWrapped("Zoom: D-pad up / down (your configured bindings), mouse wheel, Page Up / Page Down, or hold Camera mode (RB / E by default) and move the camera stick vertically.");
             ImGui::TextDisabled("Esc opens this menu and releases the mouse.");
         }
         if (cameraChanged) {
