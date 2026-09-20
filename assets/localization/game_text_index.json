@@ -1,0 +1,530 @@
+{
+  "format_version": 1,
+  "records": [
+    {
+      "id": "000ACBC0",
+      "byte_length": 71,
+      "category": "system_message"
+    },
+    {
+      "id": "000ACC08",
+      "byte_length": 30,
+      "category": "system_message"
+    },
+    {
+      "id": "001236E1",
+      "byte_length": 34,
+      "category": "item_description"
+    },
+    {
+      "id": "00123703",
+      "byte_length": 42,
+      "category": "item_description"
+    },
+    {
+      "id": "0012372D",
+      "byte_length": 50,
+      "category": "item_description"
+    },
+    {
+      "id": "0012375F",
+      "byte_length": 38,
+      "category": "item_description"
+    },
+    {
+      "id": "00123785",
+      "byte_length": 38,
+      "category": "item_description"
+    },
+    {
+      "id": "001237AB",
+      "byte_length": 31,
+      "category": "item_description"
+    },
+    {
+      "id": "001237CA",
+      "byte_length": 52,
+      "category": "item_description"
+    },
+    {
+      "id": "001237FE",
+      "byte_length": 45,
+      "category": "item_description"
+    },
+    {
+      "id": "0012382B",
+      "byte_length": 49,
+      "category": "item_description"
+    },
+    {
+      "id": "0012385C",
+      "byte_length": 34,
+      "category": "item_description"
+    },
+    {
+      "id": "0012387E",
+      "byte_length": 34,
+      "category": "item_description"
+    },
+    {
+      "id": "001238A0",
+      "byte_length": 31,
+      "category": "item_description"
+    },
+    {
+      "id": "001238BF",
+      "byte_length": 35,
+      "category": "item_description"
+    },
+    {
+      "id": "001238E2",
+      "byte_length": 38,
+      "category": "item_description"
+    },
+    {
+      "id": "00123908",
+      "byte_length": 37,
+      "category": "item_description"
+    },
+    {
+      "id": "0012392D",
+      "byte_length": 50,
+      "category": "item_description"
+    },
+    {
+      "id": "0012395F",
+      "byte_length": 38,
+      "category": "item_description"
+    },
+    {
+      "id": "00123985",
+      "byte_length": 42,
+      "category": "item_description"
+    },
+    {
+      "id": "001239AF",
+      "byte_length": 48,
+      "category": "item_description"
+    },
+    {
+      "id": "001239DF",
+      "byte_length": 42,
+      "category": "item_description"
+    },
+    {
+      "id": "00123A09",
+      "byte_length": 41,
+      "category": "item_description"
+    },
+    {
+      "id": "00123A32",
+      "byte_length": 25,
+      "category": "item_description"
+    },
+    {
+      "id": "00123A4B",
+      "byte_length": 58,
+      "category": "item_description"
+    },
+    {
+      "id": "00123A85",
+      "byte_length": 53,
+      "category": "item_description"
+    },
+    {
+      "id": "00123ABA",
+      "byte_length": 42,
+      "category": "item_description"
+    },
+    {
+      "id": "00123AE4",
+      "byte_length": 58,
+      "category": "item_description"
+    },
+    {
+      "id": "00123B1E",
+      "byte_length": 44,
+      "category": "item_description"
+    },
+    {
+      "id": "00123B4A",
+      "byte_length": 30,
+      "category": "item_description"
+    },
+    {
+      "id": "00123B68",
+      "byte_length": 40,
+      "category": "item_description"
+    },
+    {
+      "id": "00123B90",
+      "byte_length": 36,
+      "category": "item_description"
+    },
+    {
+      "id": "00123BB4",
+      "byte_length": 47,
+      "category": "item_description"
+    },
+    {
+      "id": "00123BE3",
+      "byte_length": 41,
+      "category": "item_description"
+    },
+    {
+      "id": "00123CA2",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123CAE",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123CC4",
+      "byte_length": 9,
+      "category": "item_name"
+    },
+    {
+      "id": "00123CD4",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123CE8",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123CFC",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D10",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D20",
+      "byte_length": 13,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D34",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D44",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D52",
+      "byte_length": 18,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D68",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D78",
+      "byte_length": 12,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D88",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123D98",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DA8",
+      "byte_length": 12,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DB8",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DC8",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DD8",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DEC",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123DFC",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E0C",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E1C",
+      "byte_length": 12,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E2C",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E3C",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E4C",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E60",
+      "byte_length": 13,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E74",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E84",
+      "byte_length": 12,
+      "category": "item_name"
+    },
+    {
+      "id": "00123E94",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123EA4",
+      "byte_length": 13,
+      "category": "item_name"
+    },
+    {
+      "id": "00123EB8",
+      "byte_length": 14,
+      "category": "item_name"
+    },
+    {
+      "id": "00123ECC",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123EDC",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123EEA",
+      "byte_length": 18,
+      "category": "item_name"
+    },
+    {
+      "id": "00123EFE",
+      "byte_length": 19,
+      "category": "item_name"
+    },
+    {
+      "id": "00123F16",
+      "byte_length": 19,
+      "category": "item_name"
+    },
+    {
+      "id": "00123F30",
+      "byte_length": 10,
+      "category": "item_name"
+    },
+    {
+      "id": "00123F40",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123F50",
+      "byte_length": 11,
+      "category": "item_name"
+    },
+    {
+      "id": "00123F64",
+      "byte_length": 10,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123F6E",
+      "byte_length": 19,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123F81",
+      "byte_length": 19,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123F94",
+      "byte_length": 14,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123FA2",
+      "byte_length": 12,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123FAE",
+      "byte_length": 12,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123FBA",
+      "byte_length": 17,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123FCB",
+      "byte_length": 20,
+      "category": "item_notification"
+    },
+    {
+      "id": "00123FDF",
+      "byte_length": 16,
+      "category": "item_notification"
+    },
+    {
+      "id": "0022B2F0",
+      "byte_length": 22,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B308",
+      "byte_length": 14,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B318",
+      "byte_length": 23,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B330",
+      "byte_length": 17,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B344",
+      "byte_length": 16,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B354",
+      "byte_length": 19,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B368",
+      "byte_length": 18,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B37C",
+      "byte_length": 19,
+      "category": "system_message"
+    },
+    {
+      "id": "0022B390",
+      "byte_length": 26,
+      "category": "system_message"
+    },
+    {
+      "id": "003DF6E0",
+      "byte_length": 21,
+      "category": "menu"
+    },
+    {
+      "id": "003DF6F8",
+      "byte_length": 21,
+      "category": "menu"
+    },
+    {
+      "id": "003DF710",
+      "byte_length": 27,
+      "category": "menu"
+    },
+    {
+      "id": "003DF72C",
+      "byte_length": 19,
+      "category": "menu"
+    },
+    {
+      "id": "003DF740",
+      "byte_length": 26,
+      "category": "menu"
+    },
+    {
+      "id": "003DF75C",
+      "byte_length": 27,
+      "category": "menu"
+    },
+    {
+      "id": "003DF778",
+      "byte_length": 18,
+      "category": "menu"
+    },
+    {
+      "id": "003DF78C",
+      "byte_length": 18,
+      "category": "menu"
+    },
+    {
+      "id": "003DF7A0",
+      "byte_length": 13,
+      "category": "menu"
+    },
+    {
+      "id": "003DF7B0",
+      "byte_length": 22,
+      "category": "menu"
+    },
+    {
+      "id": "003DF7C8",
+      "byte_length": 14,
+      "category": "menu"
+    },
+    {
+      "id": "003DF7D8",
+      "byte_length": 12,
+      "category": "menu"
+    },
+    {
+      "id": "003DF7E4",
+      "byte_length": 16,
+      "category": "menu"
+    }
+  ]
+}

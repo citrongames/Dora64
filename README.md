@@ -267,3 +267,5 @@ The installer uses all seven PNG sizes in the hicolor icon theme and writes
 `~/.local/share/applications`). Its app ID matches the SDL2 X11/Wayland window
 identity. Run the installer again after moving the build or changing the icons.
 The game's ROM and save/config discovery are unchanged.
+
+Release archive preparation and required assets: [docs/releases.md](docs/releases.md).

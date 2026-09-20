@@ -475,6 +475,23 @@ def translation_language_codes(localization_directory: Path) -> list[str]:
     return codes
 
 
+def write_runtime_index(path: Path, key: str, records: list[dict]) -> None:
+    """Ship only matching metadata; source bytes stay in the user's ROM."""
+    entries = []
+    for record in records:
+        entry = {
+            "id": record["id"],
+            "byte_length": len(bytes.fromhex(record["raw_hex"])),
+        }
+        if "category" in record:
+            entry["category"] = record["category"]
+        entries.append(entry)
+    path.write_text(
+        json.dumps({"format_version": 1, key: entries}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
@@ -537,6 +554,9 @@ def main() -> None:
         json.dumps(game_text_document, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
+
+    write_runtime_index(arguments.output / "dialogue_index.json", "messages", messages)
+    write_runtime_index(arguments.output / "game_text_index.json", "records", game_text)
 
     english_initial = {
         "002EE2F0": "「*****」",

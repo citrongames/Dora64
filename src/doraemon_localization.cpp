@@ -25,6 +25,7 @@
 
 #include "json/json.hpp"
 #include "librecomp/addresses.hpp"
+#include "librecomp/game.hpp"
 
 namespace {
     using doraemon::localization::LanguageInfo;
@@ -415,43 +416,30 @@ namespace {
         return true;
     }
 
-    bool parseRawHex(
-        std::string_view rawHex,
+    bool readSourceBytes(
+        const nlohmann::json& record,
         std::vector<std::uint8_t>& output,
         std::uint8_t expectedTerminator = kMessageEnd
     ) {
         output.clear();
-        std::size_t position = 0;
-        while (position < rawHex.size()) {
-            while (position < rawHex.size() && rawHex[position] == ' ') {
-                position++;
-            }
-            if (position == rawHex.size()) {
-                break;
-            }
-
-            const std::size_t end = rawHex.find(' ', position);
-            const std::string_view token = rawHex.substr(
-                position,
-                end == std::string_view::npos ? rawHex.size() - position : end - position
-            );
-            if (token.size() != 2) {
-                return false;
-            }
-
-            unsigned int value = 0;
-            const auto result = std::from_chars(
-                token.data(), token.data() + token.size(), value, 16
-            );
-            if (result.ec != std::errc{} || result.ptr != token.data() + token.size() ||
-                value > 0xFFU) {
-                return false;
-            }
-            output.push_back(static_cast<std::uint8_t>(value));
-            position = end == std::string_view::npos ? rawHex.size() : end + 1;
+        // The shipped index contains offsets and lengths, never original text.
+        // The runtime has already validated and loaded the user's Japanese ROM.
+        const auto rom = recomp::get_rom();
+        const std::string id = record.at("id").get<std::string>();
+        std::size_t offset = 0;
+        const auto result = std::from_chars(id.data(), id.data() + id.size(), offset, 16);
+        const auto& lengthJson = record.at("byte_length");
+        if (id.size() != 8 || result.ec != std::errc{} ||
+            result.ptr != id.data() + id.size() || !lengthJson.is_number_unsigned()) {
+            return false;
         }
-
-        return output.size() >= 2 && output.back() == expectedTerminator;
+        const std::size_t length = lengthJson.get<std::size_t>();
+        if (length < 2 || length > kMessageScratchSize || offset > rom.size() ||
+            length > rom.size() - offset || rom[offset + length - 1] != expectedTerminator) {
+            return false;
+        }
+        output.assign(rom.begin() + offset, rom.begin() + offset + length);
+        return true;
     }
 
     int hexNibble(char32_t character) {
@@ -684,10 +672,10 @@ namespace {
         nlohmann::json gameTranslationJson;
         nlohmann::json gameSourceJson;
         std::string error;
-        const std::filesystem::path sourcePath = localizationRoot / "dialogue_source.json";
+        const std::filesystem::path sourcePath = localizationRoot / "dialogue_index.json";
         const std::filesystem::path gameTranslationPath =
             localizationRoot / info.code / "game_text.json";
-        const std::filesystem::path gameSourcePath = localizationRoot / "game_text_source.json";
+        const std::filesystem::path gameSourcePath = localizationRoot / "game_text_index.json";
         if (!loadJson(translationPath, translationJson, error) ||
             !loadJson(sourcePath, sourceJson, error) ||
             !loadJson(gameTranslationPath, gameTranslationJson, error) ||
@@ -725,7 +713,7 @@ namespace {
             for (const nlohmann::json& message : sourceJson.at("messages")) {
                 const std::string id = message.at("id").get<std::string>();
                 std::vector<std::uint8_t> bytes;
-                if (!parseRawHex(message.at("raw_hex").get<std::string>(), bytes)) {
+                if (!readSourceBytes(message, bytes)) {
                     std::fprintf(stderr, "Invalid source bytes for dialogue %s\n", id.c_str());
                     continue;
                 }
@@ -787,8 +775,8 @@ namespace {
                 const std::uint8_t terminator = source.category == "item_name"
                     ? kNewLine
                     : kMessageEnd;
-                if (!parseRawHex(
-                        record.at("raw_hex").get<std::string>(),
+                if (!readSourceBytes(
+                        record,
                         source.bytes,
                         terminator
                     )) {
