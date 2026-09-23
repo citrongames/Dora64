@@ -6,10 +6,12 @@
 
 #if defined(__ANDROID__)
 #include <SDL.h>
-#include <SDL_syswm.h>
+#include <android/log.h>
+#include <unistd.h>
 #endif
 
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -30,10 +32,31 @@
 #include "ultramodern/config.hpp"
 
 namespace {
+#if defined(__ANDROID__)
+    void android_trace(const char* message, bool reset = false) {
+        __android_log_print(ANDROID_LOG_INFO, "Dora64Native", "%s", message);
+        const auto path = recomp::get_config_path() / "android-trace.log";
+        if (FILE* file = std::fopen(path.c_str(), reset ? "w" : "a")) {
+            std::fprintf(file, "%s\n", message);
+            std::fflush(file);
+            fsync(fileno(file));
+            std::fclose(file);
+        }
+    }
+#endif
+
     RT64::RenderHookDraw* previousOutputDraw = nullptr;
     void count_output_frame(plume::RenderCommandList* list, plume::RenderFramebuffer* framebuffer) {
+#if defined(__ANDROID__)
+        static std::atomic_bool first_output_before{false};
+        if (!first_output_before.exchange(true)) android_trace("first output draw begin");
+#endif
         if (previousOutputDraw) previousOutputDraw(list, framebuffer);
         doraemon::system_overlay::record_output_frame();
+#if defined(__ANDROID__)
+        static std::atomic_bool first_output_after{false};
+        if (!first_output_after.exchange(true)) android_trace("first output draw complete");
+#endif
     }
 
     void model_pool_matrix(RT64::State* state, RT64::DisplayList** dl) {
@@ -229,18 +252,14 @@ doraemon::renderer::RT64Context::RT64Context(
     ultramodern::renderer::WindowHandle window_handle,
     bool developer_mode)
 {
+#if defined(__ANDROID__)
+    android_trace("RT64 context begin", true);
+#endif
     RT64::Application::Core core{};
 #if defined(_WIN32)
     core.window = window_handle.window;
 #elif defined(__ANDROID__)
-    SDL_SysWMinfo window_info{};
-    SDL_VERSION(&window_info.version);
-    if (SDL_GetWindowWMInfo(window_handle, &window_info) != SDL_TRUE) {
-        std::fprintf(stderr, "SDL_GetWindowWMInfo failed: %s\n", SDL_GetError());
-        setup_result = ultramodern::renderer::SetupResult::GraphicsDeviceNotFound;
-        return;
-    }
-    core.window = window_info.info.android.window;
+    core.window = window_handle;
 #else
     core.window = window_handle;
 #endif
@@ -286,7 +305,13 @@ doraemon::renderer::RT64Context::RT64Context(
 #endif
     app_config.updateOverlayInput = doraemon::system_overlay::update_input;
     app_config.drawOverlay = doraemon::system_overlay::draw;
+#if defined(__ANDROID__)
+    android_trace("RT64 application create begin");
+#endif
     app = std::make_unique<RT64::Application>(core, app_config);
+#if defined(__ANDROID__)
+    android_trace("RT64 application created");
+#endif
 
     const auto& config = ultramodern::renderer::get_graphics_config();
     apply_user_config(*app, config);
@@ -326,7 +351,13 @@ doraemon::renderer::RT64Context::RT64Context(
         RT64::SetRenderHooks(RT64::GetRenderHookInit(), &count_output_frame,
             RT64::GetRenderHookDeinit());
     }
+#if defined(__ANDROID__)
+    android_trace("RT64 setup begin");
+#endif
     setup_result = map_setup_result(app->setup(0));
+#if defined(__ANDROID__)
+    android_trace("RT64 setup returned");
+#endif
     chosen_api = map_graphics_api(app->chosenGraphicsAPI);
     if (setup_result != ultramodern::renderer::SetupResult::Success) {
         std::fprintf(stderr, "RT64 setup failed (%d)\n", static_cast<int>(setup_result));
@@ -390,6 +421,10 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     if (!app) {
         return;
     }
+#if defined(__ANDROID__)
+    static std::atomic_bool first_display_list_before{false};
+    if (!first_display_list_before.exchange(true)) android_trace("first display list begin");
+#endif
     {
         const auto& shared = app->sharedQueueResources;
         std::scoped_lock lock(shared->configurationMutex);
@@ -419,6 +454,10 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
         task->t.data_ptr & 0x3FFFFFF,
         0,
         true);
+#if defined(__ANDROID__)
+    static std::atomic_bool first_display_list_after{false};
+    if (!first_display_list_after.exchange(true)) android_trace("first display list complete");
+#endif
     doraemon::lighting::end_task();
 }
 
@@ -428,6 +467,10 @@ void doraemon::renderer::RT64Context::send_dummy_workload(uint32_t) {
 
 void doraemon::renderer::RT64Context::update_screen(bool cpu_changes_only) {
     if (app) {
+#if defined(__ANDROID__)
+        static std::atomic_bool first_screen_before{false};
+        if (!first_screen_before.exchange(true)) android_trace("first screen update begin");
+#endif
         sync_localized_textures();
         if (cpu_changes_only) {
             app->updateScreenIfFramebufferChanged();
@@ -435,6 +478,10 @@ void doraemon::renderer::RT64Context::update_screen(bool cpu_changes_only) {
         else {
             app->updateScreen();
         }
+#if defined(__ANDROID__)
+        static std::atomic_bool first_screen_after{false};
+        if (!first_screen_after.exchange(true)) android_trace("first screen update complete");
+#endif
     }
 }
 

@@ -298,6 +298,12 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 #if defined(__ANDROID__)
+    const auto native_log = executable_dir / "native-stderr.log";
+    if (std::freopen(native_log.c_str(), "w", stderr) != nullptr) {
+        std::setvbuf(stderr, nullptr, _IONBF, 0);
+    }
+#endif
+#if defined(__ANDROID__)
     game.rom_path = wait_for_android_rom(executable_dir, game.rom_hash);
 #else
     game.rom_path = find_rom_path(executable_dir, game.rom_hash);

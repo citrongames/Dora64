@@ -42,3 +42,16 @@ This build has only been compiled and inspected. It has not been installed or
 launched by the porting work. Please test the APK on your phones and tablets,
 starting with an ARM64 Vulkan device and a connected gamepad. Report the
 device model, Android version, chipset, and any launch error or logcat output.
+
+The SDL Vulkan surface setup was checked against the
+[Zelda64Recomp Android fork](https://github.com/linkzenic/Zelda64Recomp-Android).
+Dora64 keeps its own patched RT64 and N64ModernRuntime forks.
+
+For an Android debug build, RT64 startup milestones are written to
+`files/android-trace.log`, and native error output to `files/native-stderr.log`.
+After a device hang and reboot, retrieve them with Windows ADB:
+
+```cmd
+adb exec-out run-as com.n64recomp.dora64 cat files/android-trace.log > dora64-trace.txt
+adb exec-out run-as com.n64recomp.dora64 cat files/native-stderr.log > dora64-stderr.txt
+```
