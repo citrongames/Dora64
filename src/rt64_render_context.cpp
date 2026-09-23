@@ -278,6 +278,12 @@ doraemon::renderer::RT64Context::RT64Context(
     RT64::ApplicationConfiguration app_config{};
     app_config.appId = "dora64";
     app_config.useConfigurationFile = false;
+#if defined(__ANDROID__)
+    // Android's HOME may point at /data, which an app cannot write to.
+    // Keep RT64's log and cache under Dora64's private storage instead.
+    app_config.detectDataPath = false;
+    app_config.dataPath = recomp::get_config_path() / "rt64";
+#endif
     app_config.updateOverlayInput = doraemon::system_overlay::update_input;
     app_config.drawOverlay = doraemon::system_overlay::draw;
     app = std::make_unique<RT64::Application>(core, app_config);
