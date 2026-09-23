@@ -51,7 +51,15 @@ For an Android debug build, RT64 startup milestones are written to
 `files/android-trace.log`, and native error output to `files/native-stderr.log`.
 After a device hang and reboot, retrieve them with Windows ADB:
 
-```cmd
-adb exec-out run-as com.n64recomp.dora64 cat files/android-trace.log > dora64-trace.txt
-adb exec-out run-as com.n64recomp.dora64 cat files/native-stderr.log > dora64-stderr.txt
+```powershell
+.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/android-trace.log > "D:\!Download\dora64-trace.txt"
+.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/native-stderr.log > "D:\!Download\dora64-stderr.txt"
+```
+
+The `native-stderr.log` file is optional; if it does not exist, the second command reports an error.
+
+The r3 Lenovo Y700 log stopped inside the first RT64 `fullSync`. Android debug builds now record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve the existing log after a reboot; do not rerun the APK just to collect it:
+
+```powershell
+.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/rt64/rt64.log > "D:\!Download\dora64-rt64.txt"
 ```
