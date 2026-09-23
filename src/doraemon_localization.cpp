@@ -39,6 +39,13 @@ namespace {
     constexpr std::uint32_t kScratchSlotSize = 1024;
     constexpr std::uint32_t kFirstComposedMessageOffset = 1024;
     constexpr std::uint32_t kSecondComposedMessageOffset = 2048;
+    // 0x801C7F00/04 serve the two-message descriptor. 0x801C7F08 is
+    // a separate alias of the first buffer used by single-message pickups.
+    constexpr std::array<std::uint32_t, 3> kComposedMessageOffsets{
+        kFirstComposedMessageOffset,
+        kSecondComposedMessageOffset,
+        kFirstComposedMessageOffset,
+    };
     static_assert(
         kSecondComposedMessageOffset + kScratchSlotSize <= kMessageScratchSize
     );
@@ -109,7 +116,7 @@ namespace {
     bool composedMessageUsesLocalizedFont = false;
     std::unordered_set<std::uint32_t> localizedComposedMessages;
     std::unordered_set<std::uint32_t> pendingComposedMessages;
-    std::array<std::uint32_t, 2> originalComposedMessagePointers{};
+    std::array<std::uint32_t, kComposedMessageOffsets.size()> originalComposedMessagePointers{};
     bool composedMessagePointersRedirected = false;
 
     std::uint8_t readByte(const std::uint8_t* rdram, std::uint32_t n64Address) {
@@ -150,7 +157,7 @@ namespace {
         if (rdram == nullptr || !composedMessagePointersRedirected) {
             return;
         }
-        for (std::uint32_t index = 0; index < 2U; index++) {
+        for (std::uint32_t index = 0; index < kComposedMessageOffsets.size(); index++) {
             writeWord(
                 rdram,
                 kComposedMessagePointerTable + index * 4U,
@@ -1374,23 +1381,20 @@ extern "C" void doraemon_begin_game_text_composition(std::uint8_t* rdram) {
     // names can contain many more one-byte glyphs even though they are much
     // narrower on screen, so compose into two independent large slots in the
     // persistent localization allocation instead.
-    for (std::uint32_t index = 0; index < 2U; index++) {
+    for (std::uint32_t index = 0; index < kComposedMessageOffsets.size(); index++) {
         originalComposedMessagePointers[index] = readWord(
             rdram,
             kComposedMessagePointerTable + index * 4U
         );
     }
     composedMessagePointersRedirected = true;
-    writeWord(
-        rdram,
-        kComposedMessagePointerTable,
-        state.messageAddress + kFirstComposedMessageOffset
-    );
-    writeWord(
-        rdram,
-        kComposedMessagePointerTable + 4U,
-        state.messageAddress + kSecondComposedMessageOffset
-    );
+    for (std::uint32_t index = 0; index < kComposedMessageOffsets.size(); index++) {
+        writeWord(
+            rdram,
+            kComposedMessagePointerTable + index * 4U,
+            state.messageAddress + kComposedMessageOffsets[index]
+        );
+    }
     // Mark both output slots empty. The two-item notification composer fills
     // both, while the result-table composer fills only the first one.
     writeByte(
