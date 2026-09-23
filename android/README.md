@@ -58,7 +58,7 @@ After a device hang and reboot, retrieve them with Windows ADB:
 
 The `native-stderr.log` file is optional; if it does not exist, the second command reports an error.
 
-The r3 Lenovo Y700 log stopped inside the first RT64 `fullSync`. Android debug builds now record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve the existing log after a reboot; do not rerun the APK just to collect it:
+On the Lenovo Y700, r4 exposed a failed Adreno shader link while creating the first presentation pipeline. r5 builds that framebuffer read shader with Android-only optimization and records Vulkan errors under the `Dora64Vulkan` logcat tag. Debug builds also record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve existing logs after a crash or reboot; do not rerun the APK just to collect them:
 
 ```powershell
 .\adb.exe exec-out run-as com.n64recomp.dora64 cat files/rt64/rt64.log > "D:\!Download\dora64-rt64.txt"
