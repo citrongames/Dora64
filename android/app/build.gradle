@@ -17,8 +17,8 @@ android {
         applicationId 'com.n64recomp.dora64'
         minSdk 24
         targetSdk 36
-        versionCode 6
-        versionName '0.1.5-dev'
+        versionCode 7
+        versionName '0.1.6-dev'
         buildConfigField 'boolean', 'DORA64_RUNTIME', dora64Runtime ? 'true' : 'false'
 
         ndk {
