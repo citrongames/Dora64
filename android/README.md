@@ -58,7 +58,7 @@ After a device hang and reboot, retrieve them with Windows ADB:
 
 The `native-stderr.log` file is optional; if it does not exist, the second command reports an error.
 
-On the Lenovo Y700, r4 exposed a failed Adreno shader link while creating the first presentation pipeline. r5 builds that framebuffer read shader with Android-only optimization and records Vulkan errors under the `Dora64Vulkan` logcat tag. Debug builds also record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve existing logs after a crash or reboot; do not rerun the APK just to collect them:
+On the Lenovo Y700, r5 confirmed that the stock Adreno Vulkan driver rejects five compute pipelines with `VK_ERROR_UNKNOWN` before the first frame. r6 compiles four framebuffer shaders with Android-only optimization and logs a hash of each SPIR-V shader whose pipeline creation fails under the `Dora64Vulkan` logcat tag. The device result is still unverified. Debug builds also record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve existing logs after a crash or reboot; do not rerun the APK just to collect them:
 
 ```powershell
 .\adb.exe exec-out run-as com.n64recomp.dora64 cat files/rt64/rt64.log > "D:\!Download\dora64-rt64.txt"
