@@ -43,7 +43,16 @@ set(DORAEMON_FUNCS_DIR "${DORAEMON_GENERATED_DIR}/RecompiledFuncs")
 set(DORAEMON_RSP_SOURCE "${DORAEMON_GENERATED_DIR}/aspMain.cpp")
 set(DORAEMON_GAME_HOOK_SOURCES src/doraemon_game_hooks.c)
 
-if(WIN32)
+if(ANDROID)
+    set(SDL_SHARED ON CACHE BOOL "Build SDL2 shared library" FORCE)
+    set(SDL_STATIC OFF CACHE BOOL "Do not build SDL2 static library" FORCE)
+    set(SDL_TEST OFF CACHE BOOL "Do not build SDL2 tests" FORCE)
+    add_subdirectory(lib/SDL2)
+endif()
+
+if(TARGET SDL2::SDL2)
+    # The Android project builds its pinned SDL2 checkout above.
+elseif(WIN32)
     set(DORAEMON_SDL2_ROOT
         "${CMAKE_SOURCE_DIR}/lib/rt64/src/contrib/mupen64plus-win32-deps/SDL2-2.26.3")
     add_library(SDL2::SDL2 SHARED IMPORTED)
@@ -96,7 +105,7 @@ target_include_directories(RecompiledFuncs PRIVATE
     ${DORAEMON_RUNTIME_ROOT}/N64Recomp/include
 )
 
-add_executable(Dora64
+set(DORAEMON_APP_SOURCES
     src/main.cpp
     src/register_overlays.cpp
     ${DORAEMON_RSP_SOURCE}
@@ -114,7 +123,14 @@ add_executable(Dora64
     src/system_overlay.cpp
 )
 
+if(ANDROID)
+    add_library(Dora64 SHARED ${DORAEMON_APP_SOURCES})
+else()
+    add_executable(Dora64 ${DORAEMON_APP_SOURCES})
+endif()
+
 # Use the existing RT64 asset embedder; no image tools are needed to build.
+if(NOT ANDROID)
 set(DORAEMON_ICON_SOURCE "${CMAKE_SOURCE_DIR}/assets/icons/dora64_icon_linux_256.png")
 set(DORAEMON_ICON_C "${CMAKE_CURRENT_BINARY_DIR}/generated/doraemon_icon.c")
 set(DORAEMON_ICON_H "${CMAKE_CURRENT_BINARY_DIR}/generated/doraemon_icon.h")
@@ -126,6 +142,7 @@ add_custom_command(OUTPUT "${DORAEMON_ICON_C}" "${DORAEMON_ICON_H}"
 )
 target_sources(Dora64 PRIVATE "${DORAEMON_ICON_C}" "${DORAEMON_ICON_H}")
 target_include_directories(Dora64 PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+endif()
 
 if(WIN32)
     enable_language(RC)
@@ -184,7 +201,12 @@ target_link_libraries(Dora64 PRIVATE
     SDL2::SDL2
 )
 
+if(ANDROID)
+    target_link_libraries(Dora64 PRIVATE android log)
+endif()
+
 # Refresh exports even when only assets changed and no relink is necessary.
+if(NOT ANDROID)
 add_custom_target(doraemon_assets ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets"
@@ -192,6 +214,7 @@ add_custom_target(doraemon_assets ALL
     VERBATIM
 )
 add_dependencies(Dora64 doraemon_assets)
+endif()
 
 if(WIN32)
     add_custom_command(TARGET Dora64 POST_BUILD

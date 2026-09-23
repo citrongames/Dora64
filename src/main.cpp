@@ -22,8 +22,13 @@
 #include "funcs.h"
 
 #include <SDL.h>
+#if defined(__ANDROID__)
+#include <SDL_system.h>
+#endif
 #include "stb/stb_image.h"
+#if !defined(__ANDROID__)
 #include "doraemon_icon.h"
+#endif
 #if defined(_WIN32)
 #include <SDL_syswm.h>
 #endif
@@ -71,6 +76,7 @@ static void* create_gfx() {
 }
 
 static void set_window_icon(SDL_Window* window) {
+#if !defined(__ANDROID__)
     int width = 0, height = 0;
     stbi_uc* pixels = stbi_load_from_memory(
         reinterpret_cast<const stbi_uc*>(doraemon_icon_png),
@@ -90,6 +96,9 @@ static void set_window_icon(SDL_Window* window) {
         std::fprintf(stderr, "Could not create the application icon: %s\n", SDL_GetError());
     }
     stbi_image_free(pixels);
+#else
+    (void)window;
+#endif
 }
 
 static ultramodern::renderer::WindowHandle create_window(void*) {
@@ -119,7 +128,7 @@ static ultramodern::renderer::WindowHandle create_window(void*) {
     doraemon::input::initialize_sdl();
 
     uint32_t window_flags = SDL_WINDOW_RESIZABLE;
-#if defined(__linux__)
+#if defined(__linux__) || defined(__ANDROID__)
     window_flags |= SDL_WINDOW_VULKAN;
 #endif
 
@@ -189,6 +198,34 @@ static std::filesystem::path executable_directory() {
     return {};
 }
 
+#if defined(__ANDROID__)
+static std::filesystem::path android_data_directory() {
+    const char* storage = SDL_AndroidGetInternalStoragePath();
+    return storage != nullptr ? std::filesystem::u8path(storage) : std::filesystem::path{};
+}
+
+static std::filesystem::path wait_for_android_rom(
+    const std::filesystem::path& data_dir, uint64_t expected_hash)
+{
+    const auto rom = data_dir / "doraemon.n64.jp.z64";
+    const auto ready = data_dir / ".assets-ready";
+    const auto canceled = data_dir / ".rom-selection-canceled";
+    while (true) {
+        std::error_code error;
+        if (std::filesystem::exists(canceled, error)) return {};
+        error.clear();
+        if (std::filesystem::exists(ready, error) &&
+            std::filesystem::is_regular_file(rom, error)) {
+            if (is_supported_rom(rom, expected_hash)) return rom;
+            std::filesystem::remove(rom, error);
+            show_error_message("The selected ROM is not the supported original Japanese version. Restart Dora64 to choose another file.");
+            return {};
+        }
+        SDL_Delay(100);
+    }
+}
+#endif
+
 static std::filesystem::path find_rom_path(
     const std::filesystem::path& executable_dir, uint64_t expected_hash)
 {
@@ -229,6 +266,9 @@ static bool has_command_line_argument(
     return false;
 }
 
+#if defined(__ANDROID__)
+#define main SDL_main
+#endif
 int main(int argc, char** argv) {
     std::puts("Dora64 - first runtime boot");
 
@@ -247,14 +287,26 @@ int main(int argc, char** argv) {
         .entrypoint = recomp_entrypoint,
     };
 
+#if defined(__ANDROID__)
+    const auto executable_dir = android_data_directory();
+#else
     const auto executable_dir = executable_directory();
+#endif
     if (executable_dir.empty()) {
         show_error_message("Could not determine the game folder. Please restart Dora64 from its installation folder.");
         SDL_Quit();
         return EXIT_FAILURE;
     }
+#if defined(__ANDROID__)
+    game.rom_path = wait_for_android_rom(executable_dir, game.rom_hash);
+#else
     game.rom_path = find_rom_path(executable_dir, game.rom_hash);
+#endif
     if (game.rom_path.empty()) {
+#if defined(__ANDROID__)
+        SDL_Quit();
+        return EXIT_FAILURE;
+#else
         const auto directory_utf8 = executable_dir.u8string();
         const std::string message =
             "No supported ROM found.\n\n"
@@ -266,6 +318,7 @@ int main(int argc, char** argv) {
         show_error_message(message.c_str());
         SDL_Quit();
         return EXIT_FAILURE;
+#endif
     }
 
     const auto config_path = game.rom_path.parent_path();

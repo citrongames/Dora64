@@ -3,3 +3,6 @@
 
 # Preserve the symbol export bytes used by generation receipts.
 recomp/doraemon.syms.toml whitespace=-blank-at-eof
+
+# Keep the Windows Gradle wrapper executable as a CRLF batch file.
+android/gradlew.bat text eol=crlf whitespace=cr-at-eol

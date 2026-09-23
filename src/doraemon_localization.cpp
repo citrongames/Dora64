@@ -197,6 +197,9 @@ namespace {
         const std::filesystem::path& relativePath
     ) {
         std::vector<std::filesystem::path> candidates;
+#if defined(__ANDROID__)
+        candidates.push_back(recomp::get_config_path() / "assets" / relativePath);
+#endif
         if (char* basePath = SDL_GetBasePath()) {
             candidates.push_back(pathFromUtf8(basePath) / "assets" / relativePath);
             SDL_free(basePath);

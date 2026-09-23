@@ -4,6 +4,11 @@
 
 #include "rt64_render_context.hpp"
 
+#if defined(__ANDROID__)
+#include <SDL.h>
+#include <SDL_syswm.h>
+#endif
+
 #include <algorithm>
 #include <cassert>
 #include <cstdio>
@@ -227,6 +232,15 @@ doraemon::renderer::RT64Context::RT64Context(
     RT64::Application::Core core{};
 #if defined(_WIN32)
     core.window = window_handle.window;
+#elif defined(__ANDROID__)
+    SDL_SysWMinfo window_info{};
+    SDL_VERSION(&window_info.version);
+    if (SDL_GetWindowWMInfo(window_handle, &window_info) != SDL_TRUE) {
+        std::fprintf(stderr, "SDL_GetWindowWMInfo failed: %s\n", SDL_GetError());
+        setup_result = ultramodern::renderer::SetupResult::GraphicsDeviceNotFound;
+        return;
+    }
+    core.window = window_info.info.android.window;
 #else
     core.window = window_handle;
 #endif
