@@ -3,6 +3,13 @@
 #include <cstdint>
 
 namespace doraemon::lighting {
+    struct DisplayListSnapshot {
+        const std::uint8_t* data;
+        std::uint32_t begin;
+        std::uint32_t end;
+    };
+
+    DisplayListSnapshot current_display_list();
     // Called only by the graphics parser thread, around an OSTask.
     void begin_task(std::uint32_t address, std::uint32_t size);
     const void* light_data(std::uint32_t address);

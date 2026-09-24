@@ -768,6 +768,7 @@ namespace {
         };
 
         bool changed = false;
+#if !defined(__ANDROID__)
         changed |= enumCombo("Display mode", settings.graphics.wm_option, windowModes);
         if (displays.empty()) {
             refreshDisplays();
@@ -796,6 +797,7 @@ namespace {
             refreshDisplays();
         }
 
+#endif
         changed |= enumCombo("Frame rate", settings.graphics.rr_option, frameRates);
         if (settings.graphics.rr_option == RefreshRate::Manual) {
             changed |= ImGui::SliderInt("Frame rate limit", &settings.graphics.rr_manual_value,
@@ -1114,6 +1116,10 @@ void doraemon::system_overlay::initialize(const std::filesystem::path& configDir
         settings.showFps = false;
     }
     loadSettings();
+#if defined(__ANDROID__)
+    // The single Android surface always occupies the device display.
+    settings.graphics.wm_option = ultramodern::renderer::WindowMode::Fullscreen;
+#endif
     doraemon::camera::configure(settings.modernCamera, settings.cameraStickSpeed,
         settings.cameraMouseSensitivity, settings.cameraInvertY, settings.cameraCaptureMouse, settings.cameraInvertX);
     autosaveEnabled.store(settings.autosave, std::memory_order_release);

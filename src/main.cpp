@@ -103,6 +103,11 @@ static void set_window_icon(SDL_Window* window) {
 
 static ultramodern::renderer::WindowHandle create_window(void*) {
     SDL_SetHint(SDL_HINT_APP_NAME, "Dora64");
+#if defined(__ANDROID__)
+    // SDL otherwise replaces the manifest's landscape lock with FULL_USER
+    // when creating a resizable Android window.
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft");
+#endif
 #if defined(__linux__)
     // SDL2 reads these before video initialization. Match the desktop file ID.
     SDL_setenv("SDL_VIDEO_X11_WMCLASS", "dora64", 0);
@@ -128,6 +133,9 @@ static ultramodern::renderer::WindowHandle create_window(void*) {
     doraemon::input::initialize_sdl();
 
     uint32_t window_flags = SDL_WINDOW_RESIZABLE;
+#if defined(__ANDROID__)
+    window_flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+#endif
 #if defined(__linux__) || defined(__ANDROID__)
     window_flags |= SDL_WINDOW_VULKAN;
 #endif

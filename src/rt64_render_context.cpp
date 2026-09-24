@@ -365,12 +365,28 @@ doraemon::renderer::RT64Context::RT64Context(
         return;
     }
 
+#if defined(__ANDROID__)
+    // Android owns the native surface size. Applying the desktop 1280x720
+    // window configuration changes SDL's logical size independently of the
+    // Vulkan swap chain, so leave the SDL window at its surface dimensions.
+    if (SDL_Window* window = SDL_GetWindowFromID(1)) {
+        int window_width = 0;
+        int window_height = 0;
+        SDL_GetWindowSize(window, &window_width, &window_height);
+        __android_log_print(ANDROID_LOG_INFO, "Dora64Native",
+            "window SDL=%dx%d swapchain=%ux%u",
+            window_width, window_height,
+            app->sharedQueueResources->swapChainWidth,
+            app->sharedQueueResources->swapChainHeight);
+    }
+#else
     app->setDisplayConfig(
         to_rt64(config.wm_option),
         config.display_index,
         config.display_width,
         config.display_height,
         config.display_refresh_rate);
+#endif
     sync_localized_textures();
     std::printf("RT64 renderer initialized\n");
 }
@@ -388,6 +404,7 @@ bool doraemon::renderer::RT64Context::update_config(
     if (!app || old_config == new_config) {
         return false;
     }
+#if !defined(__ANDROID__)
     if ((old_config.wm_option != new_config.wm_option) ||
         (old_config.display_index != new_config.display_index) ||
         (old_config.display_width != new_config.display_width) ||
@@ -400,6 +417,7 @@ bool doraemon::renderer::RT64Context::update_config(
             new_config.display_height,
             new_config.display_refresh_rate);
     }
+#endif
     apply_user_config(*app, new_config);
     app->updateUserConfig(true);
     if (old_config.msaa_option != new_config.msaa_option) {
@@ -439,6 +457,36 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     }
     app->state->rsp->reset();
     doraemon::lighting::begin_task(task->t.data_ptr, task->t.data_size);
+    const auto frameDisplayList = doraemon::lighting::current_display_list();
+#if defined(__ANDROID__)
+    auto compare_frame_display_list = [&](const char* phase) {
+        if (frameDisplayList.data == nullptr) return;
+        const auto* live = app->core.RDRAM + frameDisplayList.begin;
+        std::size_t changed = 0;
+        std::size_t first = 0;
+        const auto size = frameDisplayList.end - frameDisplayList.begin;
+        for (std::size_t i = 0; i < size; ++i) {
+            if (live[i] != frameDisplayList.data[i]) {
+                if (changed == 0) first = i;
+                ++changed;
+            }
+        }
+        if (changed != 0) {
+            static std::uint32_t reports = 0;
+            if (reports++ < 32 || (reports % 256) == 0) {
+                std::fprintf(stderr,
+                    "Dora64 primary DL changed %s: task=%08X bytes=%zu first=%08X report=%u\n",
+                    phase, task->t.data_ptr & 0x1FFFFFFFU, changed,
+                    frameDisplayList.begin + static_cast<std::uint32_t>(first), reports);
+                std::fflush(stderr);
+            }
+        }
+    };
+    compare_frame_display_list("before parse");
+#endif
+    app->state->displayListSnapshot = frameDisplayList.data;
+    app->state->displayListSnapshotBegin = frameDisplayList.begin;
+    app->state->displayListSnapshotEnd = frameDisplayList.end;
     app->state->rsp->lightDataCallback = doraemon::lighting::light_data;
     app->interpreter->loadUCodeGBI(
         task->t.ucode & 0x3FFFFFF,
@@ -455,9 +503,15 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
         0,
         true);
 #if defined(__ANDROID__)
+    compare_frame_display_list("after parse");
+#endif
+#if defined(__ANDROID__)
     static std::atomic_bool first_display_list_after{false};
     if (!first_display_list_after.exchange(true)) android_trace("first display list complete");
 #endif
+    app->state->displayListSnapshot = nullptr;
+    app->state->displayListSnapshotBegin = 0;
+    app->state->displayListSnapshotEnd = 0;
     doraemon::lighting::end_task();
 }
 
