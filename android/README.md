@@ -19,12 +19,24 @@ cmake --build build-tools/file-to-c-host
 export DORA64_HOST_FILE_TO_C="$PWD/build-tools/file-to-c-host/file_to_c"
 export JAVA_HOME=/path/to/jdk17
 export ANDROID_HOME=/path/to/android-sdk
-./android/gradlew -p android :app:assembleDebug -Pdora64Runtime=true
+./android/gradlew -p android :app:assembleOptimized -Pdora64Runtime=true
 ```
 
-The result is `android/app/build/outputs/apk/debug/app-debug.apk`, signed with
-the local debug key. The build without `-Pdora64Runtime=true` is only a small
-SDL/Vulkan probe. Release signing is a separate step.
+The result is `android/app/build/outputs/apk/optimized/app-optimized.apk`, signed
+with the local debug key so it can update previous test builds. This variant uses
+native `RelWithDebInfo` (`-O2 -g -DNDEBUG`) for the generated game, RT64, and
+runtime. Unstripped native libraries remain under
+`android/app/build/intermediates/cxx/RelWithDebInfo/` for crash analysis; the APK
+contains stripped libraries. The Android package is not debuggable.
+
+Use `:app:assembleDebug` only when an unoptimized native build is needed for
+debugging, not for gameplay performance measurements. The framebuffer shader
+optimization workarounds for Adreno remain independent of this native build
+type. The optimized variant disables RT64's per-command debug file log; Android
+startup and periodic timing messages still go to `native-stderr.log`.
+
+The build without `-Pdora64Runtime=true` is only a small SDL/Vulkan probe.
+Production release signing is a separate step.
 
 ## ROM and user data
 

@@ -624,8 +624,7 @@ void doraemon::renderer::RT64Context::sync_localized_textures() {
     }
 
     const std::filesystem::path replacement_directory =
-        recomp::get_config_path() / "assets" / "localization" /
-        language.code / "textures";
+        doraemon::localization::texture_directory(language);
     if (!std::filesystem::is_directory(replacement_directory)) {
         app->textureCache->clearReplacementDirectories();
         std::fprintf(

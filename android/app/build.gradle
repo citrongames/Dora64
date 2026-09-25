@@ -17,8 +17,8 @@ android {
         applicationId 'com.n64recomp.dora64'
         minSdk 24
         targetSdk 36
-        versionCode 24
-        versionName '0.1.23-dev'
+        versionCode 27
+        versionName '0.1.26-dev'
         buildConfigField 'boolean', 'DORA64_RUNTIME', dora64Runtime ? 'true' : 'false'
 
         ndk {
@@ -29,6 +29,25 @@ android {
             cmake {
                 targets dora64Runtime ? 'Dora64' : 'main'
                 arguments "-DDORA64_HOST_FILE_TO_C=${System.getenv('DORA64_HOST_FILE_TO_C') ?: ''}"
+            }
+        }
+    }
+
+    // Gameplay/performance builds must optimize the generated game, RT64,
+    // and runtime together. Keep native symbols locally for crash analysis.
+    // The debug signing key allows installing this variant over test builds.
+    buildTypes {
+        optimized {
+            initWith release
+            signingConfig signingConfigs.debug
+            debuggable false
+            jniDebuggable false
+            minifyEnabled false
+            matchingFallbacks = ['release']
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                }
             }
         }
     }

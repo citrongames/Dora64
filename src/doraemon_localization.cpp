@@ -1262,6 +1262,17 @@ doraemon::localization::current_language() {
     return languages[index];
 }
 
+std::filesystem::path doraemon::localization::texture_directory(
+    const LanguageInfo& language
+) {
+    ensureLanguagesInitialized();
+    if (language.original || localizationRoot.empty() ||
+        !validLanguageCode(language.code)) {
+        return {};
+    }
+    return localizationRoot / language.code / "textures";
+}
+
 extern "C" int doraemon_dialogue_glyph_advance(
     std::uint8_t* rdram,
     std::uint32_t dialogueObjectAddress
