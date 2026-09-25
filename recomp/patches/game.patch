@@ -1523,6 +1523,14 @@
 +    MEM_H(0X24, ctx->r5) = (ctx->r24 = doraemon_cheats_lives_value((uint32_t)ADD32(ctx->r5, 0X24), ctx->r24));
      // 0x800734A8: sb          $a3, 0x42($a1)
      MEM_B(0X42, ctx->r5) = ctx->r7;
+--- a/func_80073E80.c
++++ b/func_80073E80.c
+@@ -24,4 +24,5 @@
+     // 0x80073EA8: mtc1        $at, $f4
+     ctx->f4.u32l = ctx->r1;
++    ctx->f4.fl = doraemon_model_lod_limit(ctx->f4.fl);
+     // 0x80073EAC: sw          $ra, 0x14($sp)
+     MEM_W(0X14, ctx->r29) = ctx->r31;
 --- a/func_80073F28.c
 +++ b/func_80073F28.c
 @@ -196,9 +196,9 @@

@@ -10,6 +10,7 @@ import zipfile
 
 parser = argparse.ArgumentParser(description="Package a built Dora64 release without ROMs or local source catalogs.")
 parser.add_argument("--version", required=True)
+parser.add_argument("--source-ref", help="Full source commit when updating an existing release")
 parser.add_argument("--platform", required=True, choices=("Windows-x64", "Linux-x86_64"))
 parser.add_argument("--binary-dir", required=True, type=Path)
 parser.add_argument("--output", required=True, type=Path)
@@ -27,6 +28,9 @@ dist.mkdir(parents=True, exist_ok=True)
 commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=repo, text=True).strip()
 if subprocess.check_output(['git', 'status', '--porcelain'], cwd=repo):
     raise RuntimeError('Commit release sources before packaging')
+source_ref = args.source_ref or f'v{args.version}'
+if args.source_ref and (re.fullmatch(r'[0-9a-f]{40}', args.source_ref) is None or args.source_ref != commit):
+    raise RuntimeError('--source-ref must be the full HEAD commit used for this build')
 tracked = subprocess.check_output(['git', 'ls-files', '--recurse-submodules', '-z'], cwd=repo).decode().split('\0')
 assets = [p for p in tracked if p.startswith('assets/icons/') or
           p in ('assets/localization/dialogue_font.bmp', 'assets/localization/dialogue_font.json',
@@ -72,7 +76,7 @@ walkthrough_en.txt — short English walkthrough.
 Имя файла любое; игра проверяет содержимое. ROM в архив не входит.
 Папка assets должна оставаться рядом с игрой. Сохранения и настройки создаются здесь.
 
-Source and build instructions: https://github.com/citrongames/Dora64/tree/v{args.version}
+Source and build instructions: https://github.com/citrongames/Dora64/tree/{source_ref}
 Dependency license texts are in licenses/.
 '''
 

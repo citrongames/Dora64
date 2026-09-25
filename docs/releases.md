@@ -68,3 +68,10 @@ When replacing only the Android archive in an existing desktop release, keep the
 desktop release tag unchanged and pass `--source-ref <full Android source commit>`
 instead of `--source-tag`. For Android 1.0.1, keep Windows/Linux 1.0.4 assets
 unchanged, replace the Android ZIP, and refresh SHA256SUMS.txt for all three.
+
+
+The LOD update replaces all three archives on the existing v1.0.4 release page:
+Windows/Linux 1.0.5 and Android 1.0.2 (versionCode 39). Keep the published tag
+unchanged; pass `--source-ref <full HEAD commit>` to both packaging tools so
+README links and VERSION metadata identify the rebuilt sources precisely.
+Character LOD distance defaults to 5x, with Modern=5x and Original=1x.

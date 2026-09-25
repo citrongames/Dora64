@@ -35,7 +35,7 @@ See [Android build and data instructions](android/README.md) and
 [touch controls and layout editor](docs/android-touch-controls.md).
 Android APKs have been tested by the maintainer on Lenovo Legion Y700 (2025),
 Snapdragon 8 Gen 3, including a complete playthrough with all items and Russian
-localization. Android **1.0.1** is distributed with desktop **1.0.4** in the same
+localization. Android **1.0.2** is distributed with desktop **1.0.5** in the same
 GitHub release. Extract the Android ZIP, install its APK, and choose your original
 Japanese `.z64` ROM on first launch. Requires Android 7.0+ on a 64-bit ARM device
 with Vulkan support; other GPU/device combinations have not been playtested.
@@ -219,6 +219,7 @@ two preferences.
 | Game aspect ratio | Fit to window / fullscreen | Original (4:3) |
 | Gameplay HUD layout | Fit to window / fullscreen | Original (4:3) |
 | Object / NPC draw distance | 5x | 1x |
+| Character LOD distance | 5x | 1x |
 
 The profiles only change the settings listed above. Language, controls,
 camera sensitivity/inversion/mouse capture, cheats, audio, output window size,
@@ -257,6 +258,16 @@ Windows gameplay validation at 5x covered five stages, reaching 283 model
 entries with no allocation failures. Full playthrough validation remains open.
 Optional diagnostics are enabled with `DORAEMON_DRAW_DISTANCE_DIAGNOSTICS=1`
 and write `doraemon-draw-distance.log` in the working directory.
+
+## Character model detail
+
+**Port menu → Graphics → Character LOD distance** controls when characters switch
+to simpler geometry, independently of object visibility. The range is 1x–5x:
+1x restores the original 300-unit threshold; 5x keeps detail up to 1500 units.
+Modern and the default use 5x; Original uses 1x. Changes apply immediately and
+are saved. Existing explicit values are preserved; older settings without this
+option default to 5x. The maintainer confirmed the adjustment in Android r38.
+See [the implementation notes](docs/character-lod.md) for the verified scope.
 
 ## Menu and notification scaling
 

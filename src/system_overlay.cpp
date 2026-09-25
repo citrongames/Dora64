@@ -62,6 +62,7 @@ namespace {
     struct PcSettings {
         bool autosave = true;
         float drawDistance = 1.0f;
+        float modelLodDistance = 5.0f;
         bool cheatHealth = false;
         bool cheatLives = false;
         bool cheatTorpedo = false;
@@ -182,6 +183,7 @@ namespace {
             json["graphics"]["frame_rate_mode"] = settings.graphics.rr_option;
             json["graphics"]["frame_rate_limit"] = settings.graphics.rr_manual_value;
             json["graphics"]["draw_distance"] = settings.drawDistance;
+            json["graphics"]["model_lod_distance"] = settings.modelLodDistance;
             json["graphics"]["window_mode"] = settings.graphics.wm_option;
             json["graphics"]["display_index"] = settings.graphics.display_index;
             json["graphics"]["display_width"] = settings.graphics.display_width;
@@ -289,6 +291,7 @@ namespace {
             if (json.contains("graphics")) {
                 const auto& graphics = json.at("graphics");
                 settings.drawDistance = graphics.value("draw_distance", 1.0f);
+                settings.modelLodDistance = graphics.value("model_lod_distance", 5.0f);
                 const auto frameRate = graphics.value(
                     "frame_rate_mode", ultramodern::renderer::RefreshRate::Original);
                 if (validEnum(frameRate)) {
@@ -690,11 +693,13 @@ namespace {
         settings.graphics.ar_option = modern ? AspectRatio::Expand : AspectRatio::Original;
         settings.graphics.hr_option = modern ? HUDRatioMode::Full : HUDRatioMode::Original;
         settings.drawDistance = modern ? 5.0f : 1.0f;
+        settings.modelLodDistance = modern ? 5.0f : 1.0f;
     }
 
     void applyGameProfile(bool modern) {
         setGameProfileValues(modern);
         settings.drawDistance = doraemon_draw_distance_configure(settings.drawDistance);
+        settings.modelLodDistance = doraemon_model_lod_configure(settings.modelLodDistance);
         autosaveEnabled.store(settings.autosave, std::memory_order_release);
         doraemon::camera::configure(settings.modernCamera, settings.cameraStickSpeed,
             settings.cameraMouseSensitivity, settings.cameraInvertY, settings.cameraCaptureMouse, settings.cameraInvertX);
@@ -907,6 +912,13 @@ namespace {
             saveSettings();
         }
         ImGui::TextDisabled("1x = Original. Higher values show objects farther away.");
+        ImGui::Spacing();
+        if (ImGui::SliderFloat("Character LOD distance", &settings.modelLodDistance,
+                1.0f, 5.0f, "%.1fx", ImGuiSliderFlags_AlwaysClamp)) {
+            settings.modelLodDistance = doraemon_model_lod_configure(settings.modelLodDistance);
+            saveSettings();
+        }
+        ImGui::TextDisabled("1x = Original. Higher values keep character detail farther away.");
     }
 
     void drawAudioTab() {
@@ -1282,6 +1294,7 @@ void doraemon::system_overlay::initialize(const std::filesystem::path& configDir
         settings.cameraMouseSensitivity, settings.cameraInvertY, settings.cameraCaptureMouse, settings.cameraInvertX);
     autosaveEnabled.store(settings.autosave, std::memory_order_release);
     settings.drawDistance = doraemon_draw_distance_configure(settings.drawDistance);
+    settings.modelLodDistance = doraemon_model_lod_configure(settings.modelLodDistance);
     doraemon_cheats_configure(settings.cheatHealth, settings.cheatLives, settings.cheatTorpedo);
 
     // RT64 exposes an 8x enum value, but it is not reliable on every backend
