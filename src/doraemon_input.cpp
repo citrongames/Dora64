@@ -1,4 +1,5 @@
 #include "doraemon_input.hpp"
+#include "doraemon_touch.hpp"
 #include "system_overlay.hpp"
 #include "doraemon_camera.hpp"
 
@@ -436,6 +437,7 @@ namespace {
 }
 
 void doraemon::input::initialize(const std::filesystem::path& configDirectory) {
+    doraemon::touch::initialize(configDirectory);
     bindingsPath = configDirectory / "doraemon_input_settings.json";
     std::error_code settingsError;
     const bool firstRun = !std::filesystem::exists(bindingsPath, settingsError) && !settingsError;
@@ -455,12 +457,19 @@ void doraemon::input::initialize_sdl() {
 }
 
 void doraemon::input::shutdown() {
+    doraemon::touch::cancel();
     cancel_binding_capture();
     SDL_SetRelativeMouseMode(SDL_FALSE);
     closeController();
 }
 
 void doraemon::input::process_event(const SDL_Event& event) {
+    // Only the selected controller can switch the touch HUD to gamepad mode.
+    const bool controllerEvent = event.type == SDL_CONTROLLERBUTTONDOWN ||
+        event.type == SDL_CONTROLLERBUTTONUP || event.type == SDL_CONTROLLERAXISMOTION ||
+        event.type == SDL_CONTROLLERDEVICEREMOVED;
+    if (!controllerEvent || event.cdevice.which == activeControllerInstance)
+        doraemon::touch::process_event(event);
     if (event.type == SDL_MOUSEWHEEL && doraemon::camera::is_active() &&
         SDL_GetKeyboardFocus() != nullptr && !doraemon::system_overlay::is_menu_open() &&
         !is_binding_capture_active()) {
@@ -480,6 +489,7 @@ void doraemon::input::process_event(const SDL_Event& event) {
 }
 
 void doraemon::input::update() {
+    doraemon::touch::update();
     int keyCount = 0;
     const Uint8* keys = SDL_GetKeyboardState(&keyCount);
     const bool windowFocused = SDL_GetKeyboardFocus() != nullptr;
@@ -532,7 +542,11 @@ void doraemon::input::update() {
 
     const bool modernCamera = doraemon::camera::is_active() &&
         !doraemon::system_overlay::is_menu_open() && !is_binding_capture_active();
+#if defined(__ANDROID__)
+    const bool captureMouse = false; // Touch-generated mouse events belong to the port menu.
+#else
     const bool captureMouse = modernCamera && windowFocused && doraemon::camera::is_mouse_capture_enabled();
+#endif
     const bool wasCaptured = SDL_GetRelativeMouseMode() == SDL_TRUE;
     if (captureMouse != wasCaptured) {
         SDL_SetRelativeMouseMode(captureMouse ? SDL_TRUE : SDL_FALSE);
@@ -544,7 +558,7 @@ void doraemon::input::update() {
     if (!captureMouse || !wasCaptured) mouseX = mouseY = 0;
 
 
-    if (doraemon::system_overlay::is_menu_open()) {
+    if (doraemon::system_overlay::is_menu_open() || doraemon::touch::is_editing()) {
         doraemon::camera::clear_input();
         currentButtons.store(0, std::memory_order_release);
         currentStickX.store(0.0f, std::memory_order_release);
@@ -564,6 +578,7 @@ void doraemon::input::update() {
     };
     const auto active = [&](Action action) { return value(action) >= 0.5f; };
 
+    const auto touchCamera = doraemon::touch::take_camera();
     if (modernCamera) {
         const float vertical = value(Action::CameraDown) - value(Action::CameraUp);
         const bool zoomModifier = active(Action::CameraMode);
@@ -572,7 +587,7 @@ void doraemon::input::update() {
             std::max(value(Action::CameraZoomIn), value(Action::DpadUp)) +
             (zoomModifier ? vertical : 0.0f);
         doraemon::camera::submit_input(value(Action::CameraRight) - value(Action::CameraLeft),
-            zoomModifier ? 0.0f : vertical, float(mouseX), float(mouseY), zoom,
+            zoomModifier ? 0.0f : vertical, float(mouseX) + touchCamera.dx, float(mouseY) + touchCamera.dy, zoom + touchCamera.zoom,
             windowFocused ? wheel : 0.0f);
     }
     else {
@@ -616,9 +631,15 @@ bool doraemon::input::get_input(int controllerNum, uint16_t* buttons, float* x, 
     if (controllerNum != 0) {
         return false;
     }
-    *buttons = currentButtons.load(std::memory_order_acquire);
+    if (doraemon::system_overlay::is_menu_open() || doraemon::touch::is_editing()) {
+        *buttons=0; *x=0; *y=0;
+        return true;
+    }
+    const auto touch = doraemon::touch::read_input();
+    *buttons = currentButtons.load(std::memory_order_acquire) | touch.buttons;
     *x = currentStickX.load(std::memory_order_acquire);
     *y = currentStickY.load(std::memory_order_acquire);
+    if (touch.stickOwned) { *x=touch.x; *y=touch.y; }
     return true;
 }
 

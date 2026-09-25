@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -20,6 +21,8 @@ namespace doraemon::localization {
     void set_language(std::size_t language);
     std::size_t language();
     const LanguageInfo& current_language();
+    // Resolve textures beside the manifest used for dialogue and fonts.
+    std::filesystem::path texture_directory(const LanguageInfo& language);
 }
 
 // Called from the recompiled dialogue parser before it consumes a message.

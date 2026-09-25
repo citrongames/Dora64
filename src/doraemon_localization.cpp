@@ -197,6 +197,14 @@ namespace {
         const std::filesystem::path& relativePath
     ) {
         std::vector<std::filesystem::path> candidates;
+#if defined(__ANDROID__)
+        candidates.push_back(recomp::get_config_path() / "assets" / relativePath);
+        // Bundled assets remain private; only saves and settings move to the
+        // user-visible Android/data directory.
+        if (const char* internal = SDL_AndroidGetInternalStoragePath()) {
+            candidates.push_back(pathFromUtf8(internal) / "assets" / relativePath);
+        }
+#endif
         if (char* basePath = SDL_GetBasePath()) {
             candidates.push_back(pathFromUtf8(basePath) / "assets" / relativePath);
             SDL_free(basePath);
@@ -1252,6 +1260,17 @@ doraemon::localization::current_language() {
         index = 0;
     }
     return languages[index];
+}
+
+std::filesystem::path doraemon::localization::texture_directory(
+    const LanguageInfo& language
+) {
+    ensureLanguagesInitialized();
+    if (language.original || localizationRoot.empty() ||
+        !validLanguageCode(language.code)) {
+        return {};
+    }
+    return localizationRoot / language.code / "textures";
 }
 
 extern "C" int doraemon_dialogue_glyph_advance(

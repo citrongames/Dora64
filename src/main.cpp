@@ -18,12 +18,18 @@
 #include "rt64_render_context.hpp"
 #include "doraemon_audio.hpp"
 #include "doraemon_input.hpp"
+#include "doraemon_lighting.hpp"
 #include "system_overlay.hpp"
 #include "funcs.h"
 
 #include <SDL.h>
+#if defined(__ANDROID__)
+#include <SDL_system.h>
+#endif
 #include "stb/stb_image.h"
+#if !defined(__ANDROID__)
 #include "doraemon_icon.h"
+#endif
 #if defined(_WIN32)
 #include <SDL_syswm.h>
 #endif
@@ -71,6 +77,7 @@ static void* create_gfx() {
 }
 
 static void set_window_icon(SDL_Window* window) {
+#if !defined(__ANDROID__)
     int width = 0, height = 0;
     stbi_uc* pixels = stbi_load_from_memory(
         reinterpret_cast<const stbi_uc*>(doraemon_icon_png),
@@ -90,10 +97,18 @@ static void set_window_icon(SDL_Window* window) {
         std::fprintf(stderr, "Could not create the application icon: %s\n", SDL_GetError());
     }
     stbi_image_free(pixels);
+#else
+    (void)window;
+#endif
 }
 
 static ultramodern::renderer::WindowHandle create_window(void*) {
     SDL_SetHint(SDL_HINT_APP_NAME, "Dora64");
+#if defined(__ANDROID__)
+    // SDL otherwise replaces the manifest's landscape lock with FULL_USER
+    // when creating a resizable Android window.
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft");
+#endif
 #if defined(__linux__)
     // SDL2 reads these before video initialization. Match the desktop file ID.
     SDL_setenv("SDL_VIDEO_X11_WMCLASS", "dora64", 0);
@@ -119,7 +134,10 @@ static ultramodern::renderer::WindowHandle create_window(void*) {
     doraemon::input::initialize_sdl();
 
     uint32_t window_flags = SDL_WINDOW_RESIZABLE;
-#if defined(__linux__)
+#if defined(__ANDROID__)
+    window_flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+#endif
+#if defined(__linux__) || defined(__ANDROID__)
     window_flags |= SDL_WINDOW_VULKAN;
 #endif
 
@@ -162,6 +180,16 @@ static ultramodern::renderer::WindowHandle create_window(void*) {
 static void update_gfx(void*) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+#if defined(__ANDROID__)
+        // Handle audio here, not in a watch: SDL dispatches foreground events
+        // before releasing its backend audio lock, but returns them afterwards.
+        if (event.type == SDL_APP_WILLENTERBACKGROUND) {
+            doraemon::audio::set_suspended(true);
+        }
+        else if (event.type == SDL_APP_DIDENTERFOREGROUND) {
+            doraemon::audio::set_suspended(false);
+        }
+#endif
         doraemon::input::process_event(event);
         if (event.type == SDL_QUIT) {
             ultramodern::quit();
@@ -188,6 +216,89 @@ static std::filesystem::path executable_directory() {
     }
     return {};
 }
+
+#if defined(__ANDROID__)
+static std::filesystem::path android_data_directory() {
+    const char* storage = SDL_AndroidGetInternalStoragePath();
+    return storage != nullptr ? std::filesystem::u8path(storage) : std::filesystem::path{};
+}
+
+static std::filesystem::path android_user_directory() {
+    if ((SDL_AndroidGetExternalStorageState() & SDL_ANDROID_EXTERNAL_STORAGE_WRITE) == 0) {
+        return {};
+    }
+    const char* storage = SDL_AndroidGetExternalStoragePath();
+    if (storage == nullptr) return {};
+    const auto path = std::filesystem::u8path(storage);
+    std::error_code error;
+    std::filesystem::create_directories(path, error);
+    return error ? std::filesystem::path{} : path;
+}
+
+static bool migrate_android_user_file(
+    const std::filesystem::path& private_dir,
+    const std::filesystem::path& user_dir,
+    const std::filesystem::path& relative)
+{
+    const auto source = private_dir / relative;
+    const auto destination = user_dir / relative;
+    std::error_code error;
+    if (!std::filesystem::exists(source, error)) return !error;
+    if (std::filesystem::exists(destination, error)) return !error;
+    if (error) return false;
+    std::filesystem::create_directories(destination.parent_path(), error);
+    if (error) return false;
+    auto temporary = destination;
+    temporary += ".migration-part";
+    const bool copied = std::filesystem::copy_file(
+        source, temporary, std::filesystem::copy_options::overwrite_existing, error);
+    if (copied && !error) {
+        std::filesystem::rename(temporary, destination, error);
+    }
+    if (!copied || error) {
+        std::fprintf(stderr, "Could not migrate %s: %s\n",
+            relative.string().c_str(), error.message().c_str());
+        return false;
+    }
+    std::fprintf(stderr, "Migrated %s to Android/data\n", relative.string().c_str());
+    return true;
+}
+
+static bool migrate_android_user_files(
+    const std::filesystem::path& private_dir,
+    const std::filesystem::path& user_dir)
+{
+    for (const auto* name : {
+            "doraemon_pc_settings.json",
+            "doraemon_input_settings.json",
+            "saves/doraemon.n64.jp.bin",
+            "saves/doraemon.n64.jp.bin.bak"}) {
+        if (!migrate_android_user_file(private_dir, user_dir, name)) return false;
+    }
+    return true;
+}
+
+static std::filesystem::path wait_for_android_rom(
+    const std::filesystem::path& data_dir, uint64_t expected_hash)
+{
+    const auto rom = data_dir / "doraemon.n64.jp.z64";
+    const auto ready = data_dir / ".assets-ready";
+    const auto canceled = data_dir / ".rom-selection-canceled";
+    while (true) {
+        std::error_code error;
+        if (std::filesystem::exists(canceled, error)) return {};
+        error.clear();
+        if (std::filesystem::exists(ready, error) &&
+            std::filesystem::is_regular_file(rom, error)) {
+            if (is_supported_rom(rom, expected_hash)) return rom;
+            std::filesystem::remove(rom, error);
+            show_error_message("The selected ROM is not the supported original Japanese version. Restart Dora64 to choose another file.");
+            return {};
+        }
+        SDL_Delay(100);
+    }
+}
+#endif
 
 static std::filesystem::path find_rom_path(
     const std::filesystem::path& executable_dir, uint64_t expected_hash)
@@ -229,6 +340,9 @@ static bool has_command_line_argument(
     return false;
 }
 
+#if defined(__ANDROID__)
+#define main SDL_main
+#endif
 int main(int argc, char** argv) {
     std::puts("Dora64 - first runtime boot");
 
@@ -247,14 +361,38 @@ int main(int argc, char** argv) {
         .entrypoint = recomp_entrypoint,
     };
 
+#if defined(__ANDROID__)
+    const auto executable_dir = android_data_directory();
+    const auto user_dir = android_user_directory();
+#else
     const auto executable_dir = executable_directory();
+#endif
     if (executable_dir.empty()) {
         show_error_message("Could not determine the game folder. Please restart Dora64 from its installation folder.");
         SDL_Quit();
         return EXIT_FAILURE;
     }
+#if defined(__ANDROID__)
+    if (user_dir.empty()) {
+        show_error_message("Android user storage is unavailable. Dora64 cannot safely load saves and settings.");
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+    const auto native_log = user_dir / "native-stderr.log";
+    if (std::freopen(native_log.c_str(), "w", stderr) != nullptr) {
+        std::setvbuf(stderr, nullptr, _IONBF, 0);
+    }
+#endif
+#if defined(__ANDROID__)
+    game.rom_path = wait_for_android_rom(executable_dir, game.rom_hash);
+#else
     game.rom_path = find_rom_path(executable_dir, game.rom_hash);
+#endif
     if (game.rom_path.empty()) {
+#if defined(__ANDROID__)
+        SDL_Quit();
+        return EXIT_FAILURE;
+#else
         const auto directory_utf8 = executable_dir.u8string();
         const std::string message =
             "No supported ROM found.\n\n"
@@ -266,9 +404,19 @@ int main(int argc, char** argv) {
         show_error_message(message.c_str());
         SDL_Quit();
         return EXIT_FAILURE;
+#endif
     }
 
+#if defined(__ANDROID__)
+    if (!migrate_android_user_files(executable_dir, user_dir)) {
+        show_error_message("Could not move existing saves and settings to Android/data. No data was removed; check free space and restart Dora64.");
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+    const auto config_path = user_dir;
+#else
     const auto config_path = game.rom_path.parent_path();
+#endif
     const auto config_path_utf8 = config_path.u8string();
     std::printf("Config path: %s\n", reinterpret_cast<const char*>(config_path_utf8.c_str()));
     recomp::register_config_path(config_path);
@@ -324,6 +472,7 @@ int main(int argc, char** argv) {
     .events_callbacks = {
         .vi_callback = start_doraemon_on_first_vi,
         .gfx_init_callback = nullptr,
+        .gfx_task_submitted_callback = doraemon::lighting::submit_task,
     },
 
     .error_handling_callbacks = {

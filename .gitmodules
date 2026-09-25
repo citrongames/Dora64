@@ -6,3 +6,6 @@
 	path = lib/N64ModernRuntime
 	url = https://github.com/citrongames/Dora64-N64ModernRuntime.git
 	branch = doraemon-support
+[submodule "lib/SDL2"]
+	path = lib/SDL2
+	url = https://github.com/libsdl-org/SDL.git

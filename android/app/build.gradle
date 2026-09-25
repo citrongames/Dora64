@@ -1,0 +1,85 @@
+plugins {
+    id 'com.android.application'
+}
+
+final boolean dora64Runtime = (project.findProperty('dora64Runtime') ?: 'false').toString().toBoolean()
+final File generatedAssetsDir = layout.buildDirectory.dir('generated/dora64Assets').get().asFile
+
+android {
+    namespace 'com.n64recomp.dora64'
+    compileSdk 36
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    defaultConfig {
+        applicationId 'com.n64recomp.dora64'
+        minSdk 24
+        targetSdk 36
+        versionCode 34
+        versionName '0.1.33-dev'
+        buildConfigField 'boolean', 'DORA64_RUNTIME', dora64Runtime ? 'true' : 'false'
+
+        ndk {
+            abiFilters 'arm64-v8a'
+        }
+
+        externalNativeBuild {
+            cmake {
+                targets dora64Runtime ? 'Dora64' : 'main'
+                arguments "-DDORA64_HOST_FILE_TO_C=${System.getenv('DORA64_HOST_FILE_TO_C') ?: ''}"
+            }
+        }
+    }
+
+    // Gameplay/performance builds must optimize the generated game, RT64,
+    // and runtime together. Keep native symbols locally for crash analysis.
+    // The debug signing key allows installing this variant over test builds.
+    buildTypes {
+        optimized {
+            initWith release
+            signingConfig signingConfigs.debug
+            debuggable false
+            jniDebuggable false
+            minifyEnabled false
+            matchingFallbacks = ['release']
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                }
+            }
+        }
+    }
+
+    ndkVersion '27.0.12077973'
+
+    externalNativeBuild {
+        cmake {
+            path file(dora64Runtime ? '../../CMakeLists.txt' : 'CMakeLists.txt')
+            version '3.22.1'
+        }
+    }
+
+    sourceSets {
+        main {
+            java.srcDirs += ['../../lib/SDL2/android-project/app/src/main/java']
+            res.srcDirs += ['../../lib/SDL2/android-project/app/src/main/res']
+            if (dora64Runtime) {
+                assets.srcDirs += [generatedAssetsDir]
+            }
+        }
+    }
+}
+
+if (dora64Runtime) {
+    tasks.register('copyDora64Assets', Sync) {
+        from('../../assets') {
+            into 'dora64/assets'
+        }
+        into generatedAssetsDir
+    }
+    tasks.named('preBuild') {
+        dependsOn tasks.named('copyDora64Assets')
+    }
+}

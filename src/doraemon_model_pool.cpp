@@ -41,11 +41,23 @@ void doraemon_model_pool_reset() {
     doraemon_model_storage_offset = -0x4360;
 }
 
+uint32_t doraemon_model_pool_base() {
+    return arena.load(std::memory_order_acquire) & 0x1FFFFFFFU;
+}
+
+uint32_t doraemon_model_pool_used(uint8_t* rdram) {
+    const uint32_t used = MEM_HU(0, S32(0x80141CA0U));
+    return used <= DORAEMON_MODEL_POOL_CAPACITY ? used : 0;
+}
+
 int doraemon_model_pool_matrix_address(uint32_t address) {
     const uint32_t base = arena.load(std::memory_order_acquire);
     if (!base || address < base || address - base >= ModelBytes) return 0;
     const uint32_t offset = (address - base) % DORAEMON_MODEL_STRIDE;
     // +0x60/+0xA0 are the two scale buffers emitted by func_8001E94C.
     // They precede the remaining nine matrices at +0xE0 through +0x2E0.
-    return offset >= 0x60 && offset <= 0x2E0 && (offset - 0x60) % 0x40 == 0;
+    return offset >= DORAEMON_MODEL_MATRICES_OFFSET &&
+        offset <= DORAEMON_MODEL_MATRICES_OFFSET +
+            DORAEMON_MODEL_MATRICES_SIZE - 0x40 &&
+        (offset - DORAEMON_MODEL_MATRICES_OFFSET) % 0x40 == 0;
 }

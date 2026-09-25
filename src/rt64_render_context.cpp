@@ -4,10 +4,18 @@
 
 #include "rt64_render_context.hpp"
 
+#if defined(__ANDROID__)
+#include <SDL.h>
+#include <android/log.h>
+#include <unistd.h>
+#endif
+
 #include <algorithm>
+#include <atomic>
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
 #include "hle/rt64_application.h"
@@ -25,10 +33,31 @@
 #include "ultramodern/config.hpp"
 
 namespace {
+#if defined(__ANDROID__)
+    void android_trace(const char* message, bool reset = false) {
+        __android_log_print(ANDROID_LOG_INFO, "Dora64Native", "%s", message);
+        const auto path = recomp::get_config_path() / "android-trace.log";
+        if (FILE* file = std::fopen(path.c_str(), reset ? "w" : "a")) {
+            std::fprintf(file, "%s\n", message);
+            std::fflush(file);
+            fsync(fileno(file));
+            std::fclose(file);
+        }
+    }
+#endif
+
     RT64::RenderHookDraw* previousOutputDraw = nullptr;
     void count_output_frame(plume::RenderCommandList* list, plume::RenderFramebuffer* framebuffer) {
+#if defined(__ANDROID__)
+        static std::atomic_bool first_output_before{false};
+        if (!first_output_before.exchange(true)) android_trace("first output draw begin");
+#endif
         if (previousOutputDraw) previousOutputDraw(list, framebuffer);
         doraemon::system_overlay::record_output_frame();
+#if defined(__ANDROID__)
+        static std::atomic_bool first_output_after{false};
+        if (!first_output_after.exchange(true)) android_trace("first output draw complete");
+#endif
     }
 
     void model_pool_matrix(RT64::State* state, RT64::DisplayList** dl) {
@@ -154,6 +183,12 @@ namespace {
                 application.userConfig.resolutionMultiplier = 2.0f * downsample;
                 application.userConfig.downsampleMultiplier = downsample;
                 break;
+            case ultramodern::renderer::Resolution::Original4x:
+                application.userConfig.resolution =
+                    RT64::UserConfiguration::Resolution::Manual;
+                application.userConfig.resolutionMultiplier = 4.0f * downsample;
+                application.userConfig.downsampleMultiplier = downsample;
+                break;
             case ultramodern::renderer::Resolution::OptionCount:
                 break;
         }
@@ -224,9 +259,14 @@ doraemon::renderer::RT64Context::RT64Context(
     ultramodern::renderer::WindowHandle window_handle,
     bool developer_mode)
 {
+#if defined(__ANDROID__)
+    android_trace("RT64 context begin", true);
+#endif
     RT64::Application::Core core{};
 #if defined(_WIN32)
     core.window = window_handle.window;
+#elif defined(__ANDROID__)
+    core.window = window_handle;
 #else
     core.window = window_handle;
 #endif
@@ -264,9 +304,21 @@ doraemon::renderer::RT64Context::RT64Context(
     RT64::ApplicationConfiguration app_config{};
     app_config.appId = "dora64";
     app_config.useConfigurationFile = false;
+#if defined(__ANDROID__)
+    // Android's HOME may point at /data, which an app cannot write to.
+    // Keep RT64's log and cache under Dora64's private storage instead.
+    app_config.detectDataPath = false;
+    app_config.dataPath = recomp::get_config_path() / "rt64";
+#endif
     app_config.updateOverlayInput = doraemon::system_overlay::update_input;
     app_config.drawOverlay = doraemon::system_overlay::draw;
+#if defined(__ANDROID__)
+    android_trace("RT64 application create begin");
+#endif
     app = std::make_unique<RT64::Application>(core, app_config);
+#if defined(__ANDROID__)
+    android_trace("RT64 application created");
+#endif
 
     const auto& config = ultramodern::renderer::get_graphics_config();
     apply_user_config(*app, config);
@@ -306,7 +358,13 @@ doraemon::renderer::RT64Context::RT64Context(
         RT64::SetRenderHooks(RT64::GetRenderHookInit(), &count_output_frame,
             RT64::GetRenderHookDeinit());
     }
+#if defined(__ANDROID__)
+    android_trace("RT64 setup begin");
+#endif
     setup_result = map_setup_result(app->setup(0));
+#if defined(__ANDROID__)
+    android_trace("RT64 setup returned");
+#endif
     chosen_api = map_graphics_api(app->chosenGraphicsAPI);
     if (setup_result != ultramodern::renderer::SetupResult::Success) {
         std::fprintf(stderr, "RT64 setup failed (%d)\n", static_cast<int>(setup_result));
@@ -314,12 +372,34 @@ doraemon::renderer::RT64Context::RT64Context(
         return;
     }
 
+#if defined(__ANDROID__)
+    std::fprintf(stderr, "Dora64 swapchain: %u x %u\n",
+        app->sharedQueueResources->swapChainWidth,
+        app->sharedQueueResources->swapChainHeight);
+    std::fflush(stderr);
+#endif
+#if defined(__ANDROID__)
+    // Android owns the native surface size. Applying the desktop 1280x720
+    // window configuration changes SDL's logical size independently of the
+    // Vulkan swap chain, so leave the SDL window at its surface dimensions.
+    if (SDL_Window* window = SDL_GetWindowFromID(1)) {
+        int window_width = 0;
+        int window_height = 0;
+        SDL_GetWindowSize(window, &window_width, &window_height);
+        __android_log_print(ANDROID_LOG_INFO, "Dora64Native",
+            "window SDL=%dx%d swapchain=%ux%u",
+            window_width, window_height,
+            app->sharedQueueResources->swapChainWidth,
+            app->sharedQueueResources->swapChainHeight);
+    }
+#else
     app->setDisplayConfig(
         to_rt64(config.wm_option),
         config.display_index,
         config.display_width,
         config.display_height,
         config.display_refresh_rate);
+#endif
     sync_localized_textures();
     std::printf("RT64 renderer initialized\n");
 }
@@ -337,6 +417,7 @@ bool doraemon::renderer::RT64Context::update_config(
     if (!app || old_config == new_config) {
         return false;
     }
+#if !defined(__ANDROID__)
     if ((old_config.wm_option != new_config.wm_option) ||
         (old_config.display_index != new_config.display_index) ||
         (old_config.display_width != new_config.display_width) ||
@@ -349,6 +430,7 @@ bool doraemon::renderer::RT64Context::update_config(
             new_config.display_height,
             new_config.display_refresh_rate);
     }
+#endif
     apply_user_config(*app, new_config);
     app->updateUserConfig(true);
     if (old_config.msaa_option != new_config.msaa_option) {
@@ -370,6 +452,10 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     if (!app) {
         return;
     }
+#if defined(__ANDROID__)
+    static std::atomic_bool first_display_list_before{false};
+    if (!first_display_list_before.exchange(true)) android_trace("first display list begin");
+#endif
     {
         const auto& shared = app->sharedQueueResources;
         std::scoped_lock lock(shared->configurationMutex);
@@ -384,6 +470,87 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     }
     app->state->rsp->reset();
     doraemon::lighting::begin_task(task->t.data_ptr, task->t.data_size);
+    const auto frameDisplayList = doraemon::lighting::current_display_list();
+    const auto frameAssets = doraemon::lighting::current_frame_assets();
+    const auto skyDisplayLists = doraemon::lighting::current_sky_display_lists();
+#if defined(__ANDROID__)
+    static bool reportedSkySnapshot = false;
+    static bool reportedSkyReuse = false;
+    if (skyDisplayLists.data != nullptr) {
+        if (!reportedSkySnapshot) {
+            std::fprintf(stderr, "Dora64 sky DL snapshot active: begin=%08X bytes=%u\n",
+                skyDisplayLists.begin, skyDisplayLists.end - skyDisplayLists.begin);
+            std::fflush(stderr);
+            reportedSkySnapshot = true;
+        }
+        if (!reportedSkyReuse) {
+            const auto* liveSky = app->core.RDRAM + skyDisplayLists.begin;
+            const std::size_t skyLength = skyDisplayLists.end - skyDisplayLists.begin;
+            if (std::memcmp(skyDisplayLists.data, liveSky, skyLength) != 0) {
+                std::size_t offset = 0;
+                while (skyDisplayLists.data[offset] == liveSky[offset]) ++offset;
+                std::fprintf(stderr,
+                    "Dora64 sky DL changed before parse: address=%08X captured=%02X live=%02X\n",
+                    skyDisplayLists.begin + static_cast<std::uint32_t>(offset),
+                    static_cast<unsigned>(skyDisplayLists.data[offset]),
+                    static_cast<unsigned>(liveSky[offset]));
+                std::fflush(stderr);
+                reportedSkyReuse = true;
+            }
+        }
+    }
+    // A single report proves that the game reused the bank while RT64 still
+    // had an older task pending. Parsing uses the frame's immutable copy.
+    static bool reportedAssetReuse = false;
+    if (!reportedAssetReuse && frameAssets.data != nullptr) {
+        const auto* live = app->core.RDRAM + frameAssets.begin;
+        const std::size_t length = frameAssets.end - frameAssets.begin;
+        if (std::memcmp(frameAssets.data, live, length) != 0) {
+            std::size_t offset = 0;
+            while (frameAssets.data[offset] == live[offset]) ++offset;
+            std::fprintf(stderr,
+                "Dora64 frame assets changed before parse: address=%08X captured=%02X live=%02X\n",
+                frameAssets.begin + static_cast<std::uint32_t>(offset),
+                static_cast<unsigned>(frameAssets.data[offset]), static_cast<unsigned>(live[offset]));
+            std::fflush(stderr);
+            reportedAssetReuse = true;
+        }
+    }
+    auto compare_frame_display_list = [&](const char* phase) {
+        if (frameDisplayList.data == nullptr) return;
+        const auto* live = app->core.RDRAM + frameDisplayList.begin;
+        std::size_t changed = 0;
+        std::size_t first = 0;
+        const auto size = frameDisplayList.end - frameDisplayList.begin;
+        for (std::size_t i = 0; i < size; ++i) {
+            if (live[i] != frameDisplayList.data[i]) {
+                if (changed == 0) first = i;
+                ++changed;
+            }
+        }
+        if (changed != 0) {
+            static std::uint32_t reports = 0;
+            if (reports++ < 32 || (reports % 256) == 0) {
+                std::fprintf(stderr,
+                    "Dora64 primary DL changed %s: task=%08X bytes=%zu first=%08X report=%u\n",
+                    phase, task->t.data_ptr & 0x1FFFFFFFU, changed,
+                    frameDisplayList.begin + static_cast<std::uint32_t>(first), reports);
+                std::fflush(stderr);
+            }
+        }
+    };
+    compare_frame_display_list("before parse");
+#endif
+    app->state->displayListSnapshot = frameDisplayList.data;
+    app->state->displayListSnapshotBegin = frameDisplayList.begin;
+    app->state->displayListSnapshotEnd = frameDisplayList.end;
+    app->state->frameAssetSnapshot = frameAssets.data;
+    app->state->frameAssetSnapshotBegin = frameAssets.begin;
+    app->state->frameAssetSnapshotEnd = frameAssets.end;
+    app->state->skyDisplayListSnapshot = skyDisplayLists.data;
+    app->state->skyDisplayListSnapshotBegin = skyDisplayLists.begin;
+    app->state->skyDisplayListSnapshotEnd = skyDisplayLists.end;
+    app->state->matrixDataCallback = doraemon::lighting::model_matrix_data;
     app->state->rsp->lightDataCallback = doraemon::lighting::light_data;
     app->interpreter->loadUCodeGBI(
         task->t.ucode & 0x3FFFFFF,
@@ -399,6 +566,23 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
         task->t.data_ptr & 0x3FFFFFF,
         0,
         true);
+#if defined(__ANDROID__)
+    compare_frame_display_list("after parse");
+#endif
+#if defined(__ANDROID__)
+    static std::atomic_bool first_display_list_after{false};
+    if (!first_display_list_after.exchange(true)) android_trace("first display list complete");
+#endif
+    app->state->displayListSnapshot = nullptr;
+    app->state->displayListSnapshotBegin = 0;
+    app->state->displayListSnapshotEnd = 0;
+    app->state->frameAssetSnapshot = nullptr;
+    app->state->frameAssetSnapshotBegin = 0;
+    app->state->frameAssetSnapshotEnd = 0;
+    app->state->skyDisplayListSnapshot = nullptr;
+    app->state->skyDisplayListSnapshotBegin = 0;
+    app->state->skyDisplayListSnapshotEnd = 0;
+    app->state->matrixDataCallback = nullptr;
     doraemon::lighting::end_task();
 }
 
@@ -408,6 +592,10 @@ void doraemon::renderer::RT64Context::send_dummy_workload(uint32_t) {
 
 void doraemon::renderer::RT64Context::update_screen(bool cpu_changes_only) {
     if (app) {
+#if defined(__ANDROID__)
+        static std::atomic_bool first_screen_before{false};
+        if (!first_screen_before.exchange(true)) android_trace("first screen update begin");
+#endif
         sync_localized_textures();
         if (cpu_changes_only) {
             app->updateScreenIfFramebufferChanged();
@@ -415,6 +603,10 @@ void doraemon::renderer::RT64Context::update_screen(bool cpu_changes_only) {
         else {
             app->updateScreen();
         }
+#if defined(__ANDROID__)
+        static std::atomic_bool first_screen_after{false};
+        if (!first_screen_after.exchange(true)) android_trace("first screen update complete");
+#endif
     }
 }
 
@@ -438,8 +630,7 @@ void doraemon::renderer::RT64Context::sync_localized_textures() {
     }
 
     const std::filesystem::path replacement_directory =
-        recomp::get_config_path() / "assets" / "localization" /
-        language.code / "textures";
+        doraemon::localization::texture_directory(language);
     if (!std::filesystem::is_directory(replacement_directory)) {
         app->textureCache->clearReplacementDirectories();
         std::fprintf(
