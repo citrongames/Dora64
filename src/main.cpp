@@ -180,6 +180,16 @@ static ultramodern::renderer::WindowHandle create_window(void*) {
 static void update_gfx(void*) {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
+#if defined(__ANDROID__)
+        // Handle audio here, not in a watch: SDL dispatches foreground events
+        // before releasing its backend audio lock, but returns them afterwards.
+        if (event.type == SDL_APP_WILLENTERBACKGROUND) {
+            doraemon::audio::set_suspended(true);
+        }
+        else if (event.type == SDL_APP_DIDENTERFOREGROUND) {
+            doraemon::audio::set_suspended(false);
+        }
+#endif
         doraemon::input::process_event(event);
         if (event.type == SDL_QUIT) {
             ultramodern::quit();

@@ -23,6 +23,7 @@ uint32_t input_sample_rate = 48000;
 uint32_t output_sample_rate = 48000;
 uint32_t output_channels = 2;
 uint64_t maximum_submitted_frames = 0;
+bool suspended = false; // Protected by audio_mutex, including producer callbacks.
 std::atomic<float> master_volume{1.0f};
 
 std::vector<float> input_buffer;
@@ -146,7 +147,7 @@ bool initialize() {
         return false;
     }
 
-    SDL_PauseAudioDevice(audio_device, 0);
+    SDL_PauseAudioDevice(audio_device, suspended ? 1 : 0);
     std::printf(
         "Audio initialized: driver=%s, output=%u Hz, stereo float32, device buffer=%u frames (%llums)\n",
         SDL_GetCurrentAudioDriver() != nullptr ? SDL_GetCurrentAudioDriver() : "unknown",
@@ -157,6 +158,37 @@ bool initialize() {
         )
     );
     return true;
+}
+
+void set_suspended(bool should_suspend) {
+    std::scoped_lock lock(audio_mutex);
+    if (suspended == should_suspend) {
+        return;
+    }
+
+    suspended = should_suspend;
+    maximum_submitted_frames = 0;
+    uint32_t discarded_ms = 0;
+    if (audio_device != 0) {
+        // Pause before clearing so playback cannot consume a partial reset.
+        // SDL's Android backend has released its lifecycle lock by the time
+        // the foreground event is returned to our polling loop.
+        SDL_PauseAudioDevice(audio_device, 1);
+        const uint64_t queued_frames =
+            SDL_GetQueuedAudioSize(audio_device) / (output_channels * sizeof(float));
+        discarded_ms = static_cast<uint32_t>(queued_frames * 1000 / output_sample_rate);
+        SDL_ClearQueuedAudio(audio_device);
+    }
+    if (audio_stream != nullptr) {
+        // Clear both available output and the resampler's pending input/history.
+        SDL_AudioStreamClear(audio_stream);
+    }
+    if (!suspended && audio_device != 0) {
+        SDL_PauseAudioDevice(audio_device, 0);
+    }
+    std::printf("Audio %s: discarded %u ms queued audio.\n",
+        suspended ? "suspended" : "resumed", discarded_ms);
+    std::fflush(stdout);
 }
 
 void shutdown() {
@@ -176,6 +208,7 @@ void shutdown() {
     input_buffer.clear();
     output_buffer.clear();
     maximum_submitted_frames = 0;
+    suspended = false;
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
@@ -191,7 +224,9 @@ void set_frequency(uint32_t frequency) {
 
     input_sample_rate = frequency;
     maximum_submitted_frames = 0;
-    if (audio_device != 0) {
+    // In the background SDL may hold the device lock until foreground. Do not
+    // touch the device from game threads there; resume clears it before use.
+    if (audio_device != 0 && !suspended) {
         SDL_ClearQueuedAudio(audio_device);
     }
 
@@ -218,7 +253,7 @@ void queue_samples(int16_t* samples, size_t sample_count) {
     }
 
     std::scoped_lock lock(audio_mutex);
-    if (audio_device == 0 || audio_stream == nullptr) {
+    if (suspended || audio_device == 0 || audio_stream == nullptr) {
         return;
     }
 
@@ -256,7 +291,7 @@ void queue_samples(int16_t* samples, size_t sample_count) {
 
 size_t get_frames_remaining() {
     std::scoped_lock lock(audio_mutex);
-    if (audio_device == 0 || output_sample_rate == 0) {
+    if (suspended || audio_device == 0 || output_sample_rate == 0) {
         return 0;
     }
 
