@@ -36,7 +36,20 @@ type. The optimized variant disables RT64's per-command debug file log; Android
 startup and periodic timing messages still go to `native-stderr.log`.
 
 The build without `-Pdora64Runtime=true` is only a small SDL/Vulkan probe.
-Production release signing is a separate step.
+For a signed release, set `DORA64_SIGNING_PROPERTIES` to an absolute path to a
+private Java properties file outside the repository, then run:
+
+```sh
+export DORA64_SIGNING_PROPERTIES=/private/path/signing.properties
+./android/gradlew -p android :app:assembleRelease -Pdora64Runtime=true
+```
+
+The file supplies `storeFile` (absolute keystore path), `storePassword`, `keyAlias`
+and `keyPassword`. Never commit the file or keystore. Back them up privately;
+future updates must use the same key. Without this file, Release is unsigned.
+Release uses the same native RelWithDebInfo optimizations as Optimized and outputs
+`android/app/build/outputs/apk/release/app-release.apk` when signed.
+Only runtime assets are packaged; local `*_source.json` catalogs are excluded.
 
 ## ROM and user data
 
@@ -83,6 +96,8 @@ effects at high internal resolutions; 2x is the Android default and 4x is availa
 
 Touch controls and the editor are documented in
 [docs/android-touch-controls.md](../docs/android-touch-controls.md).
-The integration build is r34 (0.1.33-dev). It combines the existing device-tested
-port with the merged renderer dependencies and PC 720p menu scaling. It is a
-development APK using the same signing key; it is not a new published release.
+Android 1.0 (versionCode 35) is packaged alongside Windows/Linux 1.0.4.
+It uses the merged renderer dependencies and permanent release signing.
+Development builds through r34 use a different certificate: back up saves and
+settings outside Android/data before uninstalling the test app to install 1.0.
+Subsequent releases using the permanent key can update without uninstalling.

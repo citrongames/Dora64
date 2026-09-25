@@ -6,7 +6,7 @@ The project recompiles the original MIPS game code into native code and uses N64
 
 ## Download and play
 
-Download the latest **Windows x64** or **Linux x86_64** archive from
+Download the latest **Windows x64**, **Linux x86_64**, or **Android ARM64** archive from
 [GitHub Releases](https://github.com/citrongames/Dora64/releases/latest).
 Extract the complete archive, keep the `assets` folder beside the executable,
 and place your original Japanese `.z64` ROM in that same folder. Launch
@@ -21,7 +21,7 @@ Features include Japanese, English and Russian game text, widescreen support,
 an optional modern camera, higher frame rates through interpolation, autosave,
 remappable controls, adjustable object draw distance and optional cheats.
 The Modern settings profile is enabled on first launch; the Original profile
-is available in **Esc → Game**. Both archives include short Russian and English
+is available in **Esc → Game**. All three archives include short Russian and English
 collectible walkthroughs.
 
 ## Android
@@ -35,8 +35,14 @@ See [Android build and data instructions](android/README.md) and
 [touch controls and layout editor](docs/android-touch-controls.md).
 Android APKs have been tested by the maintainer on Lenovo Legion Y700 (2025),
 Snapdragon 8 Gen 3, including a complete playthrough with all items and Russian
-localization. Public Android release packaging/signing is still a separate step;
-the desktop release download above is unchanged.
+localization. Android **1.0** is distributed with desktop **1.0.4** in the same
+GitHub release. Extract the Android ZIP, install its APK, and choose your original
+Japanese `.z64` ROM on first launch. Requires Android 7.0+ on a 64-bit ARM device
+with Vulkan support; other GPU/device combinations have not been playtested.
+
+Android 1.0 uses a permanent release signing key. Earlier development APKs use a
+different key: back up saves/settings outside the app directory before uninstalling
+one to install the release. Later releases with the same key can update in place.
 
 ## Development and credits
 

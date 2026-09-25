@@ -42,3 +42,23 @@ are present in the staged archive. Before publishing, manually verify English
 and Russian dialogue, menu text and item notifications from an extracted build
 without any `*_source.json` files. The 1.0 release missed this dependency; the
 runtime indices replace it beginning with 1.0.1.
+
+
+## Android and shared releases
+
+The v1.0.4 release contains Windows/Linux 1.0.4 and Android 1.0. Build the signed
+Android Release variant as described in android/README.md, then package it with:
+
+```sh
+python3 tools/package_android_release.py --version 1.0 --source-tag v1.0.4 \
+  --apk android/app/build/outputs/apk/release/app-release.apk \
+  --output /path/to/release-output
+```
+
+Use the same output directory as desktop packaging. After all three archives
+exist, SHA256SUMS.txt must list all three (the Android packaging command writes
+this combined list when run last). Verify the APK certificate/version with SDK
+apksigner/aapt before publishing. The archive contains the APK, installation and
+upgrade instructions, both walkthroughs, dependency licenses and source metadata.
+Keep signing material and native debug symbols private and outside the archives.
+The release tag points to the common source commit, not to a platform version.

@@ -5,6 +5,18 @@ plugins {
 final boolean dora64Runtime = (project.findProperty('dora64Runtime') ?: 'false').toString().toBoolean()
 final File generatedAssetsDir = layout.buildDirectory.dir('generated/dora64Assets').get().asFile
 
+// Private signing material stays outside the repository and APK.
+final Properties releaseSigning = new Properties()
+final String signingPath = System.getenv('DORA64_SIGNING_PROPERTIES')
+if (signingPath) {
+    file(signingPath).withInputStream { releaseSigning.load(it) }
+    ['storeFile', 'storePassword', 'keyAlias', 'keyPassword'].each {
+        if (!releaseSigning.getProperty(it)) {
+            throw new GradleException("Missing release signing property: ${it}")
+        }
+    }
+}
+
 android {
     namespace 'com.n64recomp.dora64'
     compileSdk 36
@@ -17,8 +29,8 @@ android {
         applicationId 'com.n64recomp.dora64'
         minSdk 24
         targetSdk 36
-        versionCode 34
-        versionName '0.1.33-dev'
+        versionCode 35
+        versionName '1.0'
         buildConfigField 'boolean', 'DORA64_RUNTIME', dora64Runtime ? 'true' : 'false'
 
         ndk {
@@ -36,7 +48,29 @@ android {
     // Gameplay/performance builds must optimize the generated game, RT64,
     // and runtime together. Keep native symbols locally for crash analysis.
     // The debug signing key allows installing this variant over test builds.
+    signingConfigs {
+        if (signingPath) {
+            production {
+                storeFile file(releaseSigning.getProperty('storeFile'))
+                storePassword releaseSigning.getProperty('storePassword')
+                keyAlias releaseSigning.getProperty('keyAlias')
+                keyPassword releaseSigning.getProperty('keyPassword')
+            }
+        }
+    }
+
     buildTypes {
+        release {
+            if (signingPath) signingConfig signingConfigs.production
+            debuggable false
+            jniDebuggable false
+            minifyEnabled false
+            externalNativeBuild {
+                cmake {
+                    arguments '-DCMAKE_BUILD_TYPE=RelWithDebInfo'
+                }
+            }
+        }
         optimized {
             initWith release
             signingConfig signingConfigs.debug
@@ -75,6 +109,12 @@ android {
 if (dora64Runtime) {
     tasks.register('copyDora64Assets', Sync) {
         from('../../assets') {
+            include 'icons/**'
+            include 'localization/dialogue_font.bmp', 'localization/dialogue_font.json'
+            include 'localization/languages.json'
+            include 'localization/dialogue_index.json', 'localization/game_text_index.json'
+            include 'localization/en/**', 'localization/ru/**'
+            exclude '**/*_source.json'
             into 'dora64/assets'
         }
         into generatedAssetsDir
