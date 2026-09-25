@@ -142,6 +142,16 @@ namespace {
     doraemon::input::BindingDevice captureDevice =
         doraemon::input::BindingDevice::Keyboard;
 
+    bool menuSelectable(const char* label, bool selected) {
+#if defined(__ANDROID__)
+        // Combo rows need their own height; FramePadding only grows the closed combo.
+        return ImGui::Selectable(label, selected, 0,
+            ImVec2(0, ImGui::GetFrameHeight() - ImGui::GetStyle().ItemSpacing.y));
+#else
+        return ImGui::Selectable(label, selected);
+#endif
+    }
+
     template <typename Enum>
     bool validEnum(Enum value) {
         return static_cast<int>(value) >= 0 &&
@@ -422,7 +432,7 @@ namespace {
         if (ImGui::BeginCombo("Monitor", currentDisplay->name.c_str())) {
             for (int displayIndex = 0; displayIndex < static_cast<int>(displays.size()); displayIndex++) {
                 const bool isSelected = settings.graphics.display_index == displayIndex;
-                if (ImGui::Selectable(displays[displayIndex].name.c_str(), isSelected)) {
+                if (menuSelectable(displays[displayIndex].name.c_str(), isSelected)) {
                     settings.graphics.display_index = displayIndex;
                     const OutputMode& desktopMode = displays[displayIndex].desktopMode;
                     if ((desktopMode.width > 0) && (desktopMode.height > 0)) {
@@ -490,7 +500,7 @@ namespace {
                         (settings.graphics.display_refresh_rate == mode.refreshRate));
                 const std::string label = outputModeLabel(
                     mode.width, mode.height, mode.refreshRate, includeRefreshRate);
-                if (ImGui::Selectable(label.c_str(), isSelected)) {
+                if (menuSelectable(label.c_str(), isSelected)) {
                     settings.graphics.display_width = mode.width;
                     settings.graphics.display_height = mode.height;
                     settings.graphics.display_refresh_rate =
@@ -619,7 +629,7 @@ namespace {
         if (ImGui::BeginCombo(label, labels[selected])) {
             for (int index = 0; index < static_cast<int>(Count); index++) {
                 const bool isSelected = selected == index;
-                if (ImGui::Selectable(labels[index], isSelected)) {
+                if (menuSelectable(labels[index], isSelected)) {
                     value = static_cast<Enum>(index);
                     changed = true;
                 }
@@ -652,7 +662,7 @@ namespace {
         if (ImGui::BeginCombo(label, labels[selected])) {
             for (int index = 0; index < static_cast<int>(Count); index++) {
                 const bool isSelected = value == values[index];
-                if (ImGui::Selectable(labels[index], isSelected)) {
+                if (menuSelectable(labels[index], isSelected)) {
                     value = values[index];
                     changed = true;
                 }
@@ -672,7 +682,11 @@ namespace {
         settings.autosave = modern;
         settings.modernCamera = modern;
         settings.graphics.rr_option = modern ? RefreshRate::Display : RefreshRate::Original;
+#if defined(__ANDROID__)
+        settings.graphics.res_option = modern ? Resolution::Original2x : Resolution::Original;
+#else
         settings.graphics.res_option = modern ? Resolution::Auto : Resolution::Original;
+#endif
         settings.graphics.ar_option = modern ? AspectRatio::Expand : AspectRatio::Original;
         settings.graphics.hr_option = modern ? HUDRatioMode::Full : HUDRatioMode::Original;
         settings.drawDistance = modern ? 5.0f : 1.0f;
@@ -713,7 +727,7 @@ namespace {
             for (std::size_t index = 0; index < languages.size(); index++) {
                 const bool isSelected = index == selectedLanguage;
                 ImGui::PushID(languages[index].code.c_str());
-                if (ImGui::Selectable(languages[index].name.c_str(), isSelected)) {
+                if (menuSelectable(languages[index].name.c_str(), isSelected)) {
                     doraemon::localization::set_language(index);
                     settings.languageCode = languages[index].code;
                     saveSettings();
@@ -734,14 +748,24 @@ namespace {
         ImGui::Separator();
         bool cameraChanged = ImGui::Checkbox("Modern camera", &settings.modernCamera);
         if (settings.modernCamera) {
+#if defined(__ANDROID__)
+            ImGui::TextWrapped("Rotate with the right stick or swipe the free area on the right. Adjust swipe sensitivity in Touch. Scripted and boss cameras keep their original control.");
+#else
             ImGui::TextWrapped("Rotate with the right stick or camera keys. Enable mouse capture to rotate with the mouse. Scripted and boss cameras retain their original control.");
+#endif
             cameraChanged |= ImGui::SliderFloat("Camera stick speed", &settings.cameraStickSpeed, 30.0f, 360.0f, "%.0f deg/s");
+#if !defined(__ANDROID__)
             cameraChanged |= ImGui::Checkbox("Capture mouse", &settings.cameraCaptureMouse);
             cameraChanged |= ImGui::SliderFloat("Camera mouse sensitivity", &settings.cameraMouseSensitivity, 0.02f, 1.0f, "%.2f deg/pixel");
+#endif
             cameraChanged |= ImGui::Checkbox("Invert camera X", &settings.cameraInvertX);
             cameraChanged |= ImGui::Checkbox("Invert camera Y", &settings.cameraInvertY);
+#if defined(__ANDROID__)
+            ImGui::TextWrapped("Zoom: touch + / -, D-pad up / down, or hold Camera mode and move the camera stick vertically. The gear or Back / Select opens this menu.");
+#else
             ImGui::TextWrapped("Zoom: D-pad up / down (your configured bindings), mouse wheel, Page Up / Page Down, or hold Camera mode (RB / E by default) and move the camera stick vertically.");
             ImGui::TextDisabled("Esc opens this menu and releases the mouse.");
+#endif
         }
         if (cameraChanged) {
             doraemon::camera::configure(settings.modernCamera, settings.cameraStickSpeed,
@@ -907,12 +931,14 @@ namespace {
             ImGui::TextDisabled("Gamepad: not connected");
         }
 
+#if !defined(__ANDROID__)
         bool backgroundGamepadInput =
             doraemon::input::is_background_gamepad_input_enabled();
         if (ImGui::Checkbox("Background gamepad input", &backgroundGamepadInput)) {
             doraemon::input::set_background_gamepad_input_enabled(backgroundGamepadInput);
         }
         ImGui::TextDisabled("Gamepad only; keyboard input still requires focus.");
+#endif
 
         int stickDeadZonePercent = doraemon::input::stick_dead_zone_percent();
         if (ImGui::SliderInt(
@@ -923,7 +949,11 @@ namespace {
                 "%d%%")) {
             doraemon::input::set_stick_dead_zone_percent(stickDeadZonePercent);
         }
+#if defined(__ANDROID__)
+        ImGui::TextDisabled("Back / Select opens the port menu. Touch controls are in the Touch tab.");
+#else
         ImGui::TextDisabled("Escape and Back / Select are reserved for the PC menu.");
+#endif
         ImGui::Spacing();
 
         bool openCapturePopup = false;
@@ -932,10 +962,17 @@ namespace {
             ImGuiTableFlags_RowBg |
             ImGuiTableFlags_ScrollY |
             ImGuiTableFlags_SizingStretchProp;
-        if (ImGui::BeginTable("##InputBindings", 3, tableFlags, ImVec2(0.0f, uiPixels(252.0f)))) {
+#if defined(__ANDROID__)
+        constexpr int bindingColumns = 2;
+#else
+        constexpr int bindingColumns = 3;
+#endif
+        if (ImGui::BeginTable("##InputBindings", bindingColumns, tableFlags, ImVec2(0.0f, uiPixels(252.0f)))) {
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch, 2.0f);
+#if !defined(__ANDROID__)
             ImGui::TableSetupColumn("Keyboard", ImGuiTableColumnFlags_WidthStretch, 1.0f);
+#endif
             ImGui::TableSetupColumn("Gamepad", ImGuiTableColumnFlags_WidthStretch, 1.0f);
             ImGui::TableHeadersRow();
 
@@ -947,6 +984,7 @@ namespace {
                 ImGui::AlignTextToFramePadding();
                 ImGui::TextUnformatted(doraemon::input::action_name(action));
 
+#if !defined(__ANDROID__)
                 ImGui::TableSetColumnIndex(1);
                 const std::string keyboard = doraemon::input::keyboard_binding_name(action);
                 if (ImGui::Button(keyboard.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
@@ -956,7 +994,8 @@ namespace {
                     openCapturePopup = true;
                 }
 
-                ImGui::TableSetColumnIndex(2);
+#endif
+                ImGui::TableSetColumnIndex(bindingColumns - 1);
                 const std::string gamepad = doraemon::input::gamepad_binding_name(action);
                 if (ImGui::Button(gamepad.c_str(), ImVec2(-FLT_MIN, 0.0f))) {
                     captureAction = action;
@@ -1016,6 +1055,16 @@ namespace {
         }
     }
 
+    void drawTabContent(const char* id, void (*drawContent)()) {
+#if defined(__ANDROID__)
+        // Keep both the tab bar and footer fixed; only this tab's body scrolls.
+        if (ImGui::BeginChild(id, ImVec2(0, -uiPixels(72.0f)))) drawContent();
+        ImGui::EndChild();
+#else
+        drawContent();
+#endif
+    }
+
     void drawMenu() {
         ImGuiIO& io = ImGui::GetIO();
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
@@ -1031,8 +1080,13 @@ namespace {
 
         const float menuWidth = std::max(1.0f,
             std::min(viewport->WorkSize.x - uiPixels(48.0f), uiPixels(760.0f)));
+#if defined(__ANDROID__)
+        constexpr float menuHeightUnits = 620.0f;
+#else
+        constexpr float menuHeightUnits = 500.0f;
+#endif
         const float menuHeight = std::max(1.0f,
-            std::min(viewport->WorkSize.y - uiPixels(48.0f), uiPixels(500.0f)));
+            std::min(viewport->WorkSize.y - uiPixels(48.0f), uiPixels(menuHeightUnits)));
         ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
 
@@ -1052,50 +1106,71 @@ namespace {
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.11f, 0.52f, 0.72f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_CheckMark, ImVec4(0.45f, 0.95f, 0.75f, 1.0f));
 
+#if defined(__ANDROID__)
+        // Larger hit areas for fingers, scaled with the existing 720p UI baseline.
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(uiPixels(10.0f), uiPixels(14.0f)));
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(uiPixels(10.0f), uiPixels(10.0f)));
+        ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, uiPixels(24.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_GrabMinSize, uiPixels(28.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0, 0.5f));
+#endif
         if (ImGui::Begin("##DoraemonPcMenu", nullptr, flags)) {
             ImGui::SetWindowFontScale(1.18f);
             ImGui::TextUnformatted("Dora64");
             ImGui::SetWindowFontScale(1.0f);
             ImGui::SameLine();
+#if defined(__ANDROID__)
+            ImGui::TextDisabled("Port menu");
+#else
             ImGui::TextDisabled("PC menu");
+#endif
             ImGui::Separator();
             ImGui::Spacing();
 
             if (ImGui::BeginTabBar("##DoraemonPcMenuTabs")) {
                 if (ImGui::BeginTabItem("Game")) {
-                    drawGameTab();
+                    drawTabContent("##PortGameContent", drawGameTab);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Graphics")) {
-                    drawGraphicsTab();
+                    drawTabContent("##PortGraphicsContent", drawGraphicsTab);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Audio")) {
-                    drawAudioTab();
+                    drawTabContent("##PortAudioContent", drawAudioTab);
                     ImGui::EndTabItem();
                 }
                 if (ImGui::BeginTabItem("Controls")) {
-                    drawControlsTab();
+                    drawTabContent("##PortControlsContent", drawControlsTab);
                     ImGui::EndTabItem();
                 }
 #if defined(__ANDROID__)
                 if (ImGui::BeginTabItem("Touch")) {
-                    doraemon::touch::draw_settings();
+                    drawTabContent("##PortTouchContent", doraemon::touch::draw_settings);
                     ImGui::EndTabItem();
                 }
 #endif
                 if (ImGui::BeginTabItem("Cheats")) {
-                    drawCheatsTab();
+                    drawTabContent("##PortCheatsContent", drawCheatsTab);
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();
             }
 
+#if !defined(__ANDROID__)
             const float footerY = ImGui::GetWindowHeight() - uiPixels(54.0f);
             ImGui::SetCursorPosY(std::max(ImGui::GetCursorPosY(), footerY));
+#endif
             ImGui::Separator();
+#if defined(__ANDROID__)
+            ImGui::AlignTextToFramePadding();
+            ImGui::TextDisabled("Back / Select: close menu");
+            ImGui::SameLine(ImGui::GetWindowContentRegionMax().x -
+                uiPixels(200.0f) - ImGui::GetStyle().ItemSpacing.x);
+#else
             ImGui::TextDisabled("Escape / Back: close menu");
             ImGui::SameLine(ImGui::GetWindowWidth() - uiPixels(330.0f));
+#endif
             if (ImGui::Button("Continue", ImVec2(uiPixels(100.0f), 0.0f))) {
                 doraemon::system_overlay::toggle_menu();
             }
@@ -1103,10 +1178,12 @@ namespace {
             if (ImGui::Button("Reset game", ImVec2(uiPixels(100.0f), 0.0f))) {
                 ImGui::OpenPopup("Reset game?");
             }
+#if !defined(__ANDROID__)
             ImGui::SameLine();
             if (ImGui::Button("Exit game", ImVec2(uiPixels(100.0f), 0.0f))) {
                 ImGui::OpenPopup("Exit game?");
             }
+#endif
 
             ImGui::SetNextWindowPos(
                 ImGui::GetMainViewport()->GetCenter(),
@@ -1130,6 +1207,7 @@ namespace {
                 ImGui::EndPopup();
             }
 
+#if !defined(__ANDROID__)
             ImGui::SetNextWindowPos(
                 ImGui::GetMainViewport()->GetCenter(),
                 ImGuiCond_Always,
@@ -1146,8 +1224,28 @@ namespace {
                 }
                 ImGui::EndPopup();
             }
+#endif
         }
+#if defined(__ANDROID__)
+        const ImVec2 menuPos = ImGui::GetWindowPos(), menuSize = ImGui::GetWindowSize();
+        const bool canDismiss = !ImGui::IsPopupOpen(nullptr, ImGuiPopupFlags_AnyPopup);
+        doraemon::touch::set_port_menu_bounds({
+            (menuPos.x - viewport->Pos.x) / viewport->Size.x,
+            (menuPos.y - viewport->Pos.y) / viewport->Size.y,
+            menuSize.x / viewport->Size.x, menuSize.y / viewport->Size.y}, canDismiss);
+        // Real mouse clicks use ImGui; touchscreen dismissal is handled by the
+        // raw finger event so that same contact cannot press a game control.
+        const ImVec2 mouse = io.MousePos;
+        const bool outside = mouse.x < menuPos.x || mouse.y < menuPos.y ||
+            mouse.x > menuPos.x + menuSize.x || mouse.y > menuPos.y + menuSize.y;
+        if (canDismiss && outside && io.MouseSource != ImGuiMouseSource_TouchScreen &&
+            ImGui::IsMouseClicked(ImGuiMouseButton_Left) && doraemon::system_overlay::is_menu_open())
+            doraemon::system_overlay::toggle_menu();
+#endif
         ImGui::End();
+#if defined(__ANDROID__)
+        ImGui::PopStyleVar(5);
+#endif
 
         ImGui::PopStyleColor(5);
         ImGui::PopStyleVar(4);

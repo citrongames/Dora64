@@ -18,6 +18,8 @@ namespace {
     std::string saveError;
     std::array<float,SDL_CONTROLLER_AXIS_MAX> axisAnchor{}, axisValue{};
     bool suspended=false;
+    Rect portMenuBounds{};
+    bool portMenuDismissible=false;
 
     void context() {
         state.set_context(camera::is_enabled(), camera::is_dialogue_active(),
@@ -54,12 +56,17 @@ void initialize(const std::filesystem::path& directory) {
 }
 
 void process_event(const SDL_Event& event) {
-    bool openMenu=false;
+    bool openMenu=false, closeMenu=false;
     {
         std::lock_guard lock(mutex);
         context();
         switch(event.type) {
         case SDL_FINGERDOWN:
+            if(!suspended && system_overlay::is_menu_open()) {
+                closeMenu=portMenuDismissible && !portMenuBounds.contains({event.tfinger.x,event.tfinger.y});
+                // Consume the down event even when closing, never forward it to a game button.
+                break;
+            }
             axisAnchor=axisValue; // A held stick must not immediately hide a newly revealed HUD.
             state.down(event.tfinger.touchId,event.tfinger.fingerId,{event.tfinger.x,event.tfinger.y});
             openMenu=state.menuRequested; state.menuRequested=false;
@@ -92,7 +99,8 @@ void process_event(const SDL_Event& event) {
         default: break;
         }
     }
-    if(openMenu && !system_overlay::is_menu_open()) system_overlay::toggle_menu();
+    if((openMenu && !system_overlay::is_menu_open()) || (closeMenu && system_overlay::is_menu_open()))
+        system_overlay::toggle_menu();
 }
 
 void update() {
@@ -112,7 +120,12 @@ void update() {
     context();
     if(w>0 && h>0) state.resize(float(w),float(h),density);
 }
-void cancel() { std::lock_guard lock(mutex); state.clear(); }
+void cancel() { std::lock_guard lock(mutex); state.clear(); portMenuDismissible=false; }
+void set_port_menu_bounds(Rect bounds, bool canDismiss) {
+    std::lock_guard lock(mutex);
+    portMenuBounds=bounds;
+    portMenuDismissible=canDismiss;
+}
 bool is_editing() { std::lock_guard lock(mutex); return state.editing; }
 GameInput read_input() { std::lock_guard lock(mutex); context(); return state.read(camera::is_active()); }
 CameraInput take_camera() { std::lock_guard lock(mutex); context(); return state.take_camera(); }
@@ -233,6 +246,7 @@ void initialize(const std::filesystem::path&) {}
 void process_event(const SDL_Event&) {}
 void update() {}
 void cancel() {}
+void set_port_menu_bounds(Rect, bool) {}
 bool is_editing() { return false; }
 GameInput read_input() { return {}; }
 CameraInput take_camera() { return {}; }

@@ -85,3 +85,31 @@ The user approved committing the implementation. The report did not separately
 enumerate every extended checklist item (such as cold-restart persistence or
 screen-lock cycles); those are not claimed as individually device-verified.
 The agent built and inspected the APK but did not install or run it.
+
+
+## Android port menu (r33)
+
+The Android title is now Port menu. Exit game, the keyboard binding column,
+Background gamepad input, Capture mouse and Camera mouse sensitivity are hidden.
+Help text describes touch/gamepad input. Existing saved settings and keyboard
+bindings remain compatible; this is a UI change, not a settings-file migration.
+New Android installs and the Modern profile use 2x game render resolution.
+Existing chosen resolution is preserved until the user selects a profile/value.
+Original remains 1x. Desktop profiles and menu controls retain their behavior.
+
+Android buttons, tabs, checkboxes, combo rows, scrollbars and slider grabs have
+larger hit areas. The taller menu keeps its tabs and Continue/Reset fixed while
+each tab body scrolls independently. These sizes use the existing 720p baseline.
+
+Tapping outside the menu closes it like Continue. Raw SDL finger-down handling
+consumes the dismissing contact before game controls can receive it. Rendered
+menu bounds are published under the touch mutex; active popups prevent this
+dismissal. Real mouse clicks use ImGui's outside-click path. The layout editor
+retains its explicit Save/Cancel behavior.
+
+Native/optimized APK build passed. Before delivery, headless checks covered
+dismissal without game-input leakage and fixed-footer/scroll geometry at 720p,
+2560x1600 and 2400x1080; desktop syntax was also checked. These checks did not
+discover a new failure. On 2026-09-25, the user tested r33, confirmed the
+result worked well, and approved committing the Android menu changes.
+The agent did not install or run the APK.
