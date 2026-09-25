@@ -59,10 +59,6 @@ The Modern profile defaults to 2x rendering. Higher resolutions and many translu
 effects can reduce performance. Full playthrough tested on Lenovo Legion Y700 (2025),
 Snapdragon 8 Gen 3; other devices have not been playtested.
 
-UPGRADING FROM DEVELOPMENT APKS (r34 and earlier): the signing key has changed.
-Back up saves/settings outside the app directory BEFORE uninstalling the old app.
-Android removes its data on uninstall. Install 1.0, launch once, then restore your backup.
-Future public releases signed with the same permanent key can update in place.
 Data folder: Android/data/com.n64recomp.dora64/files/
 Progress: saves/doraemon.n64.jp.bin (and .bak).
 Settings: doraemon_pc_settings.json, doraemon_input_settings.json,
@@ -72,11 +68,6 @@ doraemon_touch_settings.json. Access may require a USB connection/ADB on newer A
 оригинальный японский ROM .z64. ROM в архив не входит, локализация встроена в APK.
 Нужен Android 7.0+, 64-битный ARM и Vulkan. Управление — тач или геймпад;
 положение кнопок, язык и графика настраиваются в меню Port.
-
-При переходе с тестовых APK до r34 включительно подпись меняется: СНАЧАЛА сохраните
-сейвы и настройки из указанной выше папки вне данных приложения, затем удалите
-тестовую версию и установите 1.0. Удаление приложения удаляет его данные.
-Последующие публичные версии смогут обновляться поверх 1.0.
 
 walkthrough_ru.txt / walkthrough_en.txt: short collectible walkthroughs.
 Dependency license texts: licenses/

@@ -98,6 +98,4 @@ Touch controls and the editor are documented in
 [docs/android-touch-controls.md](../docs/android-touch-controls.md).
 Android 1.0 (versionCode 35) is packaged alongside Windows/Linux 1.0.4.
 It uses the merged renderer dependencies and permanent release signing.
-Development builds through r34 use a different certificate: back up saves and
-settings outside Android/data before uninstalling the test app to install 1.0.
-Subsequent releases using the permanent key can update without uninstalling.
+Future releases using the same key can update in place.

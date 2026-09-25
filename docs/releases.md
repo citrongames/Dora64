@@ -58,7 +58,7 @@ python3 tools/package_android_release.py --version 1.0 --source-tag v1.0.4 \
 Use the same output directory as desktop packaging. After all three archives
 exist, SHA256SUMS.txt must list all three (the Android packaging command writes
 this combined list when run last). Verify the APK certificate/version with SDK
-apksigner/aapt before publishing. The archive contains the APK, installation and
-upgrade instructions, both walkthroughs, dependency licenses and source metadata.
+apksigner/aapt before publishing. The archive contains the APK, installation instructions, both walkthroughs,
+dependency licenses and source metadata.
 Keep signing material and native debug symbols private and outside the archives.
 The release tag points to the common source commit, not to a platform version.

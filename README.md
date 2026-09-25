@@ -40,9 +40,7 @@ GitHub release. Extract the Android ZIP, install its APK, and choose your origin
 Japanese `.z64` ROM on first launch. Requires Android 7.0+ on a 64-bit ARM device
 with Vulkan support; other GPU/device combinations have not been playtested.
 
-Android 1.0 uses a permanent release signing key. Earlier development APKs use a
-different key: back up saves/settings outside the app directory before uninstalling
-one to install the release. Later releases with the same key can update in place.
+Android releases use a permanent signing key and can update in place.
 
 ## Development and credits
 
