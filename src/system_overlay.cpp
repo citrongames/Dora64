@@ -780,8 +780,12 @@ namespace {
             "Windowed",
             "Borderless fullscreen"
         };
+        constexpr Resolution resolutionValues[] = {
+            Resolution::Original, Resolution::Original2x,
+            Resolution::Original4x, Resolution::Auto
+        };
         constexpr const char* resolutions[] = {
-            "Original (1x)", "Original (2x)", "Fit to window"
+            "Original (1x)", "Original (2x)", "Original (4x)", "Fit to window"
         };
         constexpr AspectRatio aspectRatioValues[] = {
             AspectRatio::Original, AspectRatio::Expand
@@ -851,7 +855,9 @@ namespace {
             ImGui::TextWrapped("Smoother motion with the original game speed. Maximum FPS follows the display refresh rate.");
         }
 
-        changed |= enumCombo("Game render resolution", settings.graphics.res_option, resolutions);
+        changed |= mappedEnumCombo(
+            "Game render resolution", settings.graphics.res_option,
+            resolutionValues, resolutions);
         changed |= mappedEnumCombo(
             "Game aspect ratio",
             settings.graphics.ar_option,

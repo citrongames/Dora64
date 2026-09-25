@@ -183,6 +183,12 @@ namespace {
                 application.userConfig.resolutionMultiplier = 2.0f * downsample;
                 application.userConfig.downsampleMultiplier = downsample;
                 break;
+            case ultramodern::renderer::Resolution::Original4x:
+                application.userConfig.resolution =
+                    RT64::UserConfiguration::Resolution::Manual;
+                application.userConfig.resolutionMultiplier = 4.0f * downsample;
+                application.userConfig.downsampleMultiplier = downsample;
+                break;
             case ultramodern::renderer::Resolution::OptionCount:
                 break;
         }
