@@ -192,6 +192,9 @@ if(WIN32)
     target_link_directories(Dora64 PRIVATE
         "${DORAEMON_SDL2_ROOT}/lib/x64"
     )
+    # The executable owns SDL's Windows entry point; do not rely on RT64
+    # propagating SDL2main through its renderer dependencies.
+    target_link_libraries(Dora64 PRIVATE SDL2main)
 endif()
 
 target_link_libraries(Dora64 PRIVATE
