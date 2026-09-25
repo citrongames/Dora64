@@ -15,6 +15,7 @@
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 
 #include "hle/rt64_application.h"
@@ -366,6 +367,12 @@ doraemon::renderer::RT64Context::RT64Context(
     }
 
 #if defined(__ANDROID__)
+    std::fprintf(stderr, "Dora64 swapchain: %u x %u\n",
+        app->sharedQueueResources->swapChainWidth,
+        app->sharedQueueResources->swapChainHeight);
+    std::fflush(stderr);
+#endif
+#if defined(__ANDROID__)
     // Android owns the native surface size. Applying the desktop 1280x720
     // window configuration changes SDL's logical size independently of the
     // Vulkan swap chain, so leave the SDL window at its surface dimensions.
@@ -458,7 +465,51 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     app->state->rsp->reset();
     doraemon::lighting::begin_task(task->t.data_ptr, task->t.data_size);
     const auto frameDisplayList = doraemon::lighting::current_display_list();
+    const auto frameAssets = doraemon::lighting::current_frame_assets();
+    const auto skyDisplayLists = doraemon::lighting::current_sky_display_lists();
 #if defined(__ANDROID__)
+    static bool reportedSkySnapshot = false;
+    static bool reportedSkyReuse = false;
+    if (skyDisplayLists.data != nullptr) {
+        if (!reportedSkySnapshot) {
+            std::fprintf(stderr, "Dora64 sky DL snapshot active: begin=%08X bytes=%u\n",
+                skyDisplayLists.begin, skyDisplayLists.end - skyDisplayLists.begin);
+            std::fflush(stderr);
+            reportedSkySnapshot = true;
+        }
+        if (!reportedSkyReuse) {
+            const auto* liveSky = app->core.RDRAM + skyDisplayLists.begin;
+            const std::size_t skyLength = skyDisplayLists.end - skyDisplayLists.begin;
+            if (std::memcmp(skyDisplayLists.data, liveSky, skyLength) != 0) {
+                std::size_t offset = 0;
+                while (skyDisplayLists.data[offset] == liveSky[offset]) ++offset;
+                std::fprintf(stderr,
+                    "Dora64 sky DL changed before parse: address=%08X captured=%02X live=%02X\n",
+                    skyDisplayLists.begin + static_cast<std::uint32_t>(offset),
+                    static_cast<unsigned>(skyDisplayLists.data[offset]),
+                    static_cast<unsigned>(liveSky[offset]));
+                std::fflush(stderr);
+                reportedSkyReuse = true;
+            }
+        }
+    }
+    // A single report proves that the game reused the bank while RT64 still
+    // had an older task pending. Parsing uses the frame's immutable copy.
+    static bool reportedAssetReuse = false;
+    if (!reportedAssetReuse && frameAssets.data != nullptr) {
+        const auto* live = app->core.RDRAM + frameAssets.begin;
+        const std::size_t length = frameAssets.end - frameAssets.begin;
+        if (std::memcmp(frameAssets.data, live, length) != 0) {
+            std::size_t offset = 0;
+            while (frameAssets.data[offset] == live[offset]) ++offset;
+            std::fprintf(stderr,
+                "Dora64 frame assets changed before parse: address=%08X captured=%02X live=%02X\n",
+                frameAssets.begin + static_cast<std::uint32_t>(offset),
+                static_cast<unsigned>(frameAssets.data[offset]), static_cast<unsigned>(live[offset]));
+            std::fflush(stderr);
+            reportedAssetReuse = true;
+        }
+    }
     auto compare_frame_display_list = [&](const char* phase) {
         if (frameDisplayList.data == nullptr) return;
         const auto* live = app->core.RDRAM + frameDisplayList.begin;
@@ -487,6 +538,13 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     app->state->displayListSnapshot = frameDisplayList.data;
     app->state->displayListSnapshotBegin = frameDisplayList.begin;
     app->state->displayListSnapshotEnd = frameDisplayList.end;
+    app->state->frameAssetSnapshot = frameAssets.data;
+    app->state->frameAssetSnapshotBegin = frameAssets.begin;
+    app->state->frameAssetSnapshotEnd = frameAssets.end;
+    app->state->skyDisplayListSnapshot = skyDisplayLists.data;
+    app->state->skyDisplayListSnapshotBegin = skyDisplayLists.begin;
+    app->state->skyDisplayListSnapshotEnd = skyDisplayLists.end;
+    app->state->matrixDataCallback = doraemon::lighting::model_matrix_data;
     app->state->rsp->lightDataCallback = doraemon::lighting::light_data;
     app->interpreter->loadUCodeGBI(
         task->t.ucode & 0x3FFFFFF,
@@ -512,6 +570,13 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     app->state->displayListSnapshot = nullptr;
     app->state->displayListSnapshotBegin = 0;
     app->state->displayListSnapshotEnd = 0;
+    app->state->frameAssetSnapshot = nullptr;
+    app->state->frameAssetSnapshotBegin = 0;
+    app->state->frameAssetSnapshotEnd = 0;
+    app->state->skyDisplayListSnapshot = nullptr;
+    app->state->skyDisplayListSnapshotBegin = 0;
+    app->state->skyDisplayListSnapshotEnd = 0;
+    app->state->matrixDataCallback = nullptr;
     doraemon::lighting::end_task();
 }
 

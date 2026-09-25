@@ -1,17 +1,15 @@
 # Dora64 for Android
 
-The Android port lives in the existing Dora64 repository on the `android-port`
-branch. Its application ID is `com.n64recomp.dora64`. It uses the pinned SDL2
-submodule and the Dora64 RT64/N64ModernRuntime forks; do not replace those
-forks with upstream checkouts.
+The Android port is in this repository on the `android-port` branch. Its package
+name is `com.n64recomp.dora64`. Build against the pinned Dora64 forks of RT64
+and N64ModernRuntime, plus the pinned SDL2 submodule. The original ROM is not
+packaged in the APK.
 
 ## Build
 
 Requirements: JDK 17, Android SDK platform 36, build tools 35.0.0, Android
-NDK 27.0.12077973, Android CMake 3.22.1, Gradle wrapper, and host CMake.
-The patched generated game code in `build-tools/game` must already be present;
-see the repository's generation instructions. The original ROM is never
-packaged into the APK.
+NDK 27.0.12077973, Android CMake 3.22.1, and the generated game code in
+`build-tools/game`.
 
 From the repository root in WSL:
 
@@ -24,42 +22,39 @@ export ANDROID_HOME=/path/to/android-sdk
 ./android/gradlew -p android :app:assembleDebug -Pdora64Runtime=true
 ```
 
-The APK is `android/app/build/outputs/apk/debug/app-debug.apk`. It is signed
-with the local Android debug key. A release signing key and Play publication
-are separate later steps; keep the release key private.
+The result is `android/app/build/outputs/apk/debug/app-debug.apk`, signed with
+the local debug key. The build without `-Pdora64Runtime=true` is only a small
+SDL/Vulkan probe. Release signing is a separate step.
 
-The default build without `-Pdora64Runtime=true` is a small SDL/Vulkan probe
-and contains no game runtime.
+## ROM and user data
 
-## First device test
+On first launch, choose the supported original Japanese 8 MiB `.z64` ROM in
+the Android document picker. The ROM and bundled assets stay in the app's
+private internal files directory. ROM contents are validated before gameplay.
 
-On first launch, choose your own original Japanese 8 MiB `.z64` ROM in the
-Android document picker. The app copies it into private app storage and checks
-its hash before starting. The APK contains no ROM. A supported gamepad is the
-current input path; touch controls have not been implemented yet.
+Saves, settings, and diagnostic logs live in the app's external files directory,
+normally `/storage/emulated/0/Android/data/com.n64recomp.dora64/files/`:
 
-This build has only been compiled and inspected. It has not been installed or
-launched by the porting work. Please test the APK on your phones and tablets,
-starting with an ARM64 Vulkan device and a connected gamepad. Report the
-device model, Android version, chipset, and any launch error or logcat output.
+- `saves/doraemon.n64.jp.bin` and its `.bak` backup: game progress.
+- `doraemon_pc_settings.json`: game and graphics settings.
+- `doraemon_input_settings.json`: input bindings.
+- `native-stderr.log`, `android-trace.log`, `rt64/rt64.log`: diagnostics.
 
-The SDL Vulkan surface setup was checked against the
-[Zelda64Recomp Android fork](https://github.com/linkzenic/Zelda64Recomp-Android).
-Dora64 keeps its own patched RT64 and N64ModernRuntime forks.
+When upgrading an older build, Dora64 copies existing saves and settings from
+the previous private directory if the destination file does not already exist.
+It keeps the original files. Android removes the external app-specific
+directory when the app is uninstalled, so copy saves elsewhere before uninstalling.
+An APK installed as an update keeps this directory.
 
-For an Android debug build, RT64 startup milestones are written to
-`files/android-trace.log`, and native error output to `files/native-stderr.log`.
-After a device hang and reboot, retrieve them with Windows ADB:
-
-```powershell
-.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/android-trace.log > "D:\!Download\dora64-trace.txt"
-.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/native-stderr.log > "D:\!Download\dora64-stderr.txt"
-```
-
-The `native-stderr.log` file is optional; if it does not exist, the second command reports an error.
-
-On the Lenovo Y700, r5 confirmed that the stock Adreno Vulkan driver rejects five compute pipelines with `VK_ERROR_UNKNOWN` before the first frame. r6 tried Android-only shader optimization, but the driver rejected the same five pipelines. r7 restores the original DXC optimization settings required by `FbCommon.hlsli`, while retaining shader hashes in the `Dora64Vulkan` logcat tag. r8 stops requiring optional Vulkan debug utilities on Android and requests the Vulkan instance version supported by the loader (at least 1.1). It logs any remaining instance setup failure under `Dora64Vulkan`. On Snapdragon 888, r8 confirmed that Vulkan instance creation now succeeds, but the first frame failed: RT64 requested an unsupported BGRA swapchain format and its re-spirv optimizer rejected `OpImageQuerySize` in RasterPS MSAA shaders. r9 requests RGBA consistently for the Android swapchain and output pipelines, and uses a patched re-spirv that handles this opcode. Plume logs shader hashes and offered surface formats if further graphics setup fails. On Snapdragon 888, r9 reached Vulkan graphics pipeline creation, but all raster pipelines failed. Their SPIR-V used packed StructuredBuffer layouts that require `scalarBlockLayout`. r10 aligns the shared CPU/GPU structures `RDPParams`, `GPUTile`, `RSPViewport`, `RSPLight`, and `RSPLookAt`, and tracks these headers as shader build dependencies. All 56 Android SPIR-V shaders and four optimized RasterPS variants pass `spirv-val --target-env vulkan1.2` without `scalarBlockLayout`. r10 has not yet been tested on a device. Debug builds also record the first four `fullSync` calls in `files/rt64/rt64.log`. Retrieve existing logs after a crash or reboot; do not rerun the APK just to collect them:
+PowerShell examples with multiple ADB devices (replace `<serial>` with the
+Lenovo serial reported by `./adb.exe devices`):
 
 ```powershell
-.\adb.exe exec-out run-as com.n64recomp.dora64 cat files/rt64/rt64.log > "D:\!Download\dora64-rt64.txt"
+./adb.exe -s "<serial>" pull "/sdcard/Android/data/com.n64recomp.dora64/files/native-stderr.log" "D:\Games\dorarecomp\logs\dora64-lenovo-stderr.txt"
+./adb.exe -s "<serial>" pull "/sdcard/Android/data/com.n64recomp.dora64/files/rt64/rt64.log" "D:\Games\dorarecomp\logs\dora64-lenovo-rt64.txt"
+./adb.exe -s "<serial>" pull "/sdcard/Android/data/com.n64recomp.dora64/files/saves/doraemon.n64.jp.bin" "D:\Games\dorarecomp\logs\doraemon.n64.jp.bin"
 ```
+
+The user tests APKs on the devices. The porting work does not install or run
+the APK. Test gameplay first on the Lenovo Legion Y700 (2025); investigate
+other chipsets after the baseline build is stable.

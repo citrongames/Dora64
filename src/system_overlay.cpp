@@ -1117,6 +1117,13 @@ void doraemon::system_overlay::initialize(const std::filesystem::path& configDir
     }
     loadSettings();
 #if defined(__ANDROID__)
+    std::fprintf(stderr,
+        "Dora64 graphics settings: resolution=%d downsample=%d refresh=%d msaa=%d drawDistance=%.2f aspect=%d\n",
+        static_cast<int>(settings.graphics.res_option), settings.graphics.ds_option,
+        static_cast<int>(settings.graphics.rr_option),
+        static_cast<int>(settings.graphics.msaa_option),
+        settings.drawDistance, static_cast<int>(settings.graphics.ar_option));
+    std::fflush(stderr);
     // The single Android surface always occupies the device display.
     settings.graphics.wm_option = ultramodern::renderer::WindowMode::Fullscreen;
 #endif

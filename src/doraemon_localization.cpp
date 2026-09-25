@@ -199,6 +199,11 @@ namespace {
         std::vector<std::filesystem::path> candidates;
 #if defined(__ANDROID__)
         candidates.push_back(recomp::get_config_path() / "assets" / relativePath);
+        // Bundled assets remain private; only saves and settings move to the
+        // user-visible Android/data directory.
+        if (const char* internal = SDL_AndroidGetInternalStoragePath()) {
+            candidates.push_back(pathFromUtf8(internal) / "assets" / relativePath);
+        }
 #endif
         if (char* basePath = SDL_GetBasePath()) {
             candidates.push_back(pathFromUtf8(basePath) / "assets" / relativePath);

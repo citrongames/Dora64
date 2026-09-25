@@ -18,6 +18,7 @@
 #include "rt64_render_context.hpp"
 #include "doraemon_audio.hpp"
 #include "doraemon_input.hpp"
+#include "doraemon_lighting.hpp"
 #include "system_overlay.hpp"
 #include "funcs.h"
 
@@ -212,6 +213,61 @@ static std::filesystem::path android_data_directory() {
     return storage != nullptr ? std::filesystem::u8path(storage) : std::filesystem::path{};
 }
 
+static std::filesystem::path android_user_directory() {
+    if ((SDL_AndroidGetExternalStorageState() & SDL_ANDROID_EXTERNAL_STORAGE_WRITE) == 0) {
+        return {};
+    }
+    const char* storage = SDL_AndroidGetExternalStoragePath();
+    if (storage == nullptr) return {};
+    const auto path = std::filesystem::u8path(storage);
+    std::error_code error;
+    std::filesystem::create_directories(path, error);
+    return error ? std::filesystem::path{} : path;
+}
+
+static bool migrate_android_user_file(
+    const std::filesystem::path& private_dir,
+    const std::filesystem::path& user_dir,
+    const std::filesystem::path& relative)
+{
+    const auto source = private_dir / relative;
+    const auto destination = user_dir / relative;
+    std::error_code error;
+    if (!std::filesystem::exists(source, error)) return !error;
+    if (std::filesystem::exists(destination, error)) return !error;
+    if (error) return false;
+    std::filesystem::create_directories(destination.parent_path(), error);
+    if (error) return false;
+    auto temporary = destination;
+    temporary += ".migration-part";
+    const bool copied = std::filesystem::copy_file(
+        source, temporary, std::filesystem::copy_options::overwrite_existing, error);
+    if (copied && !error) {
+        std::filesystem::rename(temporary, destination, error);
+    }
+    if (!copied || error) {
+        std::fprintf(stderr, "Could not migrate %s: %s\n",
+            relative.string().c_str(), error.message().c_str());
+        return false;
+    }
+    std::fprintf(stderr, "Migrated %s to Android/data\n", relative.string().c_str());
+    return true;
+}
+
+static bool migrate_android_user_files(
+    const std::filesystem::path& private_dir,
+    const std::filesystem::path& user_dir)
+{
+    for (const auto* name : {
+            "doraemon_pc_settings.json",
+            "doraemon_input_settings.json",
+            "saves/doraemon.n64.jp.bin",
+            "saves/doraemon.n64.jp.bin.bak"}) {
+        if (!migrate_android_user_file(private_dir, user_dir, name)) return false;
+    }
+    return true;
+}
+
 static std::filesystem::path wait_for_android_rom(
     const std::filesystem::path& data_dir, uint64_t expected_hash)
 {
@@ -297,6 +353,7 @@ int main(int argc, char** argv) {
 
 #if defined(__ANDROID__)
     const auto executable_dir = android_data_directory();
+    const auto user_dir = android_user_directory();
 #else
     const auto executable_dir = executable_directory();
 #endif
@@ -306,7 +363,12 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 #if defined(__ANDROID__)
-    const auto native_log = executable_dir / "native-stderr.log";
+    if (user_dir.empty()) {
+        show_error_message("Android user storage is unavailable. Dora64 cannot safely load saves and settings.");
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+    const auto native_log = user_dir / "native-stderr.log";
     if (std::freopen(native_log.c_str(), "w", stderr) != nullptr) {
         std::setvbuf(stderr, nullptr, _IONBF, 0);
     }
@@ -335,7 +397,16 @@ int main(int argc, char** argv) {
 #endif
     }
 
+#if defined(__ANDROID__)
+    if (!migrate_android_user_files(executable_dir, user_dir)) {
+        show_error_message("Could not move existing saves and settings to Android/data. No data was removed; check free space and restart Dora64.");
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
+    const auto config_path = user_dir;
+#else
     const auto config_path = game.rom_path.parent_path();
+#endif
     const auto config_path_utf8 = config_path.u8string();
     std::printf("Config path: %s\n", reinterpret_cast<const char*>(config_path_utf8.c_str()));
     recomp::register_config_path(config_path);
@@ -391,6 +462,7 @@ int main(int argc, char** argv) {
     .events_callbacks = {
         .vi_callback = start_doraemon_on_first_vi,
         .gfx_init_callback = nullptr,
+        .gfx_task_submitted_callback = doraemon::lighting::submit_task,
     },
 
     .error_handling_callbacks = {

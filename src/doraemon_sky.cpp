@@ -41,6 +41,19 @@ void doraemon::sky::set_output_width(float width) {
     outputWidth.store(width, std::memory_order_relaxed);
 }
 
+doraemon::sky::DisplayListRange doraemon::sky::frame_display_list_range(
+    std::uint32_t buffer)
+{
+    if (buffer >= arenas.size() || arenas[buffer] == 0 ||
+        currentArena != arenas[buffer]) {
+        return {0, 0};
+    }
+    const auto begin = arenas[buffer] & 0x1FFFFFFFU;
+    const auto end = arenaCursor & 0x1FFFFFFFU;
+    if (end < begin || end > begin + ScratchOffset) return {0, 0};
+    return {begin, end};
+}
+
 void doraemon::sky::reset() {
     // The runtime drains old graphics work before resetting the guest heap.
     arenas = {};
