@@ -9,14 +9,14 @@ import zipfile
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--version', required=True)
-parser.add_argument('--source-tag', required=True)
+parser.add_argument('--source-tag', '--source-ref', dest='source_tag', required=True)
 parser.add_argument('--apk', type=Path, required=True)
 parser.add_argument('--output', type=Path, required=True)
 args = parser.parse_args()
 if not re.fullmatch(r'[0-9]+\.[0-9]+(?:\.[0-9]+)?', args.version):
     parser.error('Expected a numeric version')
-if not re.fullmatch(r'v[0-9]+\.[0-9]+(?:\.[0-9]+)?', args.source_tag):
-    parser.error('Expected a version tag')
+if not re.fullmatch(r'(?:v[0-9]+\.[0-9]+(?:\.[0-9]+)?|[0-9a-f]{40})', args.source_tag):
+    parser.error('Expected a version tag or full commit SHA')
 repo = Path(__file__).resolve().parent.parent
 def git(*options):
     return subprocess.check_output(['git', *options], cwd=repo, text=True).strip()
@@ -74,7 +74,7 @@ Dependency license texts: licenses/
 Source: https://github.com/citrongames/Dora64/tree/{args.source_tag}
 ''', encoding='utf-8')
 (stage / 'VERSION.txt').write_text(
-    f'Dora64 Android {args.version}\nPlatform: Android-arm64\nSource tag: {args.source_tag}\n'
+    f'Dora64 Android {args.version}\nPlatform: Android-arm64\nSource ref: {args.source_tag}\n'
     f'Commit: {git("rev-parse", "HEAD")}\nConfiguration: Release (native RelWithDebInfo)\n'
     + git('submodule', 'status', '--recursive') + '\n', encoding='utf-8')
 dist = args.output.resolve() / 'dist'

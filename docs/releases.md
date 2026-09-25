@@ -62,3 +62,9 @@ apksigner/aapt before publishing. The archive contains the APK, installation ins
 dependency licenses and source metadata.
 Keep signing material and native debug symbols private and outside the archives.
 The release tag points to the common source commit, not to a platform version.
+
+
+When replacing only the Android archive in an existing desktop release, keep the
+desktop release tag unchanged and pass `--source-ref <full Android source commit>`
+instead of `--source-tag`. For Android 1.0.1, keep Windows/Linux 1.0.4 assets
+unchanged, replace the Android ZIP, and refresh SHA256SUMS.txt for all three.

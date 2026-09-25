@@ -35,7 +35,7 @@ See [Android build and data instructions](android/README.md) and
 [touch controls and layout editor](docs/android-touch-controls.md).
 Android APKs have been tested by the maintainer on Lenovo Legion Y700 (2025),
 Snapdragon 8 Gen 3, including a complete playthrough with all items and Russian
-localization. Android **1.0** is distributed with desktop **1.0.4** in the same
+localization. Android **1.0.1** is distributed with desktop **1.0.4** in the same
 GitHub release. Extract the Android ZIP, install its APK, and choose your original
 Japanese `.z64` ROM on first launch. Requires Android 7.0+ on a 64-bit ARM device
 with Vulkan support; other GPU/device combinations have not been playtested.

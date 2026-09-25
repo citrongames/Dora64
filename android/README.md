@@ -96,6 +96,12 @@ effects at high internal resolutions; 2x is the Android default and 4x is availa
 
 Touch controls and the editor are documented in
 [docs/android-touch-controls.md](../docs/android-touch-controls.md).
-Android 1.0 (versionCode 35) is packaged alongside Windows/Linux 1.0.4.
+Android 1.0.1 (versionCode 37) is packaged alongside Windows/Linux 1.0.4.
 It uses the merged renderer dependencies and permanent release signing.
 Future releases using the same key can update in place.
+
+
+Android 1.0.1 declares `appCategory="game"` and the legacy `isGame` flag for
+Android 7. The maintainer confirmed automatic game-center detection with the r36
+candidate. The final build retains the permanent signing key and can update 1.0
+in place. It replaces the Android archive in the existing v1.0.4 release.
