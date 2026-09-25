@@ -1,6 +1,6 @@
 # Dora64
 
-A native PC recompilation of *Doraemon: Nobita to Mittsu no Seireiseki* for Nintendo 64.
+A native desktop and Android recompilation of *Doraemon: Nobita to Mittsu no Seireiseki* for Nintendo 64.
 
 The project recompiles the original MIPS game code into native code and uses N64ModernRuntime and RT64 for the platform, audio, input, and rendering layers. It is a native recompilation project, not a conventional whole-system emulator.
 
@@ -23,6 +23,20 @@ remappable controls, adjustable object draw distance and optional cheats.
 The Modern settings profile is enabled on first launch; the Original profile
 is available in **Esc → Game**. Both archives include short Russian and English
 collectible walkthroughs.
+
+## Android
+
+Android ARM64 support is part of the same source tree. It includes ROM import,
+gamepad and configurable touch controls, modern/classic camera gestures, and
+background/screen-lock recovery. New Android installs and the Modern profile
+use 2x game rendering; saved choices are preserved.
+
+See [Android build and data instructions](android/README.md) and
+[touch controls and layout editor](docs/android-touch-controls.md).
+Android APKs have been tested by the maintainer on Lenovo Legion Y700 (2025),
+Snapdragon 8 Gen 3, including a complete playthrough with all items and Russian
+localization. Public Android release packaging/signing is still a separate step;
+the desktop release download above is unchanged.
 
 ## Development and credits
 

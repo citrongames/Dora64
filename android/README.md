@@ -1,6 +1,6 @@
 # Dora64 for Android
 
-The Android port is in this repository on the `android-port` branch. Its package
+The Android port is included in this repository alongside the desktop port. Its package
 name is `com.n64recomp.dora64`. Build against the pinned Dora64 forks of RT64
 and N64ModernRuntime, plus the pinned SDL2 submodule. The original ROM is not
 packaged in the APK.
@@ -50,6 +50,7 @@ normally `/storage/emulated/0/Android/data/com.n64recomp.dora64/files/`:
 - `saves/doraemon.n64.jp.bin` and its `.bak` backup: game progress.
 - `doraemon_pc_settings.json`: game and graphics settings.
 - `doraemon_input_settings.json`: input bindings.
+- `doraemon_touch_settings.json`: touch positions, size, opacity and sensitivity.
 - `native-stderr.log`, `android-trace.log`, `rt64/rt64.log`: diagnostics.
 
 When upgrading an older build, Dora64 copies existing saves and settings from
@@ -70,3 +71,18 @@ Lenovo serial reported by `./adb.exe devices`):
 The user tests APKs on the devices. The porting work does not install or run
 the APK. Test gameplay first on the Lenovo Legion Y700 (2025); investigate
 other chipsets after the baseline build is stable.
+
+
+## Current validation and integration
+
+The maintainer completed the game with all items on Lenovo Legion Y700 (2025),
+Snapdragon 8 Gen 3, using the Modern defaults, Russian localization and cheats.
+Subsequent r32 touch controls/layout editing and r33 Android port-menu changes
+were also confirmed working. Performance can still fall during heavy translucent
+effects at high internal resolutions; 2x is the Android default and 4x is available.
+
+Touch controls and the editor are documented in
+[docs/android-touch-controls.md](../docs/android-touch-controls.md).
+The integration build is r34 (0.1.33-dev). It combines the existing device-tested
+port with the merged renderer dependencies and PC 720p menu scaling. It is a
+development APK using the same signing key; it is not a new published release.
