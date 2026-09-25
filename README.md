@@ -240,6 +240,14 @@ entries with no allocation failures. Full playthrough validation remains open.
 Optional diagnostics are enabled with `DORAEMON_DRAW_DISTANCE_DIAGNOSTICS=1`
 and write `doraemon-draw-distance.log` in the working directory.
 
+## Menu and notification scaling
+
+The settings menu, fonts, controls, confirmation dialogs and FPS/autosave/cheat
+indicators scale with the output window height, using 720p as the baseline.
+Resizing the window updates the scale immediately; internal game render
+resolution does not affect it. Scaling is local to the port overlay and does
+not change the RT64 inspector.
+
 ## Modern camera
 
 Enable **Esc → Game → Modern camera** for continuous orbit control with the
