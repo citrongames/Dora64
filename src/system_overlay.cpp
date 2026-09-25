@@ -2,6 +2,7 @@
 #include "doraemon_camera.hpp"
 #include "doraemon_cheats.h"
 #include "system_overlay.hpp"
+#include "doraemon_touch.hpp"
 
 #include <algorithm>
 #include <atomic>
@@ -1077,6 +1078,12 @@ namespace {
                     drawControlsTab();
                     ImGui::EndTabItem();
                 }
+#if defined(__ANDROID__)
+                if (ImGui::BeginTabItem("Touch")) {
+                    doraemon::touch::draw_settings();
+                    ImGui::EndTabItem();
+                }
+#endif
                 if (ImGui::BeginTabItem("Cheats")) {
                     drawCheatsTab();
                     ImGui::EndTabItem();
@@ -1229,6 +1236,8 @@ void doraemon::system_overlay::toggle_menu() {
         std::memory_order_acquire)) {
     }
 
+    doraemon::touch::cancel();
+    doraemon::camera::clear_input();
     if (current) {
         doraemon::input::cancel_binding_capture();
     }
@@ -1306,6 +1315,8 @@ void doraemon::system_overlay::draw() {
     if (is_menu_open()) {
         drawMenu();
     }
+
+    doraemon::touch::draw();
 
     if (settings.showFps) {
         drawFps(fps);

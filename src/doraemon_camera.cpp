@@ -16,6 +16,7 @@ namespace {
     constexpr uint32_t View = 0x800F0548, CameraState = 0x800F0588;
     constexpr uint32_t GameState = 0x800F38A0;
     std::atomic_bool enabled{false}, available{false}, invertX{false}, invertY{false}, captureMouse{false};
+    std::atomic_bool dialogueActive{false};
     std::atomic<float> stickSpeed{120.0f}, mouseSensitivity{0.15f};
     std::atomic<int64_t> lastAvailable{0};
     std::atomic<unsigned> generation{0};
@@ -110,6 +111,9 @@ void doraemon::camera::configure(bool useModern, float speed, float sensitivity,
     if(!useModern) available.store(false);
 }
 
+bool doraemon::camera::is_enabled() { return enabled.load(); }
+bool doraemon::camera::is_dialogue_active() { return dialogueActive.load(); }
+
 bool doraemon::camera::is_mouse_capture_enabled() { return captureMouse.load(); }
 
 bool doraemon::camera::is_active() {
@@ -128,10 +132,14 @@ void doraemon::camera::submit_input(float yaw, float pitch, float mx, float my, 
 void doraemon::camera::clear_input() { drop_input(); }
 
 void doraemon::camera::reset() {
-    orbit={}; available.store(false); lastAvailable.store(0); drop_input();
+    orbit={}; available.store(false); dialogueActive.store(false); lastAvailable.store(0); drop_input();
 }
 
 extern "C" void doraemon_camera_sync(uint8_t* rdram) {
+    // Read on the game thread, publish to the overlay without racing RDRAM.
+    // func_80012B80: states 1..4 draw/prepare dialogue; 0 and -1 are inactive.
+    const int dialogueState=MEM_H(0,gpr(S32(0x800E6B20)));
+    dialogueActive.store(dialogueState>=1 && dialogueState<=4);
     const bool active=enabled.load() && manual(rdram);
     available.store(active); lastAvailable.store(now_ms());
     if(!active) { orbit.initialized=false; drop_input(); }

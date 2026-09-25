@@ -111,6 +111,7 @@ set(DORAEMON_APP_SOURCES
     ${DORAEMON_RSP_SOURCE}
     src/rt64_render_context.cpp
     src/doraemon_input.cpp
+    src/doraemon_touch.cpp
     src/doraemon_audio.cpp
     src/doraemon_lighting.cpp
     src/doraemon_sky.cpp
@@ -233,6 +234,9 @@ endif()
 option(DORAEMON_BUILD_TESTS "Build headless regression tests" OFF)
 if(DORAEMON_BUILD_TESTS)
     enable_testing()
+    add_executable(touch_controls_test tests/touch_controls.cpp)
+    target_include_directories(touch_controls_test PRIVATE src lib/rt64/src/contrib)
+    add_test(NAME touch_controls COMMAND touch_controls_test)
     function(doraemon_extract_game_function function_name output_variable)
         foreach(source IN LISTS FUNC_C_SOURCES)
             file(READ "${source}" function_source)
