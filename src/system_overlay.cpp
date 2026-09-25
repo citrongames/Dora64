@@ -90,6 +90,44 @@ namespace {
         std::vector<OutputMode> modes;
     };
 
+    // Dimensions below are authored at a 720p output height. Use ImGui's
+    // viewport coordinates (already accounting for framebuffer DPI), not the
+    // game's internal render resolution.
+    float overlayScale = 1.0f;
+
+    float uiPixels(float pixels) {
+        return pixels * overlayScale;
+    }
+
+    class ScopedOverlayScale {
+    public:
+        ScopedOverlayScale()
+            : originalStyle(ImGui::GetStyle()),
+              originalFontScale(ImGui::GetIO().FontGlobalScale) {
+            const float height = ImGui::GetMainViewport()->WorkSize.y;
+            overlayScale = height > 0.0f ? height / 720.0f : 1.0f;
+            // Start from the unscaled style every frame: resizing must not
+            // accumulate scaling or rounding, or affect the RT64 inspector.
+            ImGui::GetStyle().ScaleAllSizes(overlayScale);
+            ImGui::GetIO().FontGlobalScale = originalFontScale * overlayScale;
+            ImGui::PushFont(ImGui::GetFont());
+        }
+
+        ~ScopedOverlayScale() {
+            ImGui::GetIO().FontGlobalScale = originalFontScale;
+            ImGui::PopFont();
+            ImGui::GetStyle() = originalStyle;
+            overlayScale = 1.0f;
+        }
+
+        ScopedOverlayScale(const ScopedOverlayScale&) = delete;
+        ScopedOverlayScale& operator=(const ScopedOverlayScale&) = delete;
+
+    private:
+        ImGuiStyle originalStyle;
+        float originalFontScale;
+    };
+
     FpsCounter fpsCounter;
     std::atomic<std::uint64_t> outputFrames{0};
     PcSettings settings;
@@ -470,8 +508,8 @@ namespace {
     void drawFps(float fps) {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImVec2 position(
-            viewport->WorkPos.x + viewport->WorkSize.x - 12.0f,
-            viewport->WorkPos.y + 12.0f);
+            viewport->WorkPos.x + viewport->WorkSize.x - uiPixels(12.0f),
+            viewport->WorkPos.y + uiPixels(12.0f));
 
         ImGui::SetNextWindowPos(position, ImGuiCond_Always, ImVec2(1.0f, 0.0f));
         ImGui::SetNextWindowBgAlpha(0.72f);
@@ -484,8 +522,8 @@ namespace {
             ImGuiWindowFlags_NoNav |
             ImGuiWindowFlags_NoInputs;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, uiPixels(5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(uiPixels(8.0f), uiPixels(5.0f)));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.025f, 0.03f, 0.04f, 1.0f));
         if (ImGui::Begin("##DoraemonSystemOverlayFps", nullptr, flags)) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 1.0f, 0.76f, 1.0f));
@@ -505,8 +543,8 @@ namespace {
     void drawCheatsIndicator() {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImVec2 position(
-            viewport->WorkPos.x + viewport->WorkSize.x - 12.0f,
-            viewport->WorkPos.y + viewport->WorkSize.y - 12.0f);
+            viewport->WorkPos.x + viewport->WorkSize.x - uiPixels(12.0f),
+            viewport->WorkPos.y + viewport->WorkSize.y - uiPixels(12.0f));
 
         ImGui::SetNextWindowPos(position, ImGuiCond_Always, ImVec2(1.0f, 1.0f));
         ImGui::SetNextWindowBgAlpha(0.72f);
@@ -519,8 +557,8 @@ namespace {
             ImGuiWindowFlags_NoNav |
             ImGuiWindowFlags_NoInputs;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, uiPixels(5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(uiPixels(8.0f), uiPixels(5.0f)));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.025f, 0.03f, 0.04f, 1.0f));
         if (ImGui::Begin("##DoraemonSystemOverlayCheats", nullptr, flags)) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 1.0f, 0.76f, 1.0f));
@@ -542,8 +580,8 @@ namespace {
 
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         const ImVec2 position(
-            viewport->WorkPos.x + 12.0f,
-            viewport->WorkPos.y + 12.0f);
+            viewport->WorkPos.x + uiPixels(12.0f),
+            viewport->WorkPos.y + uiPixels(12.0f));
 
         ImGui::SetNextWindowPos(position, ImGuiCond_Always, ImVec2(0.0f, 0.0f));
         ImGui::SetNextWindowBgAlpha(0.72f);
@@ -556,8 +594,8 @@ namespace {
             ImGuiWindowFlags_NoNav |
             ImGuiWindowFlags_NoInputs;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, uiPixels(5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(uiPixels(8.0f), uiPixels(5.0f)));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.025f, 0.03f, 0.04f, 1.0f));
         if (ImGui::Begin("##DoraemonSystemOverlayAutosave", nullptr, flags)) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.72f, 1.0f, 0.76f, 1.0f));
@@ -887,7 +925,7 @@ namespace {
             ImGuiTableFlags_RowBg |
             ImGuiTableFlags_ScrollY |
             ImGuiTableFlags_SizingStretchProp;
-        if (ImGui::BeginTable("##InputBindings", 3, tableFlags, ImVec2(0.0f, 252.0f))) {
+        if (ImGui::BeginTable("##InputBindings", 3, tableFlags, ImVec2(0.0f, uiPixels(252.0f)))) {
             ImGui::TableSetupScrollFreeze(0, 1);
             ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch, 2.0f);
             ImGui::TableSetupColumn("Keyboard", ImGuiTableColumnFlags_WidthStretch, 1.0f);
@@ -946,7 +984,7 @@ namespace {
             }
 
             ImGui::Spacing();
-            if (ImGui::Button("Clear binding", ImVec2(120.0f, 0.0f))) {
+            if (ImGui::Button("Clear binding", ImVec2(uiPixels(120.0f), 0.0f))) {
                 if (captureDevice == BindingDevice::Keyboard) {
                     doraemon::input::set_keyboard_binding(captureAction, SDL_SCANCODE_UNKNOWN);
                 }
@@ -958,7 +996,7 @@ namespace {
                 captureAction = Action::Count;
             }
             ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(100.0f, 0.0f))) {
+            if (ImGui::Button("Cancel", ImVec2(uiPixels(100.0f), 0.0f))) {
                 doraemon::input::cancel_binding_capture();
                 ImGui::CloseCurrentPopup();
                 captureAction = Action::Count;
@@ -984,8 +1022,10 @@ namespace {
             ImVec2(viewport->Pos.x + viewport->Size.x, viewport->Pos.y + viewport->Size.y),
             IM_COL32(0, 0, 0, 145));
 
-        const float menuWidth = std::clamp(viewport->WorkSize.x - 48.0f, 440.0f, 760.0f);
-        const float menuHeight = std::clamp(viewport->WorkSize.y - 48.0f, 360.0f, 500.0f);
+        const float menuWidth = std::max(1.0f,
+            std::min(viewport->WorkSize.x - uiPixels(48.0f), uiPixels(760.0f)));
+        const float menuHeight = std::max(1.0f,
+            std::min(viewport->WorkSize.y - uiPixels(48.0f), uiPixels(500.0f)));
         ImGui::SetNextWindowPos(viewport->GetCenter(), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
         ImGui::SetNextWindowSize(ImVec2(menuWidth, menuHeight), ImGuiCond_Always);
 
@@ -995,10 +1035,10 @@ namespace {
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoSavedSettings;
 
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(22.0f, 18.0f));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 5.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 5.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, uiPixels(10.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(uiPixels(22.0f), uiPixels(18.0f)));
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, uiPixels(5.0f));
+        ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, uiPixels(5.0f));
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.025f, 0.035f, 0.055f, 0.98f));
         ImGui::PushStyleColor(ImGuiCol_TitleBg, ImVec4(0.05f, 0.18f, 0.28f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.08f, 0.38f, 0.56f, 1.0f));
@@ -1038,20 +1078,20 @@ namespace {
                 ImGui::EndTabBar();
             }
 
-            const float footerY = ImGui::GetWindowHeight() - 54.0f;
+            const float footerY = ImGui::GetWindowHeight() - uiPixels(54.0f);
             ImGui::SetCursorPosY(std::max(ImGui::GetCursorPosY(), footerY));
             ImGui::Separator();
             ImGui::TextDisabled("Escape / Back: close menu");
-            ImGui::SameLine(ImGui::GetWindowWidth() - 330.0f);
-            if (ImGui::Button("Continue", ImVec2(100.0f, 0.0f))) {
+            ImGui::SameLine(ImGui::GetWindowWidth() - uiPixels(330.0f));
+            if (ImGui::Button("Continue", ImVec2(uiPixels(100.0f), 0.0f))) {
                 doraemon::system_overlay::toggle_menu();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Reset game", ImVec2(100.0f, 0.0f))) {
+            if (ImGui::Button("Reset game", ImVec2(uiPixels(100.0f), 0.0f))) {
                 ImGui::OpenPopup("Reset game?");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Exit game", ImVec2(100.0f, 0.0f))) {
+            if (ImGui::Button("Exit game", ImVec2(uiPixels(100.0f), 0.0f))) {
                 ImGui::OpenPopup("Exit game?");
             }
 
@@ -1063,7 +1103,7 @@ namespace {
                 ImGui::TextUnformatted("Return to the opening screen?");
                 ImGui::TextDisabled("Unsaved progress will be lost.");
                 ImGui::Spacing();
-                if (ImGui::Button("Reset", ImVec2(100.0f, 0.0f))) {
+                if (ImGui::Button("Reset", ImVec2(uiPixels(100.0f), 0.0f))) {
                     std::puts("Game reset selected in PC menu");
                     gameResetRequested.store(true, std::memory_order_release);
                     menuOpen.store(false, std::memory_order_release);
@@ -1071,7 +1111,7 @@ namespace {
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("Cancel", ImVec2(100.0f, 0.0f))) {
+                if (ImGui::Button("Cancel", ImVec2(uiPixels(100.0f), 0.0f))) {
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
@@ -1084,11 +1124,11 @@ namespace {
             if (ImGui::BeginPopupModal("Exit game?", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
                 ImGui::TextUnformatted("Exit Dora64?");
                 ImGui::Spacing();
-                if (ImGui::Button("Exit", ImVec2(100.0f, 0.0f))) {
+                if (ImGui::Button("Exit", ImVec2(uiPixels(100.0f), 0.0f))) {
                     ultramodern::quit();
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("Cancel", ImVec2(100.0f, 0.0f))) {
+                if (ImGui::Button("Cancel", ImVec2(uiPixels(100.0f), 0.0f))) {
                     ImGui::CloseCurrentPopup();
                 }
                 ImGui::EndPopup();
@@ -1244,6 +1284,7 @@ void doraemon::system_overlay::record_output_frame() {
 }
 
 void doraemon::system_overlay::draw() {
+    const ScopedOverlayScale scaledOverlay;
     const float fps = fpsCounter.nextFrame(outputFrames.exchange(0, std::memory_order_relaxed));
 
     if (ImGui::IsKeyPressed(ImGuiKey_Escape, false)) {
