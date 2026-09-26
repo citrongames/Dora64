@@ -50,8 +50,10 @@ namespace {
     // but before it submits the OSTask. Keep that frame's bank until submit.
     std::array<std::shared_ptr<FrameLights>, kGraphicsBufferCount> prepared;
     std::array<std::deque<std::shared_ptr<const FrameLights>>, kGraphicsBufferCount> submitted;
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
     std::size_t preparedBytes = 0;
     std::size_t pendingBytes = 0;
+#endif
 #else
     std::array<std::shared_ptr<const FrameLights>, kGraphicsBufferCount> frames;
 #endif
@@ -100,7 +102,7 @@ static std::shared_ptr<FrameLights> capture_frame(
     return frame;
 }
 
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) && defined(DORA64_ANDROID_DIAGNOSTICS)
 static std::size_t snapshot_bytes(const FrameLights& frame) {
     return frame.data.size() + frame.displayList.size() +
         frame.frameAssets.size() + frame.skyDisplayLists.size() +
@@ -125,14 +127,19 @@ extern "C" void doraemon_snapshot_frame_lights(
     // game finishes building this frame, before the next stage may load into
     // its overlapping RDRAM range.
     std::scoped_lock rdram_lock{ultramodern::get_graphics_rdram_mutex()};
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
     const auto started = std::chrono::steady_clock::now();
+#endif
 #endif
     auto frame = capture_frame(rdram, buffer, begin, end);
     std::lock_guard lock(framesMutex);
 #if defined(__ANDROID__)
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
     if (prepared[buffer]) preparedBytes -= snapshot_bytes(*prepared[buffer]);
     preparedBytes += snapshot_bytes(*frame);
+#endif
     prepared[buffer] = std::move(frame);
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
     static std::uint32_t buildSamples = 0;
     static std::uint64_t buildTotalUs = 0;
     static std::uint64_t buildMaxUs = 0;
@@ -149,6 +156,7 @@ extern "C" void doraemon_snapshot_frame_lights(
         buildSamples = 0;
         buildTotalUs = buildMaxUs = 0;
     }
+#endif
 #else
     frames[buffer] = std::move(frame);
 #endif
@@ -164,12 +172,16 @@ void doraemon::lighting::submit_task(
         const auto expected = kGraphicsBuffers + index * kGraphicsStride + kDisplayListOffset;
         if (address != expected) continue;
 
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
         const auto started = std::chrono::steady_clock::now();
+#endif
         std::shared_ptr<FrameLights> frame;
         {
             std::lock_guard lock(framesMutex);
             frame = std::move(prepared[index]);
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
             if (frame) preparedBytes -= snapshot_bytes(*frame);
+#endif
         }
         const bool builtFrame = frame && frame->begin == address &&
             frame->end <= address + size;
@@ -187,6 +199,7 @@ void doraemon::lighting::submit_task(
         else {
             // The game may append commands after the frame-builder returns.
             // Keep the earlier shared resources, but use the final task's DL.
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
             constexpr std::uint32_t probe = 0x1E19D0U - kFrameAssetsBegin;
             if (frame->frameAssets[probe] != rdram[0x1E19D0U]) {
                 static std::uint32_t bankChangeReports = 0;
@@ -198,15 +211,19 @@ void doraemon::lighting::submit_task(
                     std::fflush(stderr);
                 }
             }
+#endif
             frame->end = address + size;
             frame->displayList.assign(rdram + address, rdram + address + size);
         }
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
         const auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(
             std::chrono::steady_clock::now() - started).count();
         const auto bytes = snapshot_bytes(*frame);
         const auto models = frame->modelCount;
+#endif
         std::lock_guard lock(framesMutex);
         submitted[index].push_back(std::move(frame));
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
         pendingBytes += bytes;
 
         // Sparse diagnostics quantify the copies and prove whether pending
@@ -242,6 +259,7 @@ void doraemon::lighting::submit_task(
             peakPendingBytes = pendingBytes;
             peakPendingTasks = submitted[0].size() + submitted[1].size();
         }
+#endif
         return;
     }
 #else
@@ -261,7 +279,9 @@ void doraemon::lighting::begin_task(
 #if defined(__ANDROID__)
         for (auto& queue : submitted) {
             if (!queue.empty() && queue.front()->begin == address) {
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
                 pendingBytes -= snapshot_bytes(*queue.front());
+#endif
                 currentFrame = std::move(queue.front());
                 queue.pop_front();
                 break;
@@ -278,7 +298,7 @@ void doraemon::lighting::begin_task(
         }
 #endif
     }
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) && defined(DORA64_ANDROID_DIAGNOSTICS)
     static bool reportedActive = false;
     static bool reportedMissing = false;
     const bool active = currentFrame && !currentFrame->displayList.empty();
@@ -367,8 +387,10 @@ void doraemon::lighting::reset() {
 #if defined(__ANDROID__)
     for (auto& queue : submitted) queue.clear();
     prepared = {};
+#if defined(DORA64_ANDROID_DIAGNOSTICS)
     preparedBytes = 0;
     pendingBytes = 0;
+#endif
 #else
     frames = {};
 #endif

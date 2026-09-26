@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.20)
 
 project(Dora64 LANGUAGES C CXX)
 
+# Development probes must not run during release gameplay, even if a device
+# retains diagnostic system properties from a previous test session.
+option(DORA64_ANDROID_DIAGNOSTICS "Enable Android frame/CPU diagnostic probes" OFF)
+if(ANDROID AND DORA64_ANDROID_DIAGNOSTICS)
+    add_compile_definitions(DORA64_ANDROID_DIAGNOSTICS)
+endif()
+
 # Game code is generated locally from the user's ROM, then patched for PC.
 set(DORAEMON_GENERATED_DIR "${CMAKE_SOURCE_DIR}/build-tools/game" CACHE PATH
     "Patched output from tools/generate_game.py")

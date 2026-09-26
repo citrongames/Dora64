@@ -55,13 +55,20 @@ ROMs are not included. Localization assets are already inside the APK.
 
 Touch controls appear when you touch the screen and hide when a gamepad is used.
 Open the Port menu for touch layout editing, camera, graphics, language and cheats.
-The Modern profile defaults to 2x rendering. Higher resolutions and many translucent
-effects can reduce performance. Full playthrough tested on Lenovo Legion Y700 (2025),
-Snapdragon 8 Gen 3. The maintainer also tested two levels plus menus/settings on
-vivo X300 FE (Snapdragon 8 Gen 5) and Lenovo Legion Y700 (2023, Snapdragon 8+ Gen 1),
-as reported, with no crashes or bugs observed. These were partial playthroughs.
-See docs/android-device-testing.md in the source repository for additional
-device results, including development builds not included in this release.
+New installs and the Modern profile use 2x rendering and Original frame rate.
+Display and Manual frame rates remain selectable. Higher resolutions and many
+translucent effects can reduce performance. Shader compilation progress is shown
+at startup; a persistent pipeline cache speeds up subsequent launches.
+
+The 1.0.3 release candidate was tested by the maintainer on eight devices spanning
+Snapdragon 660, 888, 8+ Gen 1, 8 Gen 3, 8 Gen 5, Kirin 990 and Kirin 9010.
+Each test covered startup, intro, menus, dialogue, two levels, touch/gamepad,
+minimize/restore and a repeated launch for cache verification. No bugs or crashes
+were reported in that scenario. Performance varies substantially by device.
+An earlier build also completed a full playthrough on Lenovo Legion Y700 (2025).
+See docs/android-device-testing.md in the source repository for measured results.
+The final release changes only the version and Android frame-rate defaults from
+the tested candidate; existing saved graphics preferences are retained.
 
 Data folder: Android/data/com.n64recomp.dora64/files/
 Progress: saves/doraemon.n64.jp.bin (and .bak).

@@ -504,7 +504,7 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
     const auto frameDisplayList = doraemon::lighting::current_display_list();
     const auto frameAssets = doraemon::lighting::current_frame_assets();
     const auto skyDisplayLists = doraemon::lighting::current_sky_display_lists();
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) && defined(DORA64_ANDROID_DIAGNOSTICS)
     static bool reportedSkySnapshot = false;
     static bool reportedSkyReuse = false;
     if (skyDisplayLists.data != nullptr) {
@@ -597,7 +597,7 @@ void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
         task->t.data_ptr & 0x3FFFFFF,
         0,
         true);
-#if defined(__ANDROID__)
+#if defined(__ANDROID__) && defined(DORA64_ANDROID_DIAGNOSTICS)
     compare_frame_display_list("after parse");
 #endif
 #if defined(__ANDROID__)

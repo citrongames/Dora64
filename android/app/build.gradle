@@ -29,8 +29,8 @@ android {
         applicationId 'com.n64recomp.dora64'
         minSdk 24
         targetSdk 36
-        versionCode 50
-        versionName '1.0.3-test11'
+        versionCode 55
+        versionName '1.0.3'
         buildConfigField 'boolean', 'DORA64_RUNTIME', dora64Runtime ? 'true' : 'false'
 
         ndk {
@@ -47,7 +47,7 @@ android {
 
     // Gameplay/performance builds must optimize the generated game, RT64,
     // and runtime together. Keep native symbols locally for crash analysis.
-    // The debug signing key allows installing this variant over test builds.
+    // Release uses the permanent key; only the local optimized variant uses the debug key.
     signingConfigs {
         if (signingPath) {
             production {

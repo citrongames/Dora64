@@ -1,8 +1,8 @@
 #pragma once
 
-// Temporary test4 diagnostic. Disabled unless debug.dora64.fast_cpu=1.
-// Remove after the Huawei scheduling comparison; this is not a release policy.
-#if defined(__ANDROID__)
+// Optional development diagnostic. Excluded from release builds; enabling it
+// also requires debug.dora64.fast_cpu=1. This is not a release scheduling policy.
+#if defined(__ANDROID__) && defined(DORA64_ANDROID_DIAGNOSTICS)
 #include <algorithm>
 #include <atomic>
 #include <cerrno>

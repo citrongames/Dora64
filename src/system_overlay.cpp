@@ -684,10 +684,11 @@ namespace {
 
         settings.autosave = modern;
         settings.modernCamera = modern;
-        settings.graphics.rr_option = modern ? RefreshRate::Display : RefreshRate::Original;
 #if defined(__ANDROID__)
+        settings.graphics.rr_option = RefreshRate::Original;
         settings.graphics.res_option = modern ? Resolution::Original2x : Resolution::Original;
 #else
+        settings.graphics.rr_option = modern ? RefreshRate::Display : RefreshRate::Original;
         settings.graphics.res_option = modern ? Resolution::Auto : Resolution::Original;
 #endif
         settings.graphics.ar_option = modern ? AspectRatio::Expand : AspectRatio::Original;

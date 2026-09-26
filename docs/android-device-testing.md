@@ -4,6 +4,42 @@ Results below are user-reported gameplay tests. APKs are installed and tested by
 the maintainer, not by the build agent. A successful partial test does not imply
 that all levels or every settings combination were covered.
 
+
+## Latest common test: Android 1.0.3-rc1
+
+On 2026-09-26 the maintainer reports the same test on all eight devices: clean
+installation after removing the previous version and caches, device reboot,
+startup, intro, menus, dialogues, two levels, touch controls and gamepad,
+minimize/restore, repeat launch to check caching, FPS observation, and monitoring
+for graphical bugs/crashes. All eight passed this scenario with no bugs or
+crashes reported. This is a two-level test, not a complete playthrough on each.
+Per-device render resolution and selected frame-rate mode were not explicitly
+listed in this report; do not infer matched settings or benchmark methodology.
+
+| Device | Reported SoC | RC1 result | User-reported FPS |
+| --- | --- | --- | --- |
+| Xiaomi Redmi Note 7 | Snapdragon 660 | Passed common scenario | 20–30 |
+| Huawei P40 Pro | Kirin 990 5G | Passed common scenario | 40–50 |
+| Huawei P50 | Snapdragon 888 4G | Passed common scenario | 40–50 |
+| Xiaomi Mi 11 Ultra | Snapdragon 888 5G | Passed common scenario | Stable 120 |
+| Huawei Pura 70 Ultra | Kirin 9010 | Passed common scenario | From 30 in 2D menus to stable 120 in active gameplay |
+| vivo X300 FE | Snapdragon 8 Gen 5 | Passed common scenario | Stable 90 |
+| Lenovo Legion Y700 (2023) | Snapdragon 8+ Gen 1 | Passed common scenario | Stable 90 |
+| Lenovo Legion Y700 (2025) | Snapdragon 8 Gen 3 | Passed; maintainer reference device | Stable 120 |
+
+Slower devices remain candidates for performance investigation. Pura's menu/game
+difference is not proof of scheduler trouble; CPU/GPU work, presentation pacing
+and scene-specific rendering need isolation before selecting an optimization.
+No performance fix is added speculatively to the accepted release candidate.
+
+Final Android 1.0.3 (55) retains RC1 fixes, assets and disabled development probes.
+At the maintainer's request, first-run defaults and the Modern button now select
+Original frame rate (2x Modern resolution retained). Display/Manual remain
+available; stored user preferences and desktop profiles are unchanged. Final APK
+is built/signed by the agent; the above gameplay results belong to RC1.
+
+## Historical per-device investigations
+
 | Device | Reported SoC | Coverage | Result |
 | --- | --- | --- | --- |
 | Lenovo Legion Y700 (2025) | Qualcomm SM8650-AB, Snapdragon 8 Gen 3 | Complete playthrough, all items, Modern defaults, Russian localization, cheats; subsequent touch/layout-editor and port-menu checks | No crashes or game bugs reported during the playthrough. Reported stable 120 FPS with drops during many translucent effects. |
@@ -12,6 +48,8 @@ that all levels or every settings combination were covered.
 | Xiaomi Mi 11 Ultra | Qualcomm SM8350, Snapdragon 888 5G | Android 1.0.2: ROM selection, brief black screen with touch overlay, then crash | 1.0.2 startup failure reproduced in Vulkan shader compilation; 1.0.3-test2 (41) now starts and runs, with reported 120 FPS at 2x. Partial gameplay test; see below. |
 | Huawei P50 | Qualcomm SM8350, Snapdragon 888 4G | Android 1.0.2: same startup symptoms reported | 1.0.2 startup failure; test2 now launches, but the maintainer reports occasional drops below 60 FPS even at 1x. Driver/log investigation is recorded below; remaining performance limitations are unresolved. |
 | Huawei Pura 70 Ultra | Kirin 9010 (maintainer report), Maleoon 910 (ADB) | Development test3–test11: startup, gameplay image, animated 2D elements, minimize/restore | Test10: maintainer confirms graphics artifacts fixed, including post-resume bars. Test11: feels faster; remaining FPS drops and full-playthrough coverage are unresolved. See android-maleoon-white-frame.md. |
+| Xiaomi Redmi Note 7 | Qualcomm SDM660, Snapdragon 660; Adreno 512 (ADB) | test12–test13, LineageOS Android 13, scene textures and CPU dialogue text | test13: user confirms text restored, faster first launch and almost immediate warm launch. Earlier test12 around 20 FPS; no later FPS measurement. RC1 retest pending. See [investigation](android-adreno512-black-frame.md). |
+| Huawei P40 Pro | Kirin 990 5G (user), Mali-G76 (ADB) | test12–test14, scene/dialogue and moving letterbox bars | test14: user confirms text restored and old-background flashes in bars gone. RC1 retest pending. See [investigation](android-mali-g76-cpu-text.md). |
 
 ## vivo X300 FE report
 
@@ -154,3 +192,60 @@ coverage statistics and reports of sustained frame waits. The CPU-affinity
 experiment is disabled unless `debug.dora64.fast_cpu=1` is explicitly set; it
 is not an automatic device policy and was disabled during the Pura performance
 audit. Remove or explicitly reassess development probes before a public release.
+
+
+## Redmi Note 7 and Huawei P40 Pro — test12/test13
+
+- Redmi Note 7 / Snapdragon 660 / Adreno 512: test12 restores textures, user
+  reports around 20 FPS and corrupted CPU text. ADB screenshot confirms missing
+  glyph pixels. Driver lacks the narrow storage formats used by native FB code.
+- Huawei P40 Pro / Kirin 990 5G: user reports earlier crash, test12 now starts and
+  renders; CPU text remains missing. No exact FPS/driver capture yet.
+- test13 (52) fixes native framebuffer storage format mismatches on Android,
+  adds persistent Vulkan pipeline caching and reduces redundant dummy-descriptor
+  updates. Maintainer visual and cold/warm startup tests are pending. Neither
+  device is considered fully validated. See [investigation](android-adreno512-black-frame.md).
+
+
+### test13 accepted result and test14 candidate
+
+Redmi Note 7: maintainer confirms CPU text restored; much faster first startup
+and almost immediate warm startup. No new performance range or full playthrough.
+P40 Pro: CPU text still absent, old background flashes while letterbox bars move.
+ADB confirms Mali-G76, correct test13 fallback selection and successful persistent
+cache load (649393 bytes). test14 removes remaining native texel-buffer limit /
+usage violations via packed storage buffers; visual verification is pending.
+See [P40 investigation](android-mali-g76-cpu-text.md).
+
+
+## Android 1.0.3-rc1 — full device retest pending
+
+Maintainer confirms P40 test14 fixes both absent CPU dialogue text and old scene
+flashes in moving letterbox bars. All eight owned devices have now undergone
+development testing; this does not mean each has tested the same latest binary.
+RC1 provides one signed candidate for the full repeated device matrix.
+
+VersionCode 54, permanent release signature, non-debuggable Release with optimized
+RelWithDebInfo native code (symbols retained locally). All test14 gameplay,
+compatibility, synchronization, shader/cache, localization, touch and lifecycle
+behavior is retained. No graphics quality/defaults changed for this candidate.
+
+Development-only frame timing, snapshot byte/hash/comparison reports, coverage
+statistics, timed-wait probes and CPU-affinity experiment are compiled out using
+DORA64_ANDROID_DIAGNOSTICS=OFF (default). The CPU experiment cannot be activated
+by a leftover phone property in this build. The graphics RDRAM mutex, snapshot
+capture/queues and wait predicates are unchanged. Error/startup/cache logs remain.
+Diagnostic probes can still be built explicitly for future investigation.
+
+Checks: optimized Release build, permanent signature, non-debuggable manifest,
+225 assets identical to test14, expected compatibility code present and temporary
+probe strings absent from the packaged native library. No APK install/game test
+by the agent. No commits, pushes, tags or public release changes in this step.
+
+Retest per device: startup and repeat launch; Russian dialogue/file menu; water
+and alpha effects; moving cinematic bars; touch/gamepad; pause/resume and audio;
+save/load. Record resolution and frame-rate mode alongside observed FPS. These
+are suggested focused checks for the maintainer, not automated test claims.
+
+APK: Dora64-1.0.3-rc1-Android-arm64.apk
+SHA-256: ad0027b435b3aa897568132209855522938beb87765676eb77edc48b540dcf06
