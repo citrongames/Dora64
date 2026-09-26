@@ -61,5 +61,27 @@ int main() {
     a.down(1,1,{.6f,.4f}); b.down(1,1,{.6f,.4f}); a.move(1,1,{.7f,.4f}); b.move(1,1,{.7f,.4f});
     check(near(a.take_camera().dx,b.take_camera().dx),"camera sensitivity independent of resolution");
     check(near(a.halfSize(Control::A).x,b.halfSize(Control::A).x),"DPI-scaled hit boxes match rendering");
+    // Dense landscape displays used to hit a per-control cap, ignoring the slider.
+    State phone;
+    phone.resize(2400,1080,3);
+    for(int i=0;i<count;++i) {
+        const auto control=static_cast<Control>(i);
+        phone.layout.scale=.7f;
+        const auto small=phone.halfSize(control);
+        phone.layout.scale=1.6f;
+        const auto large=phone.halfSize(control);
+        check(near(large.x/small.x,1.6f/.7f) && near(large.y/small.y,1.6f/.7f),
+            "size slider changes every control across its full range on dense phones");
+    }
+    check(near(phone.halfSize(Control::Stick).y/phone.halfSize(Control::A).y,132.0f/72),
+        "screen fitting preserves stick to A proportions");
+    check(near(phone.halfSize(Control::A).y/phone.halfSize(Control::B).y,72.0f/64),
+        "screen fitting keeps A larger than B");
+    phone.layout.scale=.7f;
+    auto edge=at(phone,Control::A);
+    edge.x+=phone.halfSize(Control::A).x*1.2f;
+    check(!phone.hit(Control::A,edge),"point outside small A is not pressed");
+    phone.layout.scale=1.6f;
+    check(phone.hit(Control::A,edge),"larger A expands the actual touch target");
     std::puts("Touch controls: all regression checks passed.");
 }

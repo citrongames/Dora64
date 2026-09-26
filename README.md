@@ -35,10 +35,17 @@ See [Android build and data instructions](android/README.md) and
 [touch controls and layout editor](docs/android-touch-controls.md).
 Android APKs have been tested by the maintainer on Lenovo Legion Y700 (2025),
 Snapdragon 8 Gen 3, including a complete playthrough with all items and Russian
-localization. Android **1.0.2** is distributed with desktop **1.0.5** in the same
+localization. On vivo X300 FE (Snapdragon 8 Gen 5, Qualcomm SM8845, as reported
+by the tester), two levels plus menus/settings were checked with no crashes or
+bugs observed. The same partial test passed on Lenovo Legion Y700 (2023),
+Snapdragon 8+ Gen 1 (Qualcomm SM8475P, as reported). See the
+[device test record](docs/android-device-testing.md).
+Android **1.0.2** is distributed with desktop **1.0.5** in the same
 GitHub release. Extract the Android ZIP, install its APK, and choose your original
 Japanese `.z64` ROM on first launch. Requires Android 7.0+ on a 64-bit ARM device
-with Vulkan support; other GPU/device combinations have not been playtested.
+with Vulkan support. Development APK 1.0.3-test11 includes additional fixes
+tested on Snapdragon 888 and Kirin 9010 devices; these fixes are not yet in
+the published 1.0.2 APK. See the device test record for coverage and limitations.
 
 Android releases use a permanent signing key and can update in place.
 

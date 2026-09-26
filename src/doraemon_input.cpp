@@ -1,3 +1,4 @@
+#include "android_cpu_probe.hpp"
 #include "doraemon_input.hpp"
 #include "doraemon_touch.hpp"
 #include "system_overlay.hpp"
@@ -489,6 +490,7 @@ void doraemon::input::process_event(const SDL_Event& event) {
 }
 
 void doraemon::input::update() {
+    doraemon::cpu_probe::update();
     doraemon::touch::update();
     int keyCount = 0;
     const Uint8* keys = SDL_GetKeyboardState(&keyCount);

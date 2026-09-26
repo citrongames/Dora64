@@ -3,10 +3,12 @@
 #endif
 
 #include "rt64_render_context.hpp"
+#include "android_cpu_probe.hpp"
 
 #if defined(__ANDROID__)
 #include <SDL.h>
 #include <android/log.h>
+#include <jni.h>
 #include <unistd.h>
 #endif
 
@@ -34,6 +36,22 @@
 
 namespace {
 #if defined(__ANDROID__)
+    std::atomic_bool shaderLoadingVisible{ false };
+    void show_android_shader_loading(bool visible) {
+        auto *env = static_cast<JNIEnv *>(SDL_AndroidGetJNIEnv());
+        auto activity = static_cast<jobject>(SDL_AndroidGetActivity());
+        if (!env || !activity) return;
+        jclass activityClass = env->GetObjectClass(activity);
+        jmethodID method = env->GetMethodID(activityClass, "setShaderCompilationVisible", "(Z)V");
+        if (method) env->CallVoidMethod(activity, method, visible ? JNI_TRUE : JNI_FALSE);
+        if (env->ExceptionCheck()) {
+            env->ExceptionClear();
+            __android_log_print(ANDROID_LOG_WARN, "Dora64Native", "Could not update shader compilation message");
+        }
+        env->DeleteLocalRef(activityClass);
+        env->DeleteLocalRef(activity);
+    }
+
     void android_trace(const char* message, bool reset = false) {
         __android_log_print(ANDROID_LOG_INFO, "Dora64Native", "%s", message);
         const auto path = recomp::get_config_path() / "android-trace.log";
@@ -48,6 +66,7 @@ namespace {
 
     RT64::RenderHookDraw* previousOutputDraw = nullptr;
     void count_output_frame(plume::RenderCommandList* list, plume::RenderFramebuffer* framebuffer) {
+        doraemon::cpu_probe::register_present();
 #if defined(__ANDROID__)
         static std::atomic_bool first_output_before{false};
         if (!first_output_before.exchange(true)) android_trace("first output draw begin");
@@ -57,6 +76,7 @@ namespace {
 #if defined(__ANDROID__)
         static std::atomic_bool first_output_after{false};
         if (!first_output_after.exchange(true)) android_trace("first output draw complete");
+        if (shaderLoadingVisible.exchange(false)) show_android_shader_loading(false);
 #endif
     }
 
@@ -234,6 +254,7 @@ namespace {
             case Input::InvalidGraphicsAPI: return Output::InvalidGraphicsAPI;
             case Input::GraphicsAPINotFound: return Output::GraphicsAPINotFound;
             case Input::GraphicsDeviceNotFound: return Output::GraphicsDeviceNotFound;
+            case Input::GraphicsPipelineCreationFailed: return Output::GraphicsPipelineCreationFailed;
         }
         std::abort();
     }
@@ -359,6 +380,8 @@ doraemon::renderer::RT64Context::RT64Context(
             RT64::GetRenderHookDeinit());
     }
 #if defined(__ANDROID__)
+    shaderLoadingVisible.store(true);
+    show_android_shader_loading(true);
     android_trace("RT64 setup begin");
 #endif
     setup_result = map_setup_result(app->setup(0));
@@ -367,6 +390,9 @@ doraemon::renderer::RT64Context::RT64Context(
 #endif
     chosen_api = map_graphics_api(app->chosenGraphicsAPI);
     if (setup_result != ultramodern::renderer::SetupResult::Success) {
+#if defined(__ANDROID__)
+        if (shaderLoadingVisible.exchange(false)) show_android_shader_loading(false);
+#endif
         std::fprintf(stderr, "RT64 setup failed (%d)\n", static_cast<int>(setup_result));
         app.reset();
         return;
@@ -404,7 +430,11 @@ doraemon::renderer::RT64Context::RT64Context(
     std::printf("RT64 renderer initialized\n");
 }
 
-doraemon::renderer::RT64Context::~RT64Context() = default;
+doraemon::renderer::RT64Context::~RT64Context() {
+#if defined(__ANDROID__)
+    if (shaderLoadingVisible.exchange(false)) show_android_shader_loading(false);
+#endif
+}
 
 bool doraemon::renderer::RT64Context::valid() {
     return static_cast<bool>(app);
@@ -449,6 +479,7 @@ void doraemon::renderer::RT64Context::enable_instant_present() {
 }
 
 void doraemon::renderer::RT64Context::send_dl(const OSTask* task) {
+    doraemon::cpu_probe::register_display_list();
     if (!app) {
         return;
     }

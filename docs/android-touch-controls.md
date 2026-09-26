@@ -113,3 +113,24 @@ dismissal without game-input leakage and fixed-footer/scroll geometry at 720p,
 discover a new failure. On 2026-09-25, the user tested r33, confirmed the
 result worked well, and approved committing the Android menu changes.
 The agent did not install or run the APK.
+
+
+## Dense phone size correction — 1.0.3-test3 (2026-09-26)
+
+The maintainer reported ineffective Button size adjustment and unexpected
+stick/A sizes after testing Huawei. The previous formula applied independent
+height caps after the user scale, saturating the slider and flattening button
+size differences on high-DPI landscape screens. The fix fits a common baseline
+density to the screen, then applies the saved user scale. This preserves the
+132:72:64:56 stick/A/B/other proportions throughout the 0.7–1.6 range. Rendering,
+hit testing and stick travel all use the same geometry. Existing scale and
+positions remain loaded; controls near screen edges are constrained as before.
+
+A focused regression on 2400x1080 at density 3 fails on the old code because
+the slider cannot scale all controls. It also checks proportions and actual
+touch-target expansion. Physical-device validation remains with the maintainer.
+
+The focused regression failed before the correction and passes after it.
+Optimized signed Release APK built successfully; signature and unchanged assets
+verified. Delivered `Dora64-1.0.3-test3-Android-arm64.apk` (versionCode 42), SHA-256 `24b6d7e7ef9bbb08e9363718d3c5b3dcc0a01a1d9fe789e634892e50dfec8ade`.
+No device install/gameplay test was performed by the agent.

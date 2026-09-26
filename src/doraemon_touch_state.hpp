@@ -51,7 +51,10 @@ public:
         if (c == Control::Stick) dp = 132;
         if (c == Control::A) dp = 72;
         if (c == Control::B) dp = 64;
-        const float pixels = std::min(dp * density * layout.scale, height * (c == Control::Stick ? .21f : .115f));
+        // Fit one common baseline to the screen, preserving control proportions.
+        // Apply the user's scale afterwards so the height cap cannot swallow it.
+        const float fittedDensity = std::min(density, height * std::min(.21f / 132.0f, .115f / 72.0f));
+        const float pixels = dp * fittedDensity * layout.scale;
         return {pixels * (c == Control::Start ? .85f : .5f) / width, pixels * .5f / height};
     }
     void constrain(Control c) {

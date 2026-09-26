@@ -4,6 +4,15 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
+import android.content.res.ColorStateList;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -17,6 +26,46 @@ public final class Dora64Activity extends SDLActivity {
     private static final int PICK_ROM = 64;
     private static final long ROM_SIZE = 8L * 1024L * 1024L;
     private static final String TAG = "Dora64";
+    private LinearLayout shaderCompilationOverlay;
+
+    // Called from the native render thread; this view is drawn by Android,
+    // so it remains visible and animated while Vulkan compiles its pipelines.
+    public void setShaderCompilationVisible(boolean visible) {
+        runOnUiThread(() -> {
+            if (isFinishing() || isDestroyed()) return;
+            if (shaderCompilationOverlay == null) {
+                if (!visible) return;
+                float density = getResources().getDisplayMetrics().density;
+                LinearLayout row = new LinearLayout(this);
+                row.setOrientation(LinearLayout.HORIZONTAL);
+                row.setGravity(Gravity.CENTER_VERTICAL);
+                row.setPadding((int)(24 * density), (int)(18 * density),
+                    (int)(24 * density), (int)(18 * density));
+                GradientDrawable background = new GradientDrawable();
+                background.setColor(0xE6222222);
+                background.setCornerRadius(12 * density);
+                row.setBackground(background);
+                row.setElevation(8 * density);
+                ProgressBar spinner = new ProgressBar(this);
+                spinner.setIndeterminateTintList(ColorStateList.valueOf(Color.WHITE));
+                row.addView(spinner, new LinearLayout.LayoutParams((int)(28 * density), (int)(28 * density)));
+                TextView label = new TextView(this);
+                label.setText("Compiling shaders…");
+                label.setTextColor(Color.WHITE);
+                label.setTextSize(18);
+                label.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+                LinearLayout.LayoutParams textParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                textParams.setMarginStart((int)(16 * density));
+                row.addView(label, textParams);
+                FrameLayout content = findViewById(android.R.id.content);
+                content.addView(row, new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+                shaderCompilationOverlay = row;
+            }
+            shaderCompilationOverlay.setVisibility(visible ? View.VISIBLE : View.GONE);
+        });
+    }
 
     @Override
     protected String[] getLibraries() {

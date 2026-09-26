@@ -57,7 +57,11 @@ Touch controls appear when you touch the screen and hide when a gamepad is used.
 Open the Port menu for touch layout editing, camera, graphics, language and cheats.
 The Modern profile defaults to 2x rendering. Higher resolutions and many translucent
 effects can reduce performance. Full playthrough tested on Lenovo Legion Y700 (2025),
-Snapdragon 8 Gen 3; other devices have not been playtested.
+Snapdragon 8 Gen 3. The maintainer also tested two levels plus menus/settings on
+vivo X300 FE (Snapdragon 8 Gen 5) and Lenovo Legion Y700 (2023, Snapdragon 8+ Gen 1),
+as reported, with no crashes or bugs observed. These were partial playthroughs.
+See docs/android-device-testing.md in the source repository for additional
+device results, including development builds not included in this release.
 
 Data folder: Android/data/com.n64recomp.dora64/files/
 Progress: saves/doraemon.n64.jp.bin (and .bak).

@@ -82,8 +82,8 @@ Lenovo serial reported by `./adb.exe devices`):
 ```
 
 The user tests APKs on the devices. The porting work does not install or run
-the APK. Test gameplay first on the Lenovo Legion Y700 (2025); investigate
-other chipsets after the baseline build is stable.
+the APK. Lenovo Legion Y700 (2025) is the full-playthrough baseline;
+additional device results are recorded in [the test record](../docs/android-device-testing.md).
 
 
 ## Current validation and integration
@@ -93,6 +93,20 @@ Snapdragon 8 Gen 3, using the Modern defaults, Russian localization and cheats.
 Subsequent r32 touch controls/layout editing and r33 Android port-menu changes
 were also confirmed working. Performance can still fall during heavy translucent
 effects at high internal resolutions; 2x is the Android default and 4x is available.
+
+The maintainer also reports successful testing on vivo X300 FE, Qualcomm SM8845
+Snapdragon 8 Gen 5 (device/SoC names as supplied): launch, two levels, menus and
+settings, with no crashes or bugs observed. This was not a full playthrough.
+The same scenario also passed on Lenovo Legion Y700 (2023), Qualcomm SM8475P
+Snapdragon 8+ Gen 1 (as reported), with no crashes or bugs observed.
+APK version, rendering settings and FPS were not specified in these partial tests.
+
+Development checkpoint 1.0.3-test11 adds shader compatibility for Snapdragon
+888, a capability-based blending fallback for Kirin/Maleoon, Vulkan memory
+visibility and resized-target initialization fixes, and coverage reuse.
+The maintainer confirms corrected graphics on Pura 70 Ultra and improved
+responsiveness with test11; performance is not yet fully characterized.
+These changes are not yet part of the published Android 1.0.2 release.
 
 Touch controls and the editor are documented in
 [docs/android-touch-controls.md](../docs/android-touch-controls.md).
